@@ -1,0 +1,402 @@
+/* FONTS */
+
+@font-face
+{
+    font-family: "font_1";
+    src: url('fonts/Monoglyceride.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face
+{
+    font-family: "font_2";
+    src: url('fonts/Montserrat-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face
+{
+    font-family: "font_3";
+    src: url('fonts/TitilliumWeb-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face
+{
+    font-family: "font_3_bold";
+    src: url('fonts/TitilliumWeb-Bold.ttf');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* HEADER */
+
+* 
+{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body
+{
+    overflow-x: hidden;
+    height: 100%;
+}
+
+html
+{
+    height: 100%;
+}
+
+#top
+{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+#main-header-h1
+{
+    z-index: 2;
+    position: relative;
+    top: 40%;
+    text-align: center;
+    font-family: 'font_3_bold';
+    font-weight: bold;
+    font-size: 4rem;
+    color: white;
+}
+
+#main-header-h3
+{
+    z-index: 2;
+    position: relative;
+    top: 40%;
+    text-align: center;
+    font-family: 'font_3';
+    font-size: 3rem;
+    color: white;
+}
+
+#get-started-button
+{
+    z-index: 2;
+    position: relative;
+    top: 40%;
+    margin: auto;
+    height: 2rem;
+    width: 8rem;
+    border-radius: 1rem;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'font_3_bold';
+    font-weight: bold;
+}
+
+#get-started-button:hover,
+#get-started-button:focus
+{
+    cursor: pointer;
+}
+
+/* MAIN */
+
+#main
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40rem;
+    border-bottom: solid black 0.1rem;
+    overflow: hidden;
+}
+
+#admin
+{
+    z-index: 2;
+    position: absolute;
+    height: 3rem;
+    width: 8rem;
+    right: 5%;
+    top: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* BULLETIN BOARD */
+
+#board
+{
+    position: relative;
+    top: 40rem;
+    left: 0;
+    width: 100%;
+    height: 60rem;
+    background-color: rgb(225, 225, 225);
+    overflow: hidden;
+    border-bottom: solid 2px;
+}
+
+#board-container
+{
+    position: absolute;
+    height: 92%;
+    width: 96%;
+    left: 2%;
+    bottom: 8%;
+    background-image: url('images/corkboard.jpeg');
+    background-size: 40%;
+    border: 1rem solid transparent;
+    border-image: url('images/border.png') 30 round;
+}
+
+/* REVIEW DIV */
+
+#main-reviews
+{
+    position: relative;
+    left: 0;
+    top: 40rem;
+    width: 100%;
+    height: 45rem;
+    background-color: rgb(225, 225, 225);
+    overflow: hidden;
+    border-bottom: solid 2px;
+}
+
+#main-reviews-container-outer
+{
+    position: relative;
+    left: 0;
+    top: 8%;
+    width: 100%;
+    height: 85%;
+    background-color: rgb(225, 225, 225);
+    overflow: hidden;
+}
+
+#main-reviews-container-inner
+{
+    position: absolute;
+    height: 40rem;
+    width: 100%;
+    bottom: 10%;
+    background-image: url('images/slide_4.jpeg');
+    background-size: 100%;
+    background-position: 0% 30%;
+}
+
+#main-reviews-header
+{
+    position: relative;
+    text-align: center;
+    top: 5%;
+    font-family: 'font_3', 'sans-serif';
+}
+
+#ribbon
+{
+    position: relative;
+    background-color: rgb(225, 225, 225);
+    height: 70%;
+    width: 30%;
+    top: -60%;
+    left: 68%;
+    padding: 1%;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    clip-path: polygon(0% 0%, 50% 15%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+#ribbon-header
+{
+    position: relative;
+    left: 6%;
+    top: 25%;
+    color: black;
+    font-family: 'font_3';
+}
+
+#ribbon-text
+{
+    position: relative;
+    left: 6%;
+    top: 25%;
+    width: 90%;
+    color: black;
+    font-family: 'font_3';
+}
+
+#ribbon-border
+{
+    position: absolute;
+}
+
+/* SOCIAL MEDIA */
+
+#socialMedia
+{
+    position: relative;
+    top: 40rem;
+    height: 40rem;
+    width: 100%;
+    background-color: rgb(225, 225, 225);
+    border-bottom: solid 2px;
+}
+
+#socialMedia-header
+{
+    position: relative;
+    left: 5%;
+    font-family: 'font_3';
+    top: 5%;
+}
+
+#socialMedia-text
+{
+    position: relative;
+    left: 6%;
+    font-family: 'font_3';
+    top: 5%;
+}
+
+#socialMedia-imgs-container
+{
+    position: relative;
+    left: 5%;
+    width: 90%;
+    height: 60%;
+    top: 8%;
+    border: 1px solid black;
+}
+
+/* SHOPPING PAGE */
+
+#shopping-page-main
+{
+    position: absolute;
+    height: 40rem;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(225, 225, 225);
+    overflow-y: auto;
+}
+
+/* SHOPPING CART */
+
+#shopping-cart-container
+{
+    z-index: 4;
+    position: fixed;
+    height: 100%;
+    width: 22rem;
+    right: 0;
+    border: solid white 2px;
+    transform: translateX(20rem);
+    transition: transform 0.6s ease;
+    display: flex;
+    flex-direction: row;
+    font-family: 'font_3';
+}
+
+#shopping-cart-slider
+{
+    width: 2rem;
+    background-color: rgb(215, 215, 215);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+#shopping-cart-main
+{
+    position: relative;
+    width: 20rem;
+    border-left: solid white 1px;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+}
+
+/* FOOTER */
+
+#footer-div
+{
+    position: relative;
+    top: 40rem;
+    left: 0;
+    width: 100%;
+    height: 20rem;
+    background-color: rgb(225, 225, 225);
+    overflow-x: hidden;
+}
+
+#footer-options
+{
+    position: absolute;
+    height: 90%;
+    top: 5%;
+    width: 12%;
+    left: 2%;
+}
+#footer-credentials
+{
+    position: absolute;
+    height: 90%;
+    top: 5%;
+    width: 30%;
+    left: 20%;
+}
+
+#copyright
+{
+    position: relative;
+    text-align: center;
+    top: 85%;
+    color: black;
+    font-family: 'font_3';
+    font-size: medium;
+}
+
+.footer-a
+{
+    text-decoration: none;
+    color: black;
+    font-family: 'font_3';
+}
+
+.footer-p
+{
+    position: relative;
+    top: 7%;
+}
+
+/* COLOR PICKER */
+
+#color-picker-container 
+{
+    position: relative;
+    z-index: 50;
+    border: 1px solid #ccc;
+    background-color: white;
+    box-shadow: 0 2rem 2rem rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    width: 4rem;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
