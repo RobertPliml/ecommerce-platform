@@ -54,18 +54,23 @@ function updateCartDisplay ()
                   <div class="cart-item">
                     <img src="${item.item_image_url}" alt="${item.item_name}" class="shopping-cart-img">
                     <h4 class="cart-item-info">${item.item_name}</h4>
-                    <p class="cart-item-info">Quantity: ${quantity}</p>
                     <p class="cart-item-info">Price: $${totalPrice}</p>
+                    <div class="cart-counter-container">
+                        <div class="cart-counter-subtract">-</div>
+                        <div class="cart-counter-value">${quantity}</div>
+                        <div class="cart-counter-add">+</div>  
+                    </div>
+                    <p class="stock-counter">In Stock</p>
                   </div>
                 `;
                 grand_total+=parseInt(totalPrice);
             });
             html += 
-            '<div id="cart-subtotal">' +
-                '<p id="subtotal">Subtotal: $'+ grand_total.toFixed(2) +'</p>' +
-                '<div id="empty-cart"></div>' +
-                '<div id="submit-cart"></div>' +
-            '</div>';
+            `<div id="cart-subtotal">
+                <p id="subtotal">Subtotal: $${grand_total.toFixed(2)}</p>
+                <div id="empty-cart"></div>
+                <div id="submit-cart"></div>
+            </div>`;
             // now commit our new html to the shopping cart
             $("#shopping-cart-main").html(html);
         },

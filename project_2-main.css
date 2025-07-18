@@ -417,6 +417,59 @@ html
     left: 40%;
     width: 20%;
 }
+.cart-counter-container
+{
+    position: relative;
+    height: 2.5rem;
+    width: 8rem;
+    border: solid rgb(215, 215, 215) 1.5px;
+    border-radius: 0% 45% 0% 45%; 
+    left: 52%;
+    top: -10rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+.cart-counter-value
+{
+    position: relative;
+    font-size: 2rem;
+}
+
+.cart-counter-add
+{
+    position: relative;
+    height: 2rem;
+    width: 2rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cart-counter-subtract
+{
+    position: relative;
+    height: 2rem;
+    width: 2rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cart-counter-add:hover,
+.cart-counter-subtract:hover
+{
+    cursor: pointer;
+}
+.stock-counter
+{
+    position: relative;
+    font-weight: bold;
+    color: green;
+    top: -9rem;
+    left: 52%;
+}
 /* FOOTER */
 
 #footer-div
