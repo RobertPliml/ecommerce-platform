@@ -59,18 +59,18 @@ if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
         text_box_content = :text_box_content, text_color = :text_color, background_color = :background_color, 
         text_font = :text_font, text_size = :text_size WHERE item_id = :item_id";
         $stm = $DB->prepare($query);
-        $stm->bindParam(':item_name', $item_name, PDO::PARAM_STR);
-        $stm->bindParam(':item_price', $item_price, PDO::PARAM_STR);
-        $stm->bindParam(':item_quantity', $item_quantity, PDO::PARAM_STR);
-        $stm->bindParam(':item_image_url', $fileDestination, PDO::PARAM_STR);
-        $stm->bindParam(':text_box_height', $text_box_height, PDO::PARAM_INT);
-        $stm->bindParam(':text_box_width', $text_box_width, PDO::PARAM_INT);
-        $stm->bindParam(':text_box_content', $text_box_content, PDO::PARAM_STR);
-        $stm->bindParam(':text_color', $text_color, PDO::PARAM_STR);
-        $stm->bindParam(':background_color', $background_color, PDO::PARAM_STR);
-        $stm->bindParam(':text_font', $text_font, PDO::PARAM_STR);
-        $stm->bindParam(':text_size', $text_size, PDO::PARAM_STR);
-        $stm->bindParam(':item_id', $item_id, PDO::PARAM_INT);
+        $stm->bindValue(':item_name', $item_name, PDO::PARAM_STR);
+        $stm->bindValue(':item_price', $item_price, PDO::PARAM_STR);
+        $stm->bindValue(':item_quantity', $item_quantity, PDO::PARAM_STR);
+        $stm->bindValue(':item_image_url', $fileDestination, PDO::PARAM_STR);
+        $stm->bindValue(':text_box_height', $text_box_height, PDO::PARAM_INT);
+        $stm->bindValue(':text_box_width', $text_box_width, PDO::PARAM_INT);
+        $stm->bindValue(':text_box_content', $text_box_content, PDO::PARAM_STR);
+        $stm->bindValue(':text_color', $text_color, PDO::PARAM_STR);
+        $stm->bindValue(':background_color', $background_color, PDO::PARAM_STR);
+        $stm->bindValue(':text_font', $text_font, PDO::PARAM_STR);
+        $stm->bindValue(':text_size', $text_size, PDO::PARAM_STR);
+        $stm->bindValue(':item_id', $item_id, PDO::PARAM_INT);
         $stm->execute();
     }
     else
@@ -104,18 +104,25 @@ if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
         $query = "INSERT INTO items (item_name, item_price, item_quantity, item_image_url, text_box_height, text_box_width, text_box_content, text_color, background_color, text_font, text_size, text_box_cat) 
         VALUES (:item_name, :item_price, :item_quantity, :item_image_url, :text_box_height, :text_box_width, :text_box_content, :text_color, :background_color, :text_font, :text_size, :text_box_cat)";
         $stm = $DB->prepare($query);
-        $stm->bindParam(':item_name', $item_name, PDO::PARAM_STR);
-        $stm->bindParam(':item_price', $item_price, PDO::PARAM_STR);
-        $stm->bindParam(':item_quantity', $item_quantity, PDO::PARAM_STR);
-        $stm->bindParam(':item_image_url', $fileDestination, PDO::PARAM_STR);
-        $stm->bindParam(param: ':text_box_height', $text_box_height, PDO::PARAM_INT);
-        $stm->bindParam(':text_box_width', $text_box_width, PDO::PARAM_INT);
-        $stm->bindParam(':text_box_content', $text_box_content, PDO::PARAM_STR);
-        $stm->bindParam(':text_color', $text_color, PDO::PARAM_STR);
-        $stm->bindParam(':background_color', $background_color, PDO::PARAM_STR);
-        $stm->bindParam(':text_font', $text_font, PDO::PARAM_STR);
-        $stm->bindParam(':text_size', $text_size, PDO::PARAM_STR);
-        $stm->bindParam(':text_box_cat', $text_box_cat, PDO::PARAM_STR);
-        $stm->execute();
+        $stm->bindValue(':item_name', $item_name, PDO::PARAM_STR);
+        $stm->bindValue(':item_price', $item_price, PDO::PARAM_STR);
+        $stm->bindValue(':item_quantity', $item_quantity, PDO::PARAM_STR);
+        $stm->bindValue(':item_image_url', $fileDestination, PDO::PARAM_STR);
+        $stm->bindValue(':text_box_height', $text_box_height, PDO::PARAM_INT);
+        $stm->bindValue(':text_box_width', $text_box_width, PDO::PARAM_INT);
+        $stm->bindValue(':text_box_content', $text_box_content, PDO::PARAM_STR);
+        $stm->bindValue(':text_color', $text_color, PDO::PARAM_STR);
+        $stm->bindValue(':background_color', $background_color, PDO::PARAM_STR);
+        $stm->bindValue(':text_font', $text_font, PDO::PARAM_STR);
+        $stm->bindValue(':text_size', $text_size, PDO::PARAM_STR);
+        $stm->bindValue(':text_box_cat', $text_box_cat, PDO::PARAM_STR);
+        try 
+        {
+            $stm->execute();
+        }
+        catch (PDOException $e) 
+        {
+            echo " ERROR: " . $e->getMessage();
+        }
     }
 }

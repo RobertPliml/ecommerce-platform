@@ -37,44 +37,41 @@ function updateCartDisplay ()
         contentType: "application/json",
         success: function (items) 
         {
-            let html = '<style>' +
-                    '.cart-item' +
-                    '{' +
-                        'width: 10rem;' +
-                        'height: 5rem;' +
-                        'border-bottom: solid 1px;' +
-                    '}' +
-
-                    '.shopping-cart-image' +
-                    '{' +
-                        'height: 5%;' +
-                        'width: 5%;' +
-                    '}' +
-                  '</style>';
-            console.log("items from server:", items);
+            let html = "";
+            let grand_total = 0;
+            //console.log("items from server:", items);
             if (!Array.isArray(items)) 
             {
+                // if we've been sent back nothing
                 $("#shopping-cart-main").html("<p>Something went wrong loading the cart.</p>");
                 return;
             }
             items.forEach(item => {
                 const quantity = cart[item.item_id];
                 const totalPrice = (item.item_price * quantity).toFixed(2);
-
+                // add the data to the new html object
                 html += `
                   <div class="cart-item">
                     <img src="${item.item_image_url}" alt="${item.item_name}" class="shopping-cart-img">
-                    <h4>${item.item_name}</h4>
-                    <p>Quantity: ${quantity}</p>
-                    <p>Price: $${totalPrice}</p>
+                    <h4 class="cart-item-info">${item.item_name}</h4>
+                    <p class="cart-item-info">Quantity: ${quantity}</p>
+                    <p class="cart-item-info">Price: $${totalPrice}</p>
                   </div>
                 `;
+                grand_total+=parseInt(totalPrice);
             });
+            html += 
+            '<div id="cart-subtotal">' +
+                '<p id="subtotal">Subtotal: $'+ grand_total.toFixed(2) +'</p>' +
+                '<div id="empty-cart"></div>' +
+                '<div id="submit-cart"></div>' +
+            '</div>';
+            // now commit our new html to the shopping cart
             $("#shopping-cart-main").html(html);
         },
         error : function () 
         {
-            $('#shopping-cart-main').html("<p>Theres nothing in here,<br> why do you suck so bad?</p>");
+            $('#shopping-cart-main').html("<p>Theres nothing in here,<br> you good bruh?</p>");
         } 
     });
 }
@@ -82,6 +79,15 @@ function updateCartDisplay ()
 $(document).ready(function () 
 {   
     updateCartDisplay();
+    /*setTimeout(() => {
+        const el = document.querySelector(".cart-item");
+        if (el) {
+            console.log("Found cart item:", el);
+            console.log("Width is:", getComputedStyle(el).width);
+        } else {
+            console.log("No .cart-item found in the DOM");
+        }
+    }, 1000);*/
     console.log('DOM LOADED');
     // Initialize Swiper
     const swiper = new Swiper('.swiper-container', 
@@ -106,6 +112,8 @@ $(document).ready(function ()
 
     // caseid#20949316 
     // Controls for login box
+    // Naming it something arbitrary like 'meta-control' is an intentional added security step. 
+    // likely not needed. still.
     const meta_control = document.getElementsByClassName('meta-control');
     if (meta_control.length > 0)
     {
@@ -145,7 +153,6 @@ $(document).ready(function ()
                 const username = $('#username').val();
                 const password = $('#password').val();
                 let scrollTop = $(window).scrollTop();
-                //console.log(username + ", " + password + ", task: " + task);
                 $.ajax
                 ({
                     type: 'POST',
@@ -160,6 +167,7 @@ $(document).ready(function ()
                     cache: false,
                     success : function (data) 
                     {
+                        // reload page & reset scroll position to where it was before request
                         location.reload();
                         $(window).scrollTop(scrollTop);
                     },
@@ -209,6 +217,7 @@ $(document).ready(function ()
             var idStr = $(this).attr('id');
             var id = idStr.split('-')[1];
             var catName = idStr.split('-')[2];
+            // seperate the way in which the 'shop all' menu displays v others
             if (catName === 'Shop\ All')
             {
                 $('#dropdown-' + id).css('display', 'flex');
@@ -699,6 +708,7 @@ $(document).ready(function ()
         }
     )
 
+    // function for handling the adding of objects to cart
     $('#shopping-page-main').on('click',
         '.item-div',
         function () 
@@ -709,7 +719,18 @@ $(document).ready(function ()
             updateCartDisplay();
         }
     )
+
+    // deleting entire cart
+    $('#shopping-cart-main').on('click',
+        '#empty-cart',
+        function () 
+        {
+            clearCart();
+        }
+    )
 });
+
+// fancy scroll effects for select elements
 
 $(window).scroll(function() 
 {

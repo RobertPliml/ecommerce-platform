@@ -829,6 +829,7 @@ $(document).ready(function ()
                 processData: false,
                 success : function (data)
                 {
+                    alert(data);
                     location.reload();
                 },
                 error : function (xhr, status, error)

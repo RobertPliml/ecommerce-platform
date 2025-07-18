@@ -327,10 +327,96 @@ html
     width: 20rem;
     border-left: solid white 1px;
     background-color: white;
-    display: flex;
-    justify-content: center;
+    display: block;
 }
 
+.cart-item
+{
+    position: relative;
+    height: 10rem;
+    width: 100%;
+}
+
+.shopping-cart-img
+{
+    position: relative;
+    height: 10rem;
+    width: 10rem;
+}
+
+.cart-item-info
+{
+    position: relative;
+    left: 52%;
+    top: -10rem;
+}
+
+#cart-subtotal
+{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4rem;
+    width: 100%;
+    border-top: solid 0.25px;
+    padding: 0.5rem;
+    display: flex;
+}
+
+#empty-cart
+{
+    position: absolute;
+    height: 3rem;
+    width: 3rem;
+    left: 0.5rem;
+    background: 
+    linear-gradient(
+      90deg,
+      rgba(255, 143, 143, 0.25) 25%, 
+      rgba(249, 0, 0, 0.25) 50%, 
+      rgba(255, 0, 0, 0.25) 75%
+    ),
+    url('uploads/trashmoji2.jpeg');
+    background-size: 200% 100%, cover;
+    background-repeat: no-repeat, no-repeat;
+    background-position: 0% 0%, center center;
+    border-radius: 15%;
+}
+#empty-cart:hover
+{
+    cursor: pointer;
+    animation: shimmer-animation 2s infinite;
+}
+#submit-cart
+{
+    position: absolute;
+    height: 3rem;
+    width: 3rem;
+    right: 0.5rem;
+    background: 
+    linear-gradient(
+      90deg,
+      rgba(99, 255, 99, 0.25) 25%, 
+      rgba(50, 255, 50, 0.499) 50%, 
+      rgba(25, 255, 25, 0.25) 75%
+    ),
+    url('uploads/upArrow.jpeg');
+    background-size: 200% 100%, cover;
+    background-repeat: no-repeat, no-repeat;
+    background-position: 0% 0%, center center;
+    border-radius: 15%;
+}
+#submit-cart:hover
+{
+    cursor: pointer;
+    animation: shimmer-animation 2s infinite;
+}
+#subtotal
+{
+    position: absolute;
+    left: 40%;
+    width: 20%;
+}
 /* FOOTER */
 
 #footer-div
