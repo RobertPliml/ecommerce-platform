@@ -470,6 +470,17 @@ html
     top: -9rem;
     left: 52%;
 }
+
+#cart-is-empty
+{
+    position: relative;
+    top: 50%;
+    left: 35%;
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 /* FOOTER */
 
 #footer-div

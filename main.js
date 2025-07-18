@@ -10,10 +10,24 @@ function getCart ()
     return JSON.parse(localStorage.getItem("cart")) || {};
 }
 
+function subtractFromCart (itemId)
+{
+    cart = getCart();
+    if (cart[itemId] > 1)
+    {
+        cart[itemId] = cart[itemId] - 1;
+    }
+    else
+    {
+        delete cart[itemId];
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
 function clearCart () 
 {
     localStorage.removeItem("cart");
-    $("#shopping-cart-main").html("<p>Cart Empty Boy</p>");
+    $("#shopping-cart-main").html("<p id='cart-is-empty'>Cart is empty.</p>");
 }
 
 function updateCartDisplay () 
@@ -23,7 +37,7 @@ function updateCartDisplay ()
 
     if (itemIds.length === 0)
     {
-        $("#shopping-cart-main").html("<p>OOOPS NOTHING</p>");
+        $("#shopping-cart-main").html("<p id='cart-is-empty'>Cart is empty.</p>");
         return;
     }
     $.ajax
@@ -56,9 +70,9 @@ function updateCartDisplay ()
                     <h4 class="cart-item-info">${item.item_name}</h4>
                     <p class="cart-item-info">Price: $${totalPrice}</p>
                     <div class="cart-counter-container">
-                        <div class="cart-counter-subtract">-</div>
+                        <div class="cart-counter-subtract" id="subtract-${item.item_id}">-</div>
                         <div class="cart-counter-value">${quantity}</div>
-                        <div class="cart-counter-add">+</div>  
+                        <div class="cart-counter-add" id="add-${item.item_id}">+</div>  
                     </div>
                     <p class="stock-counter">In Stock</p>
                   </div>
@@ -76,7 +90,7 @@ function updateCartDisplay ()
         },
         error : function () 
         {
-            $('#shopping-cart-main').html("<p>Theres nothing in here,<br> you good bruh?</p>");
+            $('#shopping-cart-main').html("<p>Shopping cart failed to update as expected.</p>");
         } 
     });
 }
@@ -721,6 +735,28 @@ $(document).ready(function ()
             let item_id = $(this).attr('id').split('-')[1];
             console.log(item_id);
             addToCart(item_id);
+            updateCartDisplay();
+        }
+    )
+    $('#shopping-cart-main').on('click',
+        '.cart-counter-add',
+        function () 
+        {
+            let item_id = $(this).attr('id').split('-')[1];
+            console.log(item_id);
+            addToCart(item_id);
+            updateCartDisplay();
+        }
+    )
+
+    // subtracting from cart
+    $('#shopping-cart-main').on('click',
+        '.cart-counter-subtract',
+        function () 
+        {
+            let item_id = $(this).attr('id').split('-')[1];
+            console.log(item_id);
+            subtractFromCart(item_id);
             updateCartDisplay();
         }
     )
