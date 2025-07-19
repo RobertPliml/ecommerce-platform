@@ -1,3 +1,25 @@
+function updateAdminToolBar (key)
+{
+    $.ajax
+    ({
+        type: "POST",
+        url: "admin_control_server.php",
+        data: 
+        {
+            new_key : key
+        },
+        cache: false,
+        success : function (data) 
+        {
+            $("#admin-main").load(location.href + " #admin-main > *");
+        },
+        error : function (xhr, status, error) 
+        {
+            console.error(xhr);
+        }
+    });
+}
+
 $(document).ready(function () 
 {
     var editbar_open = false;
@@ -1608,6 +1630,21 @@ $(document).ready(function ()
                     console.error(xhr);
                 }
             });
+        }
+    )
+    $("#navigation").on('click',
+        '#isAdmin',
+        function () 
+        {
+            window.location.assign("admin_control.php");
+        }
+    )
+    $("#admin-main").on('click',
+        '.admin-tools-menubar-buttons',
+        function () 
+        {
+            let new_key = $(this).attr('id').split('-')[3];
+            updateAdminToolBar(new_key);
         }
     )
 });

@@ -118,17 +118,27 @@ html
     overflow: hidden;
 }
 
-#admin
+#isAdmin-container
 {
     z-index: 2;
-    position: absolute;
+    position: relative;
     height: 3rem;
     width: 8rem;
-    right: 5%;
+    left: 80%;
     top: 5rem;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+}
+
+#isAdmin-container:hover
+{
+    cursor: pointer;
+}
+
+#isAdmin
+{
+    color: red;
 }
 
 /* BULLETIN BOARD */
@@ -140,7 +150,7 @@ html
     left: 0;
     width: 100%;
     height: 60rem;
-    background-color: rgb(225, 225, 225);
+    background-color: rgb(125, 125, 125);
     overflow: hidden;
     border-bottom: solid 2px;
 }
@@ -549,4 +559,50 @@ html
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* ADMIN PAGE */
+
+#admin-main
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 40rem;
+    width: 100vw; 
+    max-width: 100vw;    
+    overflow-x: hidden; 
+    background-color:rgb(225, 225, 225);
+}
+
+#admin-tools-container
+{
+    position: absolute;
+    height: 25rem;
+    width: 90%;
+    left: 5%;
+    top: 13rem;
+    border-bottom: solid 0.5px;
+    border-left: solid 0.5px;
+    border-right: solid 0.5px;
+}
+
+#admin-tools-menubar
+{
+    position: relative;
+    display: flex;
+    height: 3rem;
+    width: 90%;
+    left: 5%;
+    top: 10rem;
+}
+
+.admin-tools-menubar-buttons
+{
+    flex: 1; 
+    height: 100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    cursor: pointer;
 }

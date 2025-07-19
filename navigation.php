@@ -1,5 +1,9 @@
 <div id="navigation">
         <?php
+        // CSP protection before going to production
+        /*$nonce = base64_encode(random_bytes(16));
+        $_SESSION['nonce'] = $nonce;
+        header("Content-Security-Policy: script-src 'self' 'nonce-$nonce';");*/
         session_set_cookie_params([
             'lifetime' => 0, // session cookie expires when the browser closes
             'path' => '/',
@@ -66,6 +70,11 @@
         if (!isset($_SESSION['page_search_id']))
         {
             $_SESSION['page_search_id'] = 0;
+        }
+
+        if (!isset($_SESSION['admin_tool']))
+        {
+            $_SESSION['admin_tool'] = "stock";
         }
 
         ?>
@@ -914,8 +923,8 @@
         }
 
         if($_SESSION['isAdmin'] === true) : ?>
-            <div id="admin">
-                <p style="color: red">ADMIN</p>
+            <div id="isAdmin-container">
+                <p id="isAdmin">ADMIN</p>
             </div>
         <?php endif; ?>
         </div>
