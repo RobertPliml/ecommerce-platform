@@ -1647,4 +1647,25 @@ $(document).ready(function ()
             updateAdminToolBar(new_key);
         }
     )
+    $("#admin-main").on('mouseenter',
+        '.inventory-item',
+        function () 
+        {
+            $(this).css('opacity', '0.5');
+        }
+    )
+    $("#admin-main").on('mouseleave',
+        '.inventory-item',
+        function () 
+        {
+            $(this).css('opacity', '1');
+        }
+    )
+    $("#admin-main").on('click',
+        '.inventory-item',
+        function () 
+        {
+            // do shtuff
+        }
+    )
 });

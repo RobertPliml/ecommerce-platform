@@ -17,7 +17,7 @@
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
         <!-- CSS File -->
-        <link rel="stylesheet" type="text/css" href="project_2-main.css">
+        <link rel="stylesheet" type="text/css" href="project_2-main.css?v=<?php echo time();?>">
 
         <!-- Swiper CSS File -->
 

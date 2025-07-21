@@ -577,14 +577,14 @@ html
 
 #admin-tools-container
 {
-    position: absolute;
+    position: relative;
     height: 25rem;
     width: 90%;
     left: 5%;
-    top: 13rem;
-    border-bottom: solid 0.5px;
+    top: 10rem;
+    /*border-bottom: solid 0.5px;
     border-left: solid 0.5px;
-    border-right: solid 0.5px;
+    border-right: solid 0.5px;*/
 }
 
 #admin-tools-menubar

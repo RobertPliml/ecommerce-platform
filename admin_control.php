@@ -23,7 +23,7 @@ include "navigation.php";
             {
                 echo "
                 border-top: solid 0.5px;
-                border-left: solid 0.5px;
+                /*border-left: solid 0.5px;*/
                 border-right: solid 0.5px;
                 ";
             }
@@ -143,15 +143,64 @@ include "navigation.php";
     </div>
     <div id="admin-tools-container">
             <?php 
-            $query = "SELECT * FROM items";
-            $stm = $DB->prepare($query);
-            $stm->execute();
-            $items = $stm->fetchAll();
-            foreach ($items as $item)
+            if ($_SESSION['admin_tool'] === "stock")
             {
-                $item_id = $item['item_id'];
-                $item_name = $item['item_name'];
-                $item_quantity = $item['item_quantity'];
+                $query = "SELECT * FROM items";
+                $stm = $DB->prepare($query);
+                $stm->execute();
+                $items = $stm->fetchAll();
+                foreach ($items as $item)
+                {
+                    $item_id = $item['item_id'];
+                    $item_name = $item['item_name'];
+                    $item_quantity = $item['item_quantity'];
+                    $item_img_url = $item['item_image_url'];
+                    echo "
+                    <style>
+                    #admin-tools-container
+                    {
+                        display: flex;
+                        flex-direction: row;
+                        flex-wrap: nowrap;
+                    }
+                    .inventory-item
+                    {
+                        position: relative;
+                        height: 40%;
+                        width: 20%;
+                        display: flex;
+                        margin: 2.5%;
+                        box-shadow: 8px 2px 10px gray;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    #inventory-item-".$item_id."
+                    {
+                        background-image: url('".$item_img_url."');
+                        background-size: cover;
+                    }
+                    .subtract-stock
+                    {
+                        position: relative;
+                        width: 10%;
+                        height: 3rem;
+                        border: solid 1px;
+                    }
+                    .add-stock
+                    {
+                        position: relative;
+                        width: 10%;
+                        height: 3rem;
+                        border: solid 1px;
+                    }
+                    </style>
+                    <div class='inventory-item' id='inventory-item-".$item_id."'>
+                        <div class='subtract-stock' id='subtract-stock-".$item_id."'></div>
+                        <p></p>
+                        <div class='add-stock' id='add-stock-".$item_id."'></div>
+                    </div>
+                    ";
+                }
             }
             ?>
     </div>
