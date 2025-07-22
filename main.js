@@ -125,6 +125,77 @@ function updateCartDisplay ()
     });
 }
 
+function updateCheckoutDisplay () 
+{
+    $('#checkout-cart-subtotal').remove();
+    const cart = getCart();
+    const items = Object.entries(cart).map(([id, quantity]) => 
+        ({
+            id : parseInt(id),
+            quantity: parseInt(quantity)
+        }));
+    
+        if (items.length === 0)
+        {
+            $("#checkout-items-wrapper").html("<p id='cart-is-empty'>Cart is empty.</p>");
+            return;
+        }
+    $.ajax
+    ({
+        type: "POST",
+        url: "shop_cart_server.php",
+        data: JSON.stringify
+        ({
+            items : items,
+            action : 'updateCartDisplay'
+        }),
+        contentType: "application/json",
+        success: function (items) 
+        {
+            let html = "";
+            let html_2 = "";
+            let grand_total = 0;
+            //console.log("items from server:", items);
+            if (!Array.isArray(items)) 
+            {
+                // if we've been sent back nothing
+                $("#checkout-items-wrapper").html("<p>Something went wrong loading the cart.</p>");
+                return;
+            }
+            items.forEach(item => {
+                const quantity = cart[item.item_id];
+                const totalPrice = (item.item_price * quantity).toFixed(2);
+                // add the data to the new html object
+                html += `
+                  <div class="cart-item">
+                    <img src="${item.item_image_url}" alt="${item.item_name}" class="shopping-cart-img">
+                    <h4 class="cart-item-info">${item.item_name}</h4>
+                    <p class="cart-item-info">Price: $${totalPrice}</p>
+                    <div class="cart-counter-container">
+                        <div class="cart-counter-subtract" id="checkoutsubtract-${item.item_id}">-</div>
+                        <div class="cart-counter-value">${quantity}</div>
+                        <div class="cart-counter-add" id="checkoutadd-${item.item_id}">+</div>  
+                    </div>
+                    <p class="stock-counter">In Stock</p>
+                  </div>
+                `;
+                grand_total+=parseInt(totalPrice);
+            });
+            html_2 += 
+            `<div id="checkout-cart-subtotal">
+                <p id="checkout-subtotal">Subtotal: $${grand_total.toFixed(2)}</p>
+            </div>`;
+            // now commit our new html to the shopping cart
+            $("#checkout-items-wrapper").html(html);
+            $("#checkout-list-wrapper").append(html_2);
+        },
+        error : function () 
+        {
+            $('#checkout-items-wrapper').html("<p>Shopping cart failed to update as expected.</p>");
+        } 
+    });
+}
+
 function addToCart (itemId) 
 {
     let cart = JSON.parse(localStorage.getItem("cart")) || {};
@@ -142,6 +213,7 @@ function clearCart ()
 $(document).ready(function () 
 {   
     updateCartDisplay();
+    updateCheckoutDisplay();
     /*setTimeout(() => {
         const el = document.querySelector(".cart-item");
         if (el) {
@@ -750,6 +822,15 @@ $(document).ready(function ()
 
     cartOpen = false;
 
+    $('#navigation').on('click',
+        '#cart',
+        function () 
+        {
+            console.log('innit');
+            window.location.assign('checkout.php');
+        }
+    )
+
     $('#shopping-cart-container').on('click',
         '#shopping-cart-slider',
         function () 
@@ -780,6 +861,7 @@ $(document).ready(function ()
             console.log(item_id);
             addToCart(item_id);
             updateCartDisplay();
+            updateCheckoutDisplay();
         }
     )
     $('#shopping-cart-main').on('click',
@@ -790,6 +872,18 @@ $(document).ready(function ()
             console.log(item_id);
             addToCart(item_id);
             updateCartDisplay();
+            updateCheckoutDisplay();
+        }
+    )
+    $('#checkout-page-main').on('click',
+        '.cart-counter-add',
+        function () 
+        {
+            let item_id = $(this).attr('id').split('-')[1];
+            console.log(item_id);
+            addToCart(item_id);
+            updateCartDisplay();
+            updateCheckoutDisplay();
         }
     )
 
@@ -802,6 +896,18 @@ $(document).ready(function ()
             console.log(item_id);
             subtractFromCart(item_id);
             updateCartDisplay();
+            updateCheckoutDisplay();
+        }
+    )
+    $('#checkout-page-main').on('click',
+        '.cart-counter-subtract',
+        function () 
+        {
+            let item_id = $(this).attr('id').split('-')[1];
+            console.log(item_id);
+            subtractFromCart(item_id);
+            updateCartDisplay();
+            updateCheckoutDisplay();
         }
     )
 
@@ -817,12 +923,24 @@ $(document).ready(function ()
         '#submit-cart',
         function () 
         {
-            submitCart();
-            clearCart();
-            updateCartDisplay();
+            window.location.assign('checkout.php');
         }
     )
 });
+
+// CHECKOUT PAGE FUNCTIONS
+
+$('#checkout-page-main').on('click',
+    '#checkout-submit-order',
+    function () 
+    {
+        submitCart();
+        clearCart();
+        updateCartDisplay();
+        updateCheckoutDisplay();
+    }
+)
+
 
 // fancy scroll effects for select elements
 

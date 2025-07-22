@@ -378,7 +378,6 @@ html
     padding: 0.5rem;
     display: flex;
 }
-
 #empty-cart
 {
     position: absolute;
@@ -611,4 +610,135 @@ html
     justify-content: center; 
     align-items: center;
     cursor: pointer;
+}
+
+/* CHECKOUT PAGE */
+
+#checkout-page-main
+{
+    position: absolute;
+    height: 40rem;
+    width: 100vw;
+    left: 0;
+    top: 0;
+    background-color: rgb(225, 225, 225);
+}
+
+#checkout-list-wrapper
+{
+    position: absolute;
+    top: 20%;
+    height: 70%;
+    width: 35%;
+    left: 5%;
+    border: solid 1px;
+}
+#checkout-items-wrapper
+{
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    position: relative;
+    height: 90%;
+    max-height: 90%;
+}
+#checkout-cart-subtotal
+{
+    background-color: white;
+    position: relative;
+    height: 10%;
+    width: 100%;
+    display: flex;
+    border-top: solid 1px;
+}
+#checkout-subtotal
+{
+    position: absolute;
+    left: 40%;
+    width: 20%;
+}
+
+#checkout-shipping-info
+{
+    position: absolute;
+    top: 20%;
+    left: 45%;
+    width: 50%;
+    height: 30%;
+    border: solid 1px;
+}
+#address-line-1,
+#address-line-2,
+#del-notes
+{
+    position: relative;
+    width: 98%;
+    height: 18%;
+    padding: 1%;
+    margin: 1%;
+}
+#city
+{
+    position: relative;
+    height: 18%;
+    padding: 1%;
+    margin: 1%;
+    width: 35%;
+}
+#state
+{
+    position: relative;
+    height: 18%;
+    padding: 1%;
+    margin: 1%;
+    width: 35%;
+    border: none;
+    background-color: white;
+}
+#zip
+{
+    position: relative;
+    height: 18%;
+    padding: 1%;
+    margin: 1%;
+    width: 22.5%;
+}
+
+#checkout-payment-info
+{
+    position: absolute;
+    top: 60%;
+    left: 45%;
+    width: 50%;
+    height: 30%;
+    border: solid 1px;
+}
+#checkout-submit-order
+{
+    color: white;
+    position: relative;
+    height: 20%;
+    width: 100%;
+    top: 80%;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: solid black 0.5px;
+    background: 
+    linear-gradient(
+      90deg,
+      rgba(255, 0, 242, 0.25) 25%, 
+      rgba(30, 0, 255, 0.25) 50%, 
+      rgba(255, 0, 242, 0.25) 75%
+    ),
+    url('uploads/stars.jpeg');
+    background-size: 50% 300%;
+    /*background-repeat: no-repeat, no-repeat;*/
+    background-position: 0% 0%, center center;
+}
+#checkout-submit-order:hover
+{
+    cursor: pointer;
+    animation: shimmer-animation 2s infinite;
 }
