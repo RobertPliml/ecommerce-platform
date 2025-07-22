@@ -20,6 +20,29 @@ function updateAdminToolBar (key)
     });
 }
 
+function updateStock(method, item_id) 
+{
+    $.ajax
+    ({
+        type: "POST",
+        url: "admin_control_server.php",
+        data: 
+        {
+            method : method,
+            item_id : item_id
+        },
+        cache: false,
+        success : function (data) 
+        {
+            $("#admin-main").load(location.href + " #admin-main > *");
+        },
+        error : function (xhr, status, error) 
+        {
+            console.error(xhr);
+        }
+    });
+}
+
 $(document).ready(function () 
 {
     var editbar_open = false;
@@ -1647,7 +1670,7 @@ $(document).ready(function ()
             updateAdminToolBar(new_key);
         }
     )
-    $("#admin-main").on('mouseenter',
+    /*$("#admin-main").on('mouseenter',
         '.inventory-item',
         function () 
         {
@@ -1660,12 +1683,30 @@ $(document).ready(function ()
         {
             $(this).css('opacity', '1');
         }
-    )
+    ) we're going to improve this later*/
     $("#admin-main").on('click',
         '.inventory-item',
         function () 
         {
             // do shtuff
+        }
+    )
+    $("#admin-main").on('click',
+        '.add-stock',
+        function () 
+        {
+            let method = "add";
+            item_id = $(this).attr('id').split('-')[2];
+            updateStock(method, item_id);
+        }
+    )
+    $("#admin-main").on('click',
+        '.subtract-stock',
+        function () 
+        {
+            let method = "subtract";
+            item_id = $(this).attr('id').split('-')[2];
+            updateStock(method, item_id);
         }
     )
 });

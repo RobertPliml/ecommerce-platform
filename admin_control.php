@@ -161,7 +161,8 @@ include "navigation.php";
                     {
                         display: flex;
                         flex-direction: row;
-                        flex-wrap: nowrap;
+                        flex-wrap: wrap;
+                        overflow-x: hidden;
                     }
                     .inventory-item
                     {
@@ -179,25 +180,37 @@ include "navigation.php";
                         background-image: url('".$item_img_url."');
                         background-size: cover;
                     }
-                    .subtract-stock
-                    {
-                        position: relative;
-                        width: 10%;
-                        height: 3rem;
-                        border: solid 1px;
-                    }
+                    .subtract-stock,
                     .add-stock
                     {
                         position: relative;
                         width: 10%;
                         height: 3rem;
                         border: solid 1px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                    }
+                    .center-wrapper
+                    {
+                        display: flex;
+                        flex-grow: 1;
+                        justify-content: center;
+                        align-items: center;
+                        height: 3rem;
+                    }
+                    .stock-count
+                    {
+                        font-size: 2rem;
                     }
                     </style>
                     <div class='inventory-item' id='inventory-item-".$item_id."'>
-                        <div class='subtract-stock' id='subtract-stock-".$item_id."'></div>
-                        <p></p>
-                        <div class='add-stock' id='add-stock-".$item_id."'></div>
+                        <div class='subtract-stock' id='subtract-stock-".$item_id."'><</div>
+                        <div class='center-wrapper'>
+                            <div class='stock-count'>".$item_quantity."</div>
+                        </div>
+                        <div class='add-stock' id='add-stock-".$item_id."'>></div>
                     </div>
                     ";
                 }

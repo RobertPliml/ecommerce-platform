@@ -7,6 +7,8 @@ include 'dbconnect.php';
         <
     </div>
     <div id="shopping-cart-main">
-        <h1>Cart is empty!</h1>
+        <div id="cart-items-wrapper">
+            <h1>Cart is empty!</h1>
+        </div>
     </div>
 </div>

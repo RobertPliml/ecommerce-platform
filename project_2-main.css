@@ -340,6 +340,12 @@ html
     display: block;
 }
 
+#cart-items-wrapper
+{
+    overflow-x: hidden;
+    max-height: 90%;
+}
+
 .cart-item
 {
     position: relative;

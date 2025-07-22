@@ -1,10 +1,3 @@
-function addToCart (itemId) 
-{
-    let cart = JSON.parse(localStorage.getItem("cart")) || {};
-    cart[itemId] = (cart[itemId] || 0) +  1;
-    localStorage.setItem("cart", JSON.stringify(cart));
-}
-
 function getCart () 
 {
     return JSON.parse(localStorage.getItem("cart")) || {};
@@ -24,29 +17,66 @@ function subtractFromCart (itemId)
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function clearCart () 
-{
-    localStorage.removeItem("cart");
-    $("#shopping-cart-main").html("<p id='cart-is-empty'>Cart is empty.</p>");
-}
-
-function updateCartDisplay () 
+function submitCart ()
 {
     const cart = getCart();
-    const itemIds = Object.keys(cart);
-
-    if (itemIds.length === 0)
+    const items = Object.entries(cart).map(([id, quantity]) => 
+    ({
+        id : parseInt(id),
+        quantity: parseInt(quantity)
+    }));
+    if (items.length === 0)
     {
-        $("#shopping-cart-main").html("<p id='cart-is-empty'>Cart is empty.</p>");
+        $("#cart-items-wrapper").html("<p id='cart-is-empty'>Cart is empty.</p>");
         return;
     }
+    console.log("Submitting cart:", items);
     $.ajax
     ({
         type: "POST",
         url: "shop_cart_server.php",
         data: JSON.stringify
         ({
-            item_ids: itemIds
+            items: items,
+            action : 'submitCart'
+        }),
+        contentType: "application/json",
+        success: function () 
+        {
+            localStorage.removeItem("cart");
+            // we will expand upon this further when adding payment system, order
+            // confirmations, etc. For now, just clear the cart for visual effect. 
+        },
+        error : function (xhr, status, error) 
+        {
+            $('#cart-items-wrapper').html("<p>Shopping cart failed to update as expected.</p>");
+            console.error(xhr);
+        } 
+    });
+}
+
+function updateCartDisplay () 
+{
+    const cart = getCart();
+    const items = Object.entries(cart).map(([id, quantity]) => 
+        ({
+            id : parseInt(id),
+            quantity: parseInt(quantity)
+        }));
+    
+        if (items.length === 0)
+        {
+            $("#cart-items-wrapper").html("<p id='cart-is-empty'>Cart is empty.</p>");
+            return;
+        }
+    $.ajax
+    ({
+        type: "POST",
+        url: "shop_cart_server.php",
+        data: JSON.stringify
+        ({
+            items : items,
+            action : 'updateCartDisplay'
         }),
         contentType: "application/json",
         success: function (items) 
@@ -57,7 +87,7 @@ function updateCartDisplay ()
             if (!Array.isArray(items)) 
             {
                 // if we've been sent back nothing
-                $("#shopping-cart-main").html("<p>Something went wrong loading the cart.</p>");
+                $("#cart-items-wrapper").html("<p>Something went wrong loading the cart.</p>");
                 return;
             }
             items.forEach(item => {
@@ -86,13 +116,27 @@ function updateCartDisplay ()
                 <div id="submit-cart"></div>
             </div>`;
             // now commit our new html to the shopping cart
-            $("#shopping-cart-main").html(html);
+            $("#cart-items-wrapper").html(html);
         },
         error : function () 
         {
-            $('#shopping-cart-main').html("<p>Shopping cart failed to update as expected.</p>");
+            $('#cart-items-wrapper').html("<p>Shopping cart failed to update as expected.</p>");
         } 
     });
+}
+
+function addToCart (itemId) 
+{
+    let cart = JSON.parse(localStorage.getItem("cart")) || {};
+    cart[itemId] = (cart[itemId] || 0) +  1;
+    localStorage.setItem("cart", JSON.stringify(cart));
+    // add code to make sure we don't exceed stock
+}
+
+function clearCart () 
+{
+    localStorage.removeItem("cart");
+    $("#cart-items-wrapper").html("<p id='cart-is-empty'>Cart is empty.</p>");
 }
 
 $(document).ready(function () 
@@ -767,6 +811,15 @@ $(document).ready(function ()
         function () 
         {
             clearCart();
+        }
+    )
+    $('#shopping-cart-main').on('click',
+        '#submit-cart',
+        function () 
+        {
+            submitCart();
+            clearCart();
+            updateCartDisplay();
         }
     )
 });
