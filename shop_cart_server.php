@@ -4,13 +4,15 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 session_start();
 header('Content-Type: application/json');
-session_regenerate_id(true);
 include "dbconnect.php";
 try 
 {
     $input = json_decode(file_get_contents('php://input'), true);
     $items = $input['items'] ?? [];
-    $action = $input['action'] ?? '';  
+    $action = $input['action'] ?? '';
+    $price = $input['price'] ?? 0;
+    $address = $input['address'] ?? '';
+    $order_status = $input['order_status'] ?? '';  
     $filteredItems = array_filter($items, function ($item) 
     {
         return isset($item['id'], $item['quantity']) && 
@@ -45,6 +47,14 @@ try
                 $stm->bindValue(':quantity', $item['quantity'], PDO::PARAM_INT);
                 $stm->execute();
             }
+            $query = "INSERT INTO orders (order_id, price, street_address, order_status) 
+            VALUES (:order_id, :price, :street_address, :order_status)";
+            $stm = $DB->prepare($query);
+            $stm->bindValue(':order_id', $order_id, PDO::PARAM_STR);
+            $stm->bindValue(':price', $price, PDO::PARAM_STR);
+            $stm->bindValue(':street_address', $address, PDO::PARAM_STR);
+            $stm->bindValue(':order_status', $order_status, PDO::PARAM_STR);
+            $stm->execute();
             echo json_encode(['success' => true, 'order_id' => $order_id]);
             exit();
     }

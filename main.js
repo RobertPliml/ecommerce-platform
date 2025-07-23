@@ -20,6 +20,14 @@ function subtractFromCart (itemId)
 function submitCart ()
 {
     const cart = getCart();
+    const price = $('#checkout-subtotal').text();
+    let address_1 = $('#address-line-1').val();
+    let address_2 = $('#address-line-2').val();
+    let city = $('#city').val();
+    let state = $('#state').val();
+    let zipcode = $('#zip').val();
+    const address = address_1 + " " + address_2 + " " + city + " " + state + ", " + zipcode;
+    console.log(price + ' ' + address + ' ');
     const items = Object.entries(cart).map(([id, quantity]) => 
     ({
         id : parseInt(id),
@@ -38,7 +46,10 @@ function submitCart ()
         data: JSON.stringify
         ({
             items: items,
-            action : 'submitCart'
+            action : 'submitCart',
+            price : price,
+            address : address,
+            order_status : 'pending'
         }),
         contentType: "application/json",
         success: function () 
@@ -57,6 +68,7 @@ function submitCart ()
 
 function updateCartDisplay () 
 {
+    console.log("Cart:", localStorage.getItem("cart"));
     const cart = getCart();
     const items = Object.entries(cart).map(([id, quantity]) => 
         ({

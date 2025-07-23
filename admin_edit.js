@@ -43,6 +43,71 @@ function updateStock(method, item_id)
     });
 }
 
+function updateOrderStatus (order_id, flag, delete_order)
+{
+    if (typeof order_id !== 'string') 
+    {
+        throw new TypeError('order_id must be a string');
+    }
+    if (typeof flag !== 'boolean') 
+    {
+        throw new TypeError('flag must be a boolean');
+    }
+    if (typeof delete_order !== 'boolean') 
+    {
+        throw new TypeError('flag must be a boolean');
+    }
+    $.ajax
+    ({
+        type: "POST",
+        url: "admin_control_server.php",
+        data: 
+        {
+            order_id : order_id,
+            flag : flag,
+            delete_order : delete_order
+        },
+        cache: false,
+        success : function (data) 
+        {
+            $("#admin-main").load(location.href + " #admin-main > *");
+        },
+        error : function (xhr, status, error) 
+        {
+            console.error(xhr);
+        }
+    });
+}
+
+function previewOrder (order_id) 
+{
+    $.ajax
+    ({
+        type: "POST",
+        url: "admin_control_server.php",
+        data: 
+        {
+            order_id : order_id,
+            action : 'previewOrder'
+        },
+        cache: false,
+        success : function (order_items) 
+        {
+            let previewBox = $('<div id="preview-box"></div>').appendTo('#');
+            let html = "";
+            order_items.forEach (order_item => 
+                {
+                    
+                });
+            //$("#admin-main").load(location.href + " #admin-main > *");
+        },
+        error : function (xhr, status, error) 
+        {
+            console.error(xhr);
+        }
+    });
+}
+
 $(document).ready(function () 
 {
     var editbar_open = false;
@@ -1707,6 +1772,54 @@ $(document).ready(function ()
             let method = "subtract";
             item_id = $(this).attr('id').split('-')[2];
             updateStock(method, item_id);
+        }
+    )
+    $("#admin-main").on('click',
+        '.order-bar-flagged',
+        function () 
+        {
+            order_id = $(this).attr('id').split('-')[2];
+            updateOrderStatus(order_id, true, false);
+        }
+    )
+    $("#admin-main").on('click',
+        '.order-bar-confirmOrder',
+        function () 
+        {
+            order_id = $(this).attr('id').split('-')[2];
+            updateOrderStatus(order_id, false, false);
+        }
+    )
+    $("#admin-main").on('click',
+        '.order-bar-shipOrder',
+        function () 
+        {
+            order_id = $(this).attr('id').split('-')[2];
+            updateOrderStatus(order_id, false, false);
+        }
+    )
+    $("#admin-main").on('click',
+        '.order-bar-archiveOrder',
+        function () 
+        {
+            order_id = $(this).attr('id').split('-')[2];
+            updateOrderStatus(order_id, false, false);
+        }
+    )
+    $("#admin-main").on('click',
+        '.order-bar-delete',
+        function () 
+        {
+            order_id = $(this).attr('id').split('-')[2];
+            updateOrderStatus(order_id, false, true);
+        }
+    )
+    $("#admin-main").on('click',
+        '.order-bar-viewOrder',
+        function () 
+        {
+            order_id = $(this).attr('id').split('-')[1];
+            previewOrder(order_id);
         }
     )
 });
