@@ -57,10 +57,20 @@ if ($order_id)
     }
     else if ($delete_order === true)
     {
-        $query = "DELETE FROM orders WHERE order_id = :order_id";
-        $stm = $DB->prepare($query);
-        $stm->execute(['order_id' => $order_id]);
-        exit();
+        try
+        {
+            $DB->beginTransaction();
+            $stm = $DB->prepare("DELETE FROM order_items WHERE order_id = :order_id");
+            $stm->execute(['order_id' => $order_id]);
+            $stm = $DB->prepare("DELETE FROM orders WHERE order_id = :order_id");
+            $stm->execute(['order_id' => $order_id]);
+            $DB->commit();
+            exit();
+        }
+        catch (PDOException $e)
+        {
+            $DB->rollBack();
+        }
     }
     else if ($flag === false && $delete_order === false)
     {
@@ -77,22 +87,90 @@ if ($order_id)
         }
         else if ($status['order_status'] === 'confirmed')
         {
-            $query = "UPDATE orders SET order_status = :order_status WHERE order_id = :order_id";
-            $stm = $DB->prepare($query);
-            $stm->execute([':order_status' => 'shipped', 'order_id' => $order_id]);
-            exit();
+            try
+            {
+                $DB->beginTransaction();
+                $query = "UPDATE orders SET order_status = :order_status WHERE order_id = :order_id";
+                $stm = $DB->prepare($query);
+                $stm->execute([':order_status' => 'shipped', 'order_id' => $order_id]);
+                $stm = $DB->prepare("SELECT item_id, quantity FROM order_items WHERE order_id = :order_id");
+                $stm->execute([':order_id' => $order_id]);
+                $data = $stm->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($data as $d)
+                {
+                    $item_id = $d['item_id'];
+                    $orderQuantity = $d['quantity'];
+                    $stm = $DB->prepare("SELECT item_quantity FROM items WHERE item_id = :item_id");
+                    $stm->execute([':item_id' => $item_id]);
+                    $oldData = $stm->fetch(PDO::FETCH_ASSOC);
+                    $itemQuantity = $oldData['item_quantity'];
+                    $quantity = $itemQuantity - $orderQuantity;
+                    $stm = $DB->prepare("UPDATE items SET item_quantity = :quantity WHERE item_id = :item_id");
+                    $stm->execute([':quantity' => $quantity, ':item_id' => $item_id]);
+                }
+                $DB->commit();
+                exit();
+            }
+            catch (PDOException $e)
+            {
+                $DB->rollBack();
+            }
         }
         else
         {
-            $query = "UPDATE orders SET order_status = :order_status WHERE order_id = :order_id";
-            $stm = $DB->prepare($query);
-            $stm->execute([':order_status' => 'archived', 'order_id' => $order_id]);
-            exit();
+            try
+            {
+                $DB->beginTransaction();
+                $stm = $DB->prepare("SELECT order_id, price, street_address FROM orders WHERE order_id = :order_id");
+                $stm->execute([':order_id' => $order_id]);
+                $itemInfo = $stm->fetchAll(PDO::FETCH_ASSOC);
+                $query = "INSERT INTO archived_orders (order_id, street_address, price) VALUES (:order_id, :street_address, :price)";
+                $stm = $DB->prepare($query);
+                foreach ($itemInfo as $item)
+                {
+                    $stm->execute([
+                        ':order_id' => $item['order_id'],
+                        ':street_address' => $item['street_address'],
+                        ':price' => $item['price']
+                    ]);
+                }
+                $query = "SELECT order_id, item_id, quantity FROM order_items WHERE order_id = :order_id";
+                $stm = $DB->prepare($query);
+                $stm->execute([':order_id' => $order_id]);
+                $itemInfo = $stm->fetchAll(PDO::FETCH_ASSOC);
+                $query = "INSERT INTO archived_order_items (order_id, item_id, quantity) VALUES (:order_id, :item_id, :quantity)";
+                $stm = $DB->prepare($query);
+                foreach ($itemInfo as $item)
+                {
+                    $stm->execute([
+                        ':order_id' => $item['order_id'],
+                        ':item_id' => $item['item_id'],
+                        ':quantity' => $item['quantity']
+                    ]);
+                }
+                $stm = $DB->prepare("DELETE FROM order_items WHERE order_id = :order_id");
+                $stm->execute(['order_id' => $order_id]);
+                $stm = $DB->prepare("DELETE FROM orders WHERE order_id = :order_id");
+                $stm->execute(['order_id' => $order_id]);
+                $DB->commit();
+                exit();
+            }
+            catch (PDOException $e)
+            {
+                $DB->rollBack();
+            }
         }
     }
     if ($action && $action === 'previewOrder')
     {
-        $query = "SELECT oi.item_id, oi.quantity, i.item_name, i.item_price, i.item_image_url FROM order_items oi JOIN items i ON oi.item_id = i.item_id WHERE oi.order_id = :order_id";
+        if ($_SESSION['admin_tool'] === 'archived')
+        {
+            $query = "SELECT oi.item_id, oi.quantity, i.item_name, i.item_price, i.item_image_url FROM archived_order_items oi JOIN items i ON oi.item_id = i.item_id WHERE oi.order_id = :order_id";
+        }
+        else
+        {
+            $query = "SELECT oi.item_id, oi.quantity, i.item_name, i.item_price, i.item_image_url FROM order_items oi JOIN items i ON oi.item_id = i.item_id WHERE oi.order_id = :order_id";
+        }
         $stm = $DB->prepare($query);
         $stm->execute([':order_id' => $order_id]);
         $order_items = $stm->fetchAll(PDO::FETCH_ASSOC);

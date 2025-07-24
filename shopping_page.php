@@ -166,6 +166,7 @@ echo"
             background-image: url('".$item_img_url."');
             background-size: cover;
             background-position: center;
+            box-shadow: 8px 2px 10px gray;
         }
 
         #textbox-".$item_id."

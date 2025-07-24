@@ -22,6 +22,7 @@ function updateAdminToolBar (key)
 
 function updateStock(method, item_id) 
 {
+    const scrollLeft = $('#admin-tools-container').scrollLeft();
     $.ajax
     ({
         type: "POST",
@@ -34,7 +35,10 @@ function updateStock(method, item_id)
         cache: false,
         success : function (data) 
         {
-            $("#admin-main").load(location.href + " #admin-main > *");
+            $("#admin-main").load(location.href + " #admin-main > *", function () 
+            {
+                $('#admin-tools-container').scrollLeft(scrollLeft);
+            });
         },
         error : function (xhr, status, error) 
         {
@@ -90,16 +94,126 @@ function previewOrder (order_id)
             order_id : order_id,
             action : 'previewOrder'
         },
+        dataType: 'json',
         cache: false,
         success : function (order_items) 
         {
-            let previewBox = $('<div id="preview-box"></div>').appendTo('#');
-            let html = "";
+            let previewBox = $('<div id="preview-box"></div>').appendTo('#admin-main');
+            let closePreview = $('<div id="close-preview">X</div>').appendTo('#admin-main');
+            let previewModal = $('<div id="preview-modal"></div>').appendTo('#admin-main');
+            let screen_width = $(window).width();
+            let screen_height = $(window).height();
+            previewBox.css
+            ({
+                'position' : 'fixed',
+                'height' : screen_height,
+                'width' : screen_width / 2,
+                'left' : screen_width / 4,
+                'top' : '0',
+                'z-index' : '10',
+                'background-color' : 'white',
+                'display' : 'flex',
+                'align-items' : 'flex-start',
+                'flex-direction' : 'column',
+                'overflow-x' : 'hidden',
+                'overflow-y' : 'auto',
+                'border' : 'solid 1px',
+                'font-family' : 'font_3'
+            });
+            closePreview.css
+            ({
+                'position' : 'fixed',
+                'height' : '6rem',
+                'width' : '6rem',
+                'top' : '0',
+                'left' : '2%',
+                'font-size' : '5rem',
+                'z-index' : '10',
+                'color' : 'white'
+            });
+            previewModal.css
+            ({
+                'position' : 'fixed',
+                'top' : '0',
+                'left' : '0',
+                'height' : screen_height,
+                'width' : screen_width,
+                'background-color' : 'rgba(0, 0, 0, 0.7)',
+                'z-index' : '9'
+            });
+            let raw_html = "";
+            let grand_total = 0;
             order_items.forEach (order_item => 
-                {
-                    
-                });
-            //$("#admin-main").load(location.href + " #admin-main > *");
+            {
+                raw_html += `
+                <div class='preview-item' id='item-${order_item.item_id}'>
+                    <div class='div-wrapper'>
+                        <div class='preview-img' style='background-image: url("${order_item.item_image_url}")'></div>
+                        <div class='preview-info-wrapper'>
+                            <div class='preview-info'>QUANTITY: ${order_item.quantity}</div>
+                            <div class='preview-info'>ITEM NAME: ${order_item.item_name}</div>
+                            <div class='preview-info'>PRICE: ${order_item.item_price * order_item.quantity}</div>
+                        </div>
+                    </div>
+                </div>
+                `;
+                grand_total+=(order_item.item_price * order_item.quantity);
+            });
+            raw_html += 
+            `
+            <div class='preview-item' id='preview-grandTotal'>Order Total: $${grand_total}</div>
+            `;
+            $('#preview-box').html(raw_html);
+            $('.preview-item').css
+            ({
+                'position' : 'relative',
+                'min-height' : '25%',
+                'width' : '100%',
+                'flex-grow' : '1'
+            });
+            $('.div-wrapper').css
+            ({
+                'position' : 'relative',
+                'display' : 'flex',
+                'height' : '100%',
+                'width' : '100%'
+            });
+            $('.preview-img').css
+            ({
+                'position' : 'relative',
+                'flex-grow' : '1',
+                'width' : '30%',
+                'background-size' : 'cover',
+                'border-bottom' : 'solid 1px',
+                'border-right' : 'solid 1px'
+            });
+            $('.preview-info-wrapper').css
+            ({
+                'position' : 'relative',
+                'flex-grow' : '1',
+                'border-bottom' : 'solid 0.5px',
+                'width' : '70%',
+                'display' : 'flex',
+                'flex-direction' : 'column'
+            });
+            $('.preview-info').css
+            ({
+                'position' : 'relative',
+                'border-bottom' : 'solid 1px',
+                'min-height' : '33.33%',
+                'width' : '100%',
+                'flex-grow' : '1',
+                'display' : 'flex',
+                'justify-content' : 'center',
+                'align-items' : 'center'
+            });
+            $('#preview-grandTotal').css
+            ({
+                'display' : 'flex',
+                'justify-content' : 'center',
+                'align-items' : 'center',
+                'font-size' : '4rem'
+            });
         },
         error : function (xhr, status, error) 
         {
@@ -133,21 +247,24 @@ $(document).ready(function ()
             $('#blank-item').css('display', 'none');
             blank_item = $('<div id="blankItem"></div>').appendTo('#shopping-items-container');
             close_blank_item = $('<div id="exit-add-item">X</div>').appendTo('#blankItem');
+            item_settings_wrapper = $('<div id="item-settings-wrapper"></div>').appendTo('#blankItem');
             toggle_edit = $('<div id="toggle-edit"></div>').appendTo('#blankItem');
-            add_name = $('<div id="add-name"></div>').appendTo('#blankItem');
-            add_price = $('<div id="add-price"></div>').appendTo('#blankItem');
+            add_name = $('<div id="add-name"></div>').appendTo('#item-settings-wrapper');
+            add_price = $('<div id="add-price"></div>').appendTo('#item-settings-wrapper');
+            add_image = $('<div id="add-image"></div>').appendTo('#item-settings-wrapper');
             add_image_input = $('<div id="add-image-form"><form id="add-image-formId"><label class="add-image" for="imageinput">Select an image:</label><input class="add-image" type="file" name="imageinput" id="image" accept="image/*"></form></div>').appendTo('#blankItem');
-            add_image = $('<div id="add-image"></div>').appendTo('#blankItem');
-            add_item = $('<div id="add-item" type="submit"></div>').appendTo('#blankItem');
+            add_item = $('<div id="add-item" type="submit"></div>').appendTo('#item-settings-wrapper');
             blank_item.css
             ({
                 'position' : 'relative',
                 'height' : '19rem',
                 'width' : '19rem',
-                'background-color' : 'white'
+                'background-color' : 'white',
+                'display' : 'flex'
             })
             close_blank_item.css
             ({
+                'z-index' : '2',
                 'position' : 'absolute',
                 'top' : '0',
                 'left' : '0',
@@ -167,46 +284,64 @@ $(document).ready(function ()
                 'width' : '16%',
                 'right' : '5%',
                 'top' : '5%',
-                'background-color' : 'gray'
+                'background-image' : 'url("uploads/settings-logo.png")',
+                'background-size' : 'cover',
+                'border-radius' : '90%',
+                'background-position' : '50% 0%'
+            });
+            item_settings_wrapper.css
+            ({
+                'position' : 'absolute',
+                'height' : '70%',
+                'width' : '16%',
+                'right' : '5%',
+                'bottom' : '5%',
+                'display' : 'flex',
+                'flex-direction' : 'column',
+                'justify-content' : 'space-between'
             });
             add_name.css
             ({
                 'z-index' : '2',
-                'position' : 'absolute',
-                'height' : '16%',
-                'width' : '16%',
-                'right' : '5%',
-                'top' : '40%',
-                'background-color' : 'red',
-                'display' : 'none'
+                'position' : 'relative',
+                'height' : '20%',
+                'width' : '100%',
+                'background-image' : 'url("uploads/pencilAndPaper-logo.png")',
+                'background-size' : 'cover',
+                'display' : 'none',
+                'background-size' : '110% 100%',
+                'background-position' : '10% 0%'
             })
             add_price.css
             ({
                 'z-index' : '2',
-                'position' : 'absolute',
-                'height' : '16%',
-                'width' : '16%',
-                'right' : '5%',
-                'top' : '60%',
-                'background-color' : 'pink',
-                'display' : 'none'
+                'position' : 'relative',
+                'height' : '20%',
+                'width' : '100%',
+                'background-image' : 'url("uploads/cost-logo.png")',
+                'background-size' : 'cover',
+                'display' : 'none',
+                'background-position' : '0% 60%',
+                'background-size' : '98% 98%'
             })
             add_image.css
             ({
                 'z-index' : '2',
-                'position' : 'absolute',
-                'height' : '16%',
-                'width' : '16%',
-                'right' : '5%',
-                'top' : '20%',
-                'background-color' : 'skyblue',
-                'display' : 'none'
+                'position' : 'relative',
+                'height' : '20%',
+                'width' : '100%',
+                'background-image' : 'url("uploads/background-logo.png")',
+                'background-size' : 'cover',
+                'display' : 'none',
+                'border' : 'solid 1px',
+                'background-position' : '0% 40%'
             })
             add_image_input.css
             ({
-                'position' : 'absolute',
+                'z-index' : '2',
+                'position' : 'relative',
                 'left' : '5%',
-                'top' : '10%',
+                'top' : '50%',
                 'width' : '15rem',
                 'height' : '7rem',
                 'overflow' : 'visible',
@@ -220,13 +355,13 @@ $(document).ready(function ()
             add_item.css
             ({
                 'z-index' : '2',
-                'position' : 'absolute',
-                'height' : '16%',
-                'width' : '16%',
-                'right' : '5%',
-                'top' : '80%',
-                'background-color' : 'purple',
-                'display' : 'none'
+                'position' : 'relative',
+                'height' : '20%',
+                'width' : '100%',
+                'background-image' : 'url("uploads/save-logo.png")',
+                'background-size' : 'cover',
+                'display' : 'none',
+                'background-size' : '96% 99%'
             })
             svg_ribbon = $('<div id="svg-div"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="skyblue" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form');
             close_add_image = $('<div id="close-add-image">X</div>').appendTo('#add-image-form');
@@ -292,6 +427,7 @@ $(document).ready(function ()
         '#close-add-image',
         function () 
         {
+            console.log('register click');
             add_image_input.css
             ({
                 'display' : 'none'
@@ -829,31 +965,49 @@ $(document).ready(function ()
         '#name-tag',
         function () 
         {
-            var maxHeight = $('#blankItem').height() / 2;
-            const barHeight = ($('#blankItem').height() / 100) * 11;
             const parentHeight = $('#blankItem').height();
+            // store full height of blankItem
+            var maxHeight = parentHeight / 2;
+            // half height of blankItem, used as threshold to stop growing of input field
+            const barHeight = ($('#blankItem').height() / 100) * 11; 
+            // 11% of blankItem, used as threshold to decide when to move #name-menu, our 
+            // editing bar
             const initTopPercentage = 84;
-            if (this.scrollHeight > maxHeight)
+            
+            // initial top % of #name-menu
+            if (this.scrollHeight > maxHeight) // if input height grows taller than allowed
             {
+                // if too tall, remove last character in input to limit growth.
+                // get our current input length first
                 var currentLength = $(this).val().length;
+                // set new input value to a new string, that is the same string, but with
+                // the last character removed
                 $(this).val($(this).val().substring(0, currentLength - 1));
             }
             else
             {
-                this.style.height = (this.scrollHeight) + 'px';
+                // if within height, set input height to fit content 
+                this.style.height = this.scrollHeight + 'px';
             }
+            // now make sure if the inputs height exceeds our 11% starting position, that
+            // we adjust the height of #name-menu, again, our editing bar
             if (this.scrollHeight > barHeight)
             {
+                // offset represents how far past the start pos we've gone
                 let offset = this.scrollHeight - barHeight;
+                // we give a new top percentage to #name-menu by (offset / parentHeight) * 100
+                // which turns the distance in pixels, into a useable percentage, then we
+                // subtract it from the original top percentage, to get our new top percentage.
                 const newTopPercentage = initTopPercentage - (offset / parentHeight) * 100;
                 $('#name-menu').css
                 ({
                     'top' : newTopPercentage + '%'
                 });
-                $('#name-menu')[0].getBoundingClientRect(); 
+                //$('#name-menu')[0].getBoundingClientRect(); probably old testing 
             }
             else
             {
+                // if #name-menu makes its way below the 11% threshold/start pos, reset
                 $('#name-menu').css('top', initTopPercentage + '%');
             }
         }
@@ -1024,12 +1178,13 @@ $(document).ready(function ()
                 'color' : edit_textbox_color,
                 'border' : 'none'
             });
+            item_settings_wrapper_edit = $('<div id="item-settings-wrapper"></div>').appendTo('#blankItemEdit');
             toggle_edit_edit = $('<div id="toggle-edit-edit"></div>').appendTo('#blankItemEdit');
-            add_name_edit = $('<div id="add-name-edit"></div>').appendTo('#blankItemEdit');
-            add_price_edit = $('<div id="add-price-edit"></div>').appendTo('#blankItemEdit');
+            add_name_edit = $('<div id="add-name-edit"></div>').appendTo('#item-settings-wrapper');
+            add_price_edit = $('<div id="add-price-edit"></div>').appendTo('#item-settings-wrapper');
             add_image_input = $('<div id="add-image-form"><form id="add-image-formId"><label class="add-image" for="imageinput">Select an image:</label><input class="add-image" type="file" name="imageinput" id="image-edit" accept="image/*"></form></div>').appendTo('#blankItemEdit');
-            add_image_edit = $('<div id="add-image"></div>').appendTo('#blankItemEdit');
-            add_item_edit = $('<div id="add-item-edit" type="submit"></div>').appendTo('#blankItemEdit');
+            add_image_edit = $('<div id="add-image"></div>').appendTo('#item-settings-wrapper');
+            add_item_edit = $('<div id="add-item-edit" type="submit"></div>').appendTo('#item-settings-wrapper');
             toggle_edit_edit.css
             ({
                 'z-index' : '2',
@@ -1038,46 +1193,67 @@ $(document).ready(function ()
                 'width' : '16%',
                 'right' : '5%',
                 'top' : '5%',
-                'background-color' : 'gray'
+                'background-image' : 'url("uploads/settings-logo.png")',
+                'background-size' : 'cover',
+                'border-radius' : '90%',
+                'background-position' : '50% 0%'
+            });
+            item_settings_wrapper_edit.css
+            ({
+                'position' : 'absolute',
+                'height' : '70%',
+                'width' : '16%',
+                'right' : '5%',
+                'bottom' : '5%',
+                'display' : 'flex',
+                'flex-direction' : 'column',
+                'justify-content' : 'space-between'
             });
             add_name_edit.css
             ({
                 'z-index' : '2',
-                'position' : 'absolute',
-                'height' : '16%',
-                'width' : '16%',
-                'right' : '5%',
-                'top' : '40%',
-                'background-color' : 'red',
-                'display' : 'none'
+                'position' : 'relative',
+                'height' : '20%',
+                'width' : '100%',
+                'background-image' : 'url("uploads/pencilAndPaper-logo.png")',
+                'background-size' : 'cover',
+                'display' : 'none',
+                'background-size' : '110% 100%',
+                'background-position' : '10% 0%',
+                'border' : 'solid 0.5px'
             })
             add_price_edit.css
             ({
                 'z-index' : '2',
-                'position' : 'absolute',
-                'height' : '16%',
-                'width' : '16%',
-                'right' : '5%',
-                'top' : '60%',
-                'background-color' : 'pink',
-                'display' : 'none'
+                'position' : 'relative',
+                'height' : '20%',
+                'width' : '100%',
+                'background-image' : 'url("uploads/cost-logo.png")',
+                'background-size' : 'cover',
+                'display' : 'none',
+                'background-position' : '0% 60%',
+                'background-size' : '98% 98%',
+                'border' : 'solid 0.5px'
             })
             add_image_edit.css
             ({
                 'z-index' : '2',
-                'position' : 'absolute',
-                'height' : '16%',
-                'width' : '16%',
-                'right' : '5%',
-                'top' : '20%',
-                'background-color' : 'skyblue',
-                'display' : 'none'
+                'position' : 'relative',
+                'height' : '20%',
+                'width' : '100%',
+                'background-image' : 'url("uploads/background-logo.png")',
+                'background-size' : 'cover',
+                'display' : 'none',
+                'border' : 'solid 1px',
+                'background-position' : '0% 40%',
+                'border' : 'solid 0.5px'
             })
             add_image_input.css
             ({
-                'position' : 'absolute',
+                'z-index' : '2',
+                'position' : 'relative',
                 'left' : '5%',
-                'top' : '10%',
+                'top' : '50%',
                 'width' : '15rem',
                 'height' : '7rem',
                 'overflow' : 'visible',
@@ -1091,13 +1267,14 @@ $(document).ready(function ()
             add_item_edit.css
             ({
                 'z-index' : '2',
-                'position' : 'absolute',
-                'height' : '16%',
-                'width' : '16%',
-                'right' : '5%',
-                'top' : '80%',
-                'background-color' : 'purple',
-                'display' : 'none'
+                'position' : 'relative',
+                'height' : '20%',
+                'width' : '100%',
+                'background-image' : 'url("uploads/save-logo.png")',
+                'background-size' : 'cover',
+                'display' : 'none',
+                'background-size' : '96% 99%',
+                'border' : 'solid 0.5px'
             })
             svg_ribbon = $('<div id="svg-div"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="skyblue" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form');
             close_add_image = $('<div id="close-add-image">X</div>').appendTo('#add-image-form');
@@ -1427,7 +1604,7 @@ $(document).ready(function ()
                 ({
                     'top' : newTopPercentage + '%'
                 });
-                $('#name-menu-edit')[0].getBoundingClientRect(); 
+                //$('#name-menu-edit')[0].getBoundingClientRect(); 
             }
             else
             {
@@ -1457,7 +1634,8 @@ $(document).ready(function ()
                     {
                     text_box_edit.css
                     ({
-                        'z-index': '1'
+                        'z-index': '1',
+                        'border' : 'none'
                     });
                     console.log('clicking outside targets');
                     name_menu_edit.css
@@ -1820,6 +1998,33 @@ $(document).ready(function ()
         {
             order_id = $(this).attr('id').split('-')[1];
             previewOrder(order_id);
+        }
+    )
+    $("#admin-main").on('mouseenter',
+        '#close-preview',
+        function () 
+        {
+            $(this).css
+            ({
+                'cursor' : 'pointer',
+                'color' : 'black'
+            });
+        }
+    )
+    $("#admin-main").on('mouseleave',
+        '#close-preview',
+        function () 
+        {
+            $(this).css('color', 'white');
+        }
+    )
+    $("#admin-main").on('click',
+        '#close-preview',
+        function () 
+        {
+            $("#close-preview").remove();
+            $("#preview-modal").remove();
+            $("#preview-box").remove();
         }
     )
 });

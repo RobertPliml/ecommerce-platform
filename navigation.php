@@ -158,6 +158,19 @@
                     left: -8rem;
                 }
 
+                #site-logo
+                {
+                    position: relative;
+                    height: 8rem;
+                    width: 8rem;
+                    top: -30%;
+                    left: -50%;
+                    background-image: url('uploads/logo.jpeg');
+                    background-size: cover;
+                    border: solid 4px;
+                    border-radius: 90%;
+                }
+
                 .logo:hover,
                 .logo:focus
                 {
@@ -204,7 +217,7 @@
 
             <ul id='header-options'>
             <div class='logo'>
-                <img src='' alt='Site Logo'>
+                <div id='site-logo'></div>
             </div>
             <div class='alt-header'>
                 <div id='search'></div>

@@ -38,6 +38,14 @@ try
             break;
         case "submitCart" :
             $order_id = uniqid('order#', true);
+            $query = "INSERT INTO orders (order_id, price, street_address, order_status) 
+            VALUES (:order_id, :price, :street_address, :order_status)";
+            $stm = $DB->prepare($query);
+            $stm->bindValue(':order_id', $order_id, PDO::PARAM_STR);
+            $stm->bindValue(':price', $price, PDO::PARAM_STR);
+            $stm->bindValue(':street_address', $address, PDO::PARAM_STR);
+            $stm->bindValue(':order_status', $order_status, PDO::PARAM_STR);
+            $stm->execute();
             foreach ($itemData as $item)
             {
                 $query = "INSERT INTO order_items (order_id, item_id, quantity) VALUES (:order_id, :item_id, :quantity)";
@@ -47,14 +55,6 @@ try
                 $stm->bindValue(':quantity', $item['quantity'], PDO::PARAM_INT);
                 $stm->execute();
             }
-            $query = "INSERT INTO orders (order_id, price, street_address, order_status) 
-            VALUES (:order_id, :price, :street_address, :order_status)";
-            $stm = $DB->prepare($query);
-            $stm->bindValue(':order_id', $order_id, PDO::PARAM_STR);
-            $stm->bindValue(':price', $price, PDO::PARAM_STR);
-            $stm->bindValue(':street_address', $address, PDO::PARAM_STR);
-            $stm->bindValue(':order_status', $order_status, PDO::PARAM_STR);
-            $stm->execute();
             echo json_encode(['success' => true, 'order_id' => $order_id]);
             exit();
     }

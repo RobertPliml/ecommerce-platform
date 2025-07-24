@@ -432,17 +432,16 @@ include "navigation.php";
                     }
                     break;
                 case "archived" :
-                    $query = "SELECT * FROM orders WHERE order_status = :order_status";
-                    $stm = $DB->prepare($query);
-                    $stm->execute(['order_status' => 'archived']);
+                    $stm = $DB->prepare("SELECT * FROM archived_orders");
+                    $stm->execute();
                     $orders = $stm->fetchAll(PDO::FETCH_ASSOC);
                     foreach($orders as $order)
                     {
                         echo "
                         <div class='order-bar'>
                             <div class='order-bar-order_id'>".$order['order_id']."</div>
-                            <div class='order-bar-price'>$".explode('$', $order['price'])[1]."</div>
-                            <div class='order-bar-address'>".$order['street_address']."</div>
+                            <div class='order-bar-price'></div>
+                            <div class='order-bar-address'></div>
                             <div class='order-bar-viewOrder' id='vieworder-".$order['order_id']."'>View Order</div>
                             <div class='order-bar-archived'></div>
                             <div class='order-bar-archived-2'></div>
