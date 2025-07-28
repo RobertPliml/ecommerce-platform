@@ -144,18 +144,20 @@ echo"
     $items = $stm->fetchAll();
     foreach ($items as $item) 
     {
-        $item_id = htmlspecialchars($item['item_id'], ENT_QUOTES, 'UFT-8');
+        $item_id = htmlspecialchars($item['item_id'], ENT_QUOTES, 'UTF-8');
         $item_img_url = htmlspecialchars($item['item_image_url'], ENT_QUOTES, 'UTF-8');
-        $text_box_height = htmlspecialchars($item['text_box_height'], ENT_QUOTES, 'UTF-8');
-        $text_box_width = htmlspecialchars($item['text_box_width'], ENT_QUOTES, 'UTF-8');
+        $text_box_height = $item['text_box_height'];
+        $text_box_width = $item['text_box_width'];
         $text_box_content = $item['text_box_content'];
-        $text_color = htmlspecialchars($item['text_color'], ENT_QUOTES, 'UTF-8');
-        $background_color = htmlspecialchars($item['background_color'], ENT_QUOTES, 'UTF-8');
-        $text_font = htmlspecialchars($item['text_font'], ENT_QUOTES, 'UTF-8');
-        $text_size = htmlspecialchars($item['text_size'], ENT_QUOTES, 'UTF-8');
-        $height_in_rem = $text_box_height / 16;
-        $width_in_rem = $text_box_width / 16;
-        $text_size_in_rem = $text_size / 16;
+        $text_color = $item['text_color'];
+        $background_color = $item['background_color'];
+        $text_font = $item['text_font'];
+        $text_size = $item['text_size'];
+        $height_in_rem = $text_box_height !== null ? $text_box_height / 16 : null;
+        $width_in_rem = $text_box_width !== null ? $text_box_width / 16 : null;
+        $text_size_in_rem = $text_size !== null ? $text_size / 16 : null;
+        $background_size = $item['background_size'];
+        $background_pos = $item['background_pos'];
         echo "
         <style>
         #item-".$item_id."
@@ -164,28 +166,60 @@ echo"
             height: 19rem;
             width: 19rem;
             background-image: url('".$item_img_url."');
-            background-size: cover;
-            background-position: center;
+            background-size: ".$background_size.";
+            background-position: ".$background_pos.";
             box-shadow: 8px 2px 10px gray;
         }
-
-        #textbox-".$item_id."
+        ";
+        if ($text_box_content !== null)
         {
-            position: absolute;
-            bottom: 0;
-            resize: none;
-            text-align: center;
-            height: ".$height_in_rem."rem;
-            width: ".$width_in_rem."rem;
-            border: none;
-            color: ".$text_color.";
-            background-color: ".$background_color.";
-            font-size: ".$text_size_in_rem."rem;
-            font-family = '".$text_font."';
+            echo"
+            #textbox-".$item_id."
+            {
+                position: absolute;
+                bottom: 0;
+                resize: none;
+                text-align: center;
+                ";
+                if ($text_box_height !== null)
+                {
+                    echo" height: ".$height_in_rem."rem;";
+                }
+                if ($text_box_width !== null)
+                {
+                    echo "width: ".$width_in_rem."rem;";
+                }
+                echo"
+                border: none;
+                ";
+                if ($text_color !== null)
+                {
+                    echo "color: ".$text_color.";";
+                }
+                if ($background_color !== null)
+                {
+                    echo "background-color: ".$background_color.";";
+                }
+                if ($text_size !== null)
+                {
+                    echo "font-size: ".$text_size_in_rem."rem;";
+                }
+                if ($text_font !== null)
+                {
+                    echo "font-family: '".$text_font."';";
+                }
+                echo"
+            }";
         }
+        echo"
         </style>
         <div class='item-div' id='item-".$item_id."'>
-            <textarea id='textbox-".$item_id."' readonly>".$text_box_content."</textarea>
+        ";
+        if ($text_box_content !== null)
+        {
+            echo"<textarea id='textbox-".$item_id."' readonly>".$text_box_content."</textarea>";
+        }
+        echo"
         </div>
         ";
     }

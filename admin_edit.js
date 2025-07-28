@@ -152,7 +152,7 @@ function previewOrder (order_id)
                         <div class='preview-info-wrapper'>
                             <div class='preview-info'>QUANTITY: ${order_item.quantity}</div>
                             <div class='preview-info'>ITEM NAME: ${order_item.item_name}</div>
-                            <div class='preview-info'>PRICE: ${order_item.item_price * order_item.quantity}</div>
+                            <div class='preview-info'>PRICE: $${order_item.item_price * order_item.quantity}</div>
                         </div>
                     </div>
                 </div>
@@ -226,13 +226,13 @@ $(document).ready(function ()
 {
     var editbar_open = false;
     var file = '';
-    var text_box_width = 0;
-    var text_box_height = 0;
-    var text_box_content = '';
-    var text_color = '';
-    var background_color = '';
-    var text_font = '';
-    var text_size = 0;
+    var text_box_width = null;
+    var text_box_height = null;
+    var text_box_content = null;
+    var text_color = null;
+    var background_color = null;
+    var text_font = null;
+    var text_size = null;
     var edit_id = 0;
     var editing_existing_box = true;
     var editing = false;
@@ -252,7 +252,31 @@ $(document).ready(function ()
             add_name = $('<div id="add-name"></div>').appendTo('#item-settings-wrapper');
             add_price = $('<div id="add-price"></div>').appendTo('#item-settings-wrapper');
             add_image = $('<div id="add-image"></div>').appendTo('#item-settings-wrapper');
-            add_image_input = $('<div id="add-image-form"><form id="add-image-formId"><label class="add-image" for="imageinput">Select an image:</label><input class="add-image" type="file" name="imageinput" id="image" accept="image/*"></form></div>').appendTo('#blankItem');
+            add_image_input = $(`<div id="add-image-form">
+                    <form id="add-image-formId">
+                        <label class="add-image" for="imageinput">Select an image:</label>
+                        <input class="add-image" type="file" name="imageinput" id="image" accept="image/*">
+                    </form>
+                    <div id="image-pos-edit-wrapper">
+                        <div class="image-pos-edit" id="image-x-minus"><</div>
+                        <div id="y-plus-minus-wrapper">
+                            <div class="image-pos-edit" id="image-y-plus">^</div>
+                            <div class="image-pos-edit" id="image-y-minus">v</div>
+                        </div>
+                        <div class="image-pos-edit" id="image-x-plus">></div>
+                    </div>
+                    <input id="image-size-slider" type="range" min="100" max="200" step="10" value="150">
+                </div>`).appendTo('#blankItem');
+            add_price_input = $(`<div id="add-image-form-2">
+                <form id="add-image-formId-2">
+                    <label class="add-name-label" for="add-name-input">Set Name: </label>
+                    <input type="text" class="add-name-input">
+                    <label class="add-price-label" for="add-price-input">Set Price: </label>
+                    <input type="text" class="add-price-input">
+                    <label class="add-quantity-label" for="add-quantity-input">Set Quantity: </label>
+                    <input type="text" class="add-quantity-input">
+                </form>
+            </div>`).appendTo('#blankItem');
             add_item = $('<div id="add-item" type="submit"></div>').appendTo('#item-settings-wrapper');
             blank_item.css
             ({
@@ -347,6 +371,17 @@ $(document).ready(function ()
                 'overflow' : 'visible',
                 'display' : 'none'
             })
+            add_price_input.css
+            ({
+                'z-index' : '2',
+                'position' : 'relative',
+                'left' : '5%',
+                'top' : '32%',
+                'width' : '15rem',
+                'height' : '7rem',
+                'overflow' : 'visible',
+                'display' : 'none'
+            })
             $("#add-image-formId").css
             ({
                 'position' : 'absolute',
@@ -363,22 +398,115 @@ $(document).ready(function ()
                 'display' : 'none',
                 'background-size' : '96% 99%'
             })
-            svg_ribbon = $('<div id="svg-div"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="skyblue" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form');
+            $('#image-pos-edit-wrapper').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '63%',
+                'left' : '7%',
+                'height' : '35%',
+                'width' : '30%',
+                'display' : 'flex',
+                'justify-content' : 'space-between',
+                'flex-direction' : 'row'
+            });
+            $('#y-plus-minus-wrapper').css
+            ({
+                'display' : 'flex',
+                'flex' : '1',
+                'flex-direction' : 'column'
+            });
+            $('.image-pos-edit').css
+            ({
+                'position' : 'relative',
+                'border' : 'solid 1px',
+                'display' : 'flex',
+                'justify-content' : 'center',
+                'align-items' : 'center',
+                'font-size' : '0.5rem',
+                'cursor' : 'pointer'
+            });
+            $('#image-y-plus').css('flex', '1');
+            $('#image-y-minus').css('flex', '1');
+            $('#image-x-plus').css('flex', '0.4');
+            $('#image-x-minus').css('flex', '0.4');
+            $('#image-size-slider').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'width' : '40%',
+                'height' : '15%',
+                'top' : '70%',
+                'left' : '40%',
+                'cursor' : 'pointer'
+            });
+            svg_ribbon = $('<div id="svg-div"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form');
+            svg_ribbon_2 = $('<div id="svg-div-2"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form-2');
             close_add_image = $('<div id="close-add-image">X</div>').appendTo('#add-image-form');
+            close_add_price = $('<div id="close-add-price">X</div>').appendTo('#add-image-form-2');
             svg_ribbon.css
             ({
                 'position' : 'absolute',
                 'top' : '0',
                 'left' : '0',
                 'z-index' : '3'
-            })
+            });
+            svg_ribbon_2.css
+            ({
+                'position' : 'absolute',
+                'top' : '0',
+                'left' : '0',
+                'z-index' : '3'
+            });
             $('.add-image').css
             ({
                 'z-index' : '4',
                 'position' : 'relative',
                 'top' : '15%',
                 'left' : '5%'
-            })
+            });
+            $('.add-price-label').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'max-width' : '50%',
+                'font-size' : '0.75rem'
+            });
+            $('.add-name-label').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'max-width' : '50%',
+                'font-size' : '0.75rem'
+            });
+            $('.add-quantity-label').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'max-width' : '50%',
+                'font-size' : '0.75rem'
+            });
+            $('.add-price-input').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'width' : '20%',
+                'height' : '1rem'
+            });
+            $('.add-name-input').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'width' : '60%',
+                'height' : '1rem'
+            });
+            $('.add-quantity-input').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'width' : '20%',
+                'height' : '1rem'
+            });
             close_add_image.css
             ({
                 'position' : 'absolute',
@@ -392,7 +520,21 @@ $(document).ready(function ()
                 'justify-content' : 'center',
                 'align-items' : 'center',
                 'z-index' : '3'
-            })
+            });
+            close_add_price.css
+            ({
+                'position' : 'absolute',
+                'height' : '1rem',
+                'width' : '1rem',
+                'top' : '0',
+                'left' : '0',
+                'display' : 'flex',
+                'background-color' : 'white',
+                'border' : 'solid 1px',
+                'justify-content' : 'center',
+                'align-items' : 'center',
+                'z-index' : '3'
+            });
         }
     )
 
@@ -420,6 +562,81 @@ $(document).ready(function ()
             }
         }
     )
+
+    $('#shopping-page-main').on('click',
+        '#image-x-plus',
+        function ()
+        {
+            let image_pos = $('#blankItem').css('background-position');
+            let image_x = parseInt(image_pos.split('%')[0]);
+            let image_y = parseInt(image_pos.split('%')[1]);
+            let new_x = image_x + 10;
+            let new_pos = new_x + "% " + image_y + "%";
+            if (new_x < 100)
+            {
+                console.log(new_pos);
+                $('#blankItem').css('background-position', new_pos);
+            }
+        }
+    );
+    $('#shopping-page-main').on('click',
+        '#image-x-minus',
+        function ()
+        {
+            let image_pos = $('#blankItem').css('background-position');
+            let image_x = parseInt(image_pos.split('%')[0]);
+            let image_y = parseInt(image_pos.split('%')[1]);
+            let new_x = image_x - 10;
+            let new_pos = new_x + "% " + image_y + "%";
+            if (new_x > 0)
+            {
+                console.log(new_pos);
+                $('#blankItem').css('background-position', new_pos);
+            }
+        }
+    );
+    $('#shopping-page-main').on('click',
+        '#image-y-plus',
+        function ()
+        {
+            let image_pos = $('#blankItem').css('background-position');
+            let image_x = parseInt(image_pos.split('%')[0]);
+            let image_y = parseInt(image_pos.split('%')[1]);
+            let new_y = image_y - 10;
+            let new_pos = image_x + "% " + new_y + "%";
+            if (new_y > 0)
+            {
+                console.log(new_pos);
+                $('#blankItem').css('background-position', new_pos);
+            }
+        }
+    );
+    $('#shopping-page-main').on('click',
+        '#image-y-minus',
+        function ()
+        {
+            let image_pos = $('#blankItem').css('background-position');
+            let image_x = parseInt(image_pos.split('%')[0]);
+            let image_y = parseInt(image_pos.split('%')[1]);
+            let new_y = image_y + 10;
+            let new_pos = image_x + "% " + new_y + "%";
+            if (new_y < 100)
+            {
+                console.log(new_pos);
+                $('#blankItem').css('background-position', new_pos);
+            }
+        }
+    );
+
+    $('#shopping-page-main').on('input',
+        '#image-size-slider',
+        function ()
+        {
+            let new_val = $(this).val();
+            let new_val_str = new_val + "% " + new_val + "%";
+            $('#blankItem').css('background-size', new_val_str);
+        }
+    );
 
     // EVENT HANDLERS FOR EDITING
 
@@ -549,8 +766,8 @@ $(document).ready(function ()
                 reader.onload = function (e) 
                 {
                     $('#blankItem').css('background-image', 'url(' + e.target.result + ')');
-                    $('#blankItem').css('background-size', 'cover');  
-                    $('#blankItem').css('background-position', 'center');
+                    $('#blankItem').css('background-size', '150% 150%');  
+                    $('#blankItem').css('background-position', '50% 50%');
                     add_item_img = e.target.result;
                 }
                 reader.readAsDataURL(file);
@@ -1016,7 +1233,30 @@ $(document).ready(function ()
         '#add-price',
         function () 
         {
-            
+            $('#add-image-form-2').css
+            ({
+                'display' : 'block'
+            });
+            $('#add-image-formId-2').css
+            ({
+                'position' : 'absolute',
+                'top' : '0',
+                'left' : '10%',
+                'display' : 'flex',
+                'flex-direction' : 'column',
+                'justify-content' : 'flex-start'
+            });
+        }
+    )
+    $('#shopping-page-main').on('click',
+        '#close-add-price',
+        function () 
+        {
+            add_price_input.css
+            ({
+                'display' : 'none',
+                'cursor' : 'pointer'
+            });
         }
     )
 
@@ -1028,14 +1268,23 @@ $(document).ready(function ()
         {
             event.preventDefault();
             editing = false;
-            text_box_height = name_tag.height();
-            text_box_width = name_tag.width();
-            text_box_content = name_tag.val();
-            text_color = name_tag.css('color');
-            background_color = name_tag.css('background-color');
-            text_font = name_tag.css('font-family');
-            text_size = name_tag.css('font-size').split('p')[0];
+            let name_tag = $("#name-tag");
+            if (name_tag.length > 0)
+            {
+                text_box_height = name_tag.height();
+                text_box_width = name_tag.width();
+                text_box_content = name_tag.val();
+                text_color = name_tag.css('color');
+                text_font = name_tag.css('font-family');
+                text_size = name_tag.css('font-size').split('p')[0];
+                background_color = name_tag.css('background-color');
+            }
+            background_size = $('#blankItem').css('background-size');
+            background_pos = $('#blankItem').css('background-position');
             text_box_cat = $('#subcat-name').text();
+            item_price = $('.add-price-input').val();
+            item_name = $('.add-name-input').val();
+            item_quantity = $('.add-quantity-input').val();
             var formData = new FormData();
             var fileInput = $('#image')[0].files[0];
             formData.append('csrf_token', csrf_token);
@@ -1083,6 +1332,27 @@ $(document).ready(function ()
                 console.log(text_box_cat);
                 formData.append('text_box_cat', text_box_cat);
             }
+            if (item_price)
+            {
+                formData.append('item_price', item_price);
+            }
+            if (item_name)
+            {
+                console.log(item_name);
+                formData.append('item_name', item_name);
+            }
+            if (item_quantity)
+            {
+                formData.append('item_quantity', item_quantity);
+            }
+            if (background_size)
+            {
+                formData.append('background_size', background_size);
+            }
+            if (background_pos)
+            {
+                formData.append('background_pos', background_pos);
+            }
             $.ajax
             ({
                 type: 'POST',
@@ -1093,7 +1363,6 @@ $(document).ready(function ()
                 processData: false,
                 success : function (data)
                 {
-                    alert(data);
                     location.reload();
                 },
                 error : function (xhr, status, error)
@@ -1119,6 +1388,8 @@ $(document).ready(function ()
             edit_box_top -= border;
             edit_box_left -= border;
             var edit_box_img = $(this).css('background-image');
+            var edit_img_size = $(this).css('background-size');
+            var edit_img_pos = $(this).css('background-position');
             var container_height_25percent = parseFloat($('#shopping-page-main').css('height')) / 4;
             var page_width_20percent = $(window).width() / 5;
             edit_box_top -= container_height_25percent;
@@ -1145,8 +1416,8 @@ $(document).ready(function ()
                 'top' : edit_box_top + 'px',
                 'left' : edit_box_left + 'px',
                 'background-image' : edit_box_img,
-                'background-size' : 'cover',
-                'background-position' : 'center'
+                'background-size' : edit_img_size,
+                'background-position' : edit_img_pos
             });
             close_edit.css
             ({
@@ -1182,7 +1453,31 @@ $(document).ready(function ()
             toggle_edit_edit = $('<div id="toggle-edit-edit"></div>').appendTo('#blankItemEdit');
             add_name_edit = $('<div id="add-name-edit"></div>').appendTo('#item-settings-wrapper');
             add_price_edit = $('<div id="add-price-edit"></div>').appendTo('#item-settings-wrapper');
-            add_image_input = $('<div id="add-image-form"><form id="add-image-formId"><label class="add-image" for="imageinput">Select an image:</label><input class="add-image" type="file" name="imageinput" id="image-edit" accept="image/*"></form></div>').appendTo('#blankItemEdit');
+            add_image_input = $(`<div id="add-image-form">
+                    <form id="add-image-formId">
+                        <label class="add-image" for="imageinput">Select an image:</label>
+                        <input class="add-image" type="file" name="imageinput" id="image-edit" accept="image/*">
+                    </form>
+                    <div id="image-pos-edit-wrapper-edit">
+                        <div class="image-pos-edit-edit" id="image-x-minus-edit"><</div>
+                        <div id="y-plus-minus-wrapper-edit">
+                            <div class="image-pos-edit-edit" id="image-y-plus-edit">^</div>
+                            <div class="image-pos-edit-edit" id="image-y-minus-edit">v</div>
+                        </div>
+                        <div class="image-pos-edit-edit" id="image-x-plus-edit">></div>
+                    </div>
+                    <input id="image-size-slider-edit" type="range" min="100" max="200" step="10" value="${edit_img_size.split('%')[0]}">
+                </div>`).appendTo('#blankItemEdit');
+            add_price_input = $(`<div id="add-price-form">
+                    <form id="add-price-formId">
+                        <label class="add-name-label-edit" for="add-name-input-edit">Change Name: </label>
+                        <input type="text" class="add-name-input-edit">
+                        <label class="add-price-label-edit" for="add-price-input-edit">Change Price: </label>
+                        <input type="text" class="add-price-input-edit">
+                        <label class="add-quantity-label-edit" for="add-quantity-input-edit">Change Quantity: </label>
+                        <input type="text" class="add-quantity-input-edit">
+                    </form>
+                </div>`).appendTo('#blankItemEdit');
             add_image_edit = $('<div id="add-image"></div>').appendTo('#item-settings-wrapper');
             add_item_edit = $('<div id="add-item-edit" type="submit"></div>').appendTo('#item-settings-wrapper');
             toggle_edit_edit.css
@@ -1264,6 +1559,17 @@ $(document).ready(function ()
                 'position' : 'absolute',
                 'top' : '15%'
             });
+            add_price_input.css
+            ({
+                'z-index' : '2',
+                'position' : 'relative',
+                'left' : '5%',
+                'top' : '30%',
+                'width' : '15rem',
+                'height' : '7rem',
+                'overflow' : 'visible',
+                'display' : 'none'
+            })
             add_item_edit.css
             ({
                 'z-index' : '2',
@@ -1276,9 +1582,60 @@ $(document).ready(function ()
                 'background-size' : '96% 99%',
                 'border' : 'solid 0.5px'
             })
-            svg_ribbon = $('<div id="svg-div"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="skyblue" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form');
+            $('#image-pos-edit-wrapper-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '63%',
+                'left' : '7%',
+                'height' : '35%',
+                'width' : '30%',
+                'display' : 'flex',
+                'justify-content' : 'space-between',
+                'flex-direction' : 'row'
+            });
+            $('#y-plus-minus-wrapper-edit').css
+            ({
+                'display' : 'flex',
+                'flex' : '1',
+                'flex-direction' : 'column'
+            });
+            $('.image-pos-edit-edit').css
+            ({
+                'position' : 'relative',
+                'border' : 'solid 1px',
+                'display' : 'flex',
+                'justify-content' : 'center',
+                'align-items' : 'center',
+                'font-size' : '0.5rem',
+                'cursor' : 'pointer'
+            });
+            $('#image-y-plus-edit').css('flex', '1');
+            $('#image-y-minus-edit').css('flex', '1');
+            $('#image-x-plus-edit').css('flex', '0.4');
+            $('#image-x-minus-edit').css('flex', '0.4');
+            $('#image-size-slider-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'width' : '40%',
+                'height' : '15%',
+                'top' : '70%',
+                'left' : '40%',
+                'cursor' : 'pointer'
+            });
+            svg_ribbon = $('<div id="svg-div"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form');
+            svg_ribbon_2 = $('<div id="svg-div-2"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-price-form');
             close_add_image = $('<div id="close-add-image">X</div>').appendTo('#add-image-form');
+            close_add_price = $('<div id="close-add-price">X</div>').appendTo('#add-price-form');
             svg_ribbon.css
+            ({
+                'position' : 'absolute',
+                'top' : '0',
+                'left' : '0',
+                'z-index' : '3'
+            })
+            svg_ribbon_2.css
             ({
                 'position' : 'absolute',
                 'top' : '0',
@@ -1292,7 +1649,63 @@ $(document).ready(function ()
                 'top' : '15%',
                 'left' : '5%'
             })
+            $('.add-price-label-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'max-width' : '50%',
+                'font-size' : '0.75rem'
+            });
+            $('.add-name-label-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'max-width' : '50%',
+                'font-size' : '0.75rem'
+            });
+            $('.add-quantity-label-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'max-width' : '50%',
+                'font-size' : '0.75rem'
+            });
+            $('.add-price-input-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'width' : '20%',
+                'height' : '1rem'
+            });
+            $('.add-name-input-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'width' : '60%',
+                'height' : '1rem'
+            });
+            $('.add-quantity-input-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'relative',
+                'width' : '20%',
+                'height' : '1rem'
+            });
             close_add_image.css
+            ({
+                'position' : 'absolute',
+                'height' : '1rem',
+                'width' : '1rem',
+                'top' : '0',
+                'left' : '0',
+                'display' : 'flex',
+                'background-color' : 'white',
+                'border' : 'solid 1px',
+                'justify-content' : 'center',
+                'align-items' : 'center',
+                'z-index' : '3'
+            })
+            close_add_price.css
             ({
                 'position' : 'absolute',
                 'height' : '1rem',
@@ -1465,6 +1878,81 @@ $(document).ready(function ()
             $('#image-edit').val('')
         }
     )
+    $('#shopping-page-main').on('click',
+        '#image-x-plus-edit',
+        function ()
+        {
+            let image_pos = $('#blankItemEdit').css('background-position');
+            let image_x = parseInt(image_pos.split('%')[0]);
+            let image_y = parseInt(image_pos.split('%')[1]);
+            let new_x = image_x + 10;
+            let new_pos = new_x + "% " + image_y + "%";
+            if (new_x < 100)
+            {
+                console.log(new_pos);
+                $('#blankItemEdit').css('background-position', new_pos);
+            }
+        }
+    );
+    $('#shopping-page-main').on('click',
+        '#image-x-minus-edit',
+        function ()
+        {
+            let image_pos = $('#blankItemEdit').css('background-position');
+            let image_x = parseInt(image_pos.split('%')[0]);
+            let image_y = parseInt(image_pos.split('%')[1]);
+            let new_x = image_x - 10;
+            let new_pos = new_x + "% " + image_y + "%";
+            if (new_x > 0)
+            {
+                console.log(new_pos);
+                $('#blankItemEdit').css('background-position', new_pos);
+            }
+        }
+    );
+    $('#shopping-page-main').on('click',
+        '#image-y-plus-edit',
+        function ()
+        {
+            let image_pos = $('#blankItemEdit').css('background-position');
+            let image_x = parseInt(image_pos.split('%')[0]);
+            let image_y = parseInt(image_pos.split('%')[1]);
+            let new_y = image_y - 10;
+            let new_pos = image_x + "% " + new_y + "%";
+            if (new_y > 0)
+            {
+                console.log(new_pos);
+                $('#blankItemEdit').css('background-position', new_pos);
+            }
+        }
+    );
+    $('#shopping-page-main').on('click',
+        '#image-y-minus-edit',
+        function ()
+        {
+            let image_pos = $('#blankItemEdit').css('background-position');
+            let image_x = parseInt(image_pos.split('%')[0]);
+            let image_y = parseInt(image_pos.split('%')[1]);
+            let new_y = image_y + 10;
+            let new_pos = image_x + "% " + new_y + "%";
+            if (new_y < 100)
+            {
+                console.log(new_pos);
+                $('#blankItemEdit').css('background-position', new_pos);
+            }
+        }
+    );
+
+    $('#shopping-page-main').on('input',
+        '#image-size-slider-edit',
+        function ()
+        {
+            let new_val = $(this).val();
+            let new_val_str = new_val + "% " + new_val + "%";
+            $('#blankItemEdit').css('background-size', new_val_str);
+        }
+    );
+
     $('#shopping-page-main').on('mouseenter mouseleave',
         '#close_edit',
         function () 
@@ -1482,6 +1970,28 @@ $(document).ready(function ()
             editing = false;
         }
     )
+    $('#shopping-page-main').on('click',
+        '#add-price-edit',
+        function ()
+        {
+            add_price_input.css('display', 'block');
+            $('#add-price-formId').css
+            ({
+                'position' : 'absolute',
+                'top' : '0',
+                'left' : '10%',
+                'display' : 'flex',
+                'flex-direction' : 'column'
+            });
+        }
+    )
+    $('#shopping-page-main').on('click',
+        '#close-add-price',
+        function ()
+        {
+            add_price_input.css('display', 'none');
+        }
+    )
 
     // EDIT BACKGROUND IMAGE
 
@@ -1497,8 +2007,8 @@ $(document).ready(function ()
                 reader.onload = function (e) 
                 {
                     $('#blankItemEdit').css('background-image', 'url(' + e.target.result + ')');
-                    $('#blankItemEdit').css('background-size', 'cover');  
-                    $('#blankItemEdit').css('background-position', 'center');
+                    //$('#blankItemEdit').css('background-size', '50% 50%');  
+                    //$('#blankItemEdit').css('background-position', '150% 150%');
                     add_item_img = e.target.result;
                 }
                 reader.readAsDataURL(file);
@@ -1808,6 +2318,8 @@ $(document).ready(function ()
             });
         }
     )
+
+    // SUBMIT EDITED ITEM
     $("#shopping-page-main").on('click',
         '#add-item-edit',
         function (event)
@@ -1818,7 +2330,12 @@ $(document).ready(function ()
             text_box_content = text_box_edit.val();
             text_color = text_box_edit.css('color');
             background_color = text_box_edit.css('background-color');
+            background_size = $('#blankItemEdit').css('background-size');
+            background_pos = $('#blankItemEdit').css('background-position');
             text_font = text_box_edit.css('font-family');
+            item_name = $('.add-name-input-edit').val();
+            item_price = $('.add-price-input-edit').val();
+            item_quantity = $('.add-quantity-input-edit').val();
             text_size = text_box_edit.css('font-size').split('p')[0];
             var formDataEdit = new FormData();
             if ($('#image-edit')[0].files && $('#image-edit')[0].files.length > 0)
@@ -1878,6 +2395,28 @@ $(document).ready(function ()
             if (edit_id)
             {
                 formDataEdit.append('edit_id', edit_id);
+            }
+            if (item_name)
+            {
+                formDataEdit.append('item_name', item_name);
+            }
+            if (item_price)
+            {
+                formDataEdit.append('item_price', item_price);
+            }
+            if (item_quantity)
+            {
+                formDataEdit.append('item_quantity', item_quantity);
+            }
+            if (background_size)
+            {
+                formDataEdit.append('background_size', background_size);
+                console.log(background_size);
+            }
+            if (background_pos)
+            {
+                formDataEdit.append('background_pos', background_pos);
+                console.log(background_pos);
             }
             $.ajax
             ({
