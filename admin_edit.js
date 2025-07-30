@@ -237,6 +237,7 @@ $(document).ready(function ()
     var editing_existing_box = true;
     var editing = false;
     var text_box_cat = '';
+    var lock_xy = false;
 
     // CREATE NEW DIV 
 
@@ -265,7 +266,12 @@ $(document).ready(function ()
                         </div>
                         <div class="image-pos-edit" id="image-x-plus">></div>
                     </div>
-                    <input id="image-size-slider" type="range" min="100" max="200" step="10" value="150">
+                    <div id="lock-axis"></div>
+                    <span id="lock-axis-label">Lock X and Y axis</span>
+                    <label id="x-pos-label" for="image-size-slider-x">X</label>
+                    <input id="image-size-slider-x" type="range" min="100" max="200" step="10" value="150">
+                    <label id="y-pos-label" for="image-size-slider-y">Y</label>
+                    <input id="image-size-slider-y" type="range" min="100" max="200" step="10" value="150">
                 </div>`).appendTo('#blankItem');
             add_price_input = $(`<div id="add-image-form-2">
                 <form id="add-image-formId-2">
@@ -365,9 +371,9 @@ $(document).ready(function ()
                 'z-index' : '2',
                 'position' : 'relative',
                 'left' : '5%',
-                'top' : '50%',
+                'top' : '47%',
                 'width' : '15rem',
-                'height' : '7rem',
+                'height' : '9rem',
                 'overflow' : 'visible',
                 'display' : 'none'
             })
@@ -382,11 +388,6 @@ $(document).ready(function ()
                 'overflow' : 'visible',
                 'display' : 'none'
             })
-            $("#add-image-formId").css
-            ({
-                'position' : 'absolute',
-                'top' : '15%'
-            });
             add_item.css
             ({
                 'z-index' : '2',
@@ -402,8 +403,8 @@ $(document).ready(function ()
             ({
                 'z-index' : '4',
                 'position' : 'absolute',
-                'top' : '63%',
-                'left' : '7%',
+                'top' : '60%',
+                'left' : '3%',
                 'height' : '35%',
                 'width' : '30%',
                 'display' : 'flex',
@@ -430,26 +431,79 @@ $(document).ready(function ()
             $('#image-y-minus').css('flex', '1');
             $('#image-x-plus').css('flex', '0.4');
             $('#image-x-minus').css('flex', '0.4');
-            $('#image-size-slider').css
+            $('#image-size-slider-x').css
             ({
                 'z-index' : '4',
                 'position' : 'absolute',
                 'width' : '40%',
                 'height' : '15%',
-                'top' : '70%',
+                'top' : '65%',
                 'left' : '40%',
                 'cursor' : 'pointer'
             });
-            svg_ribbon = $('<div id="svg-div"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form');
+            $('#image-size-slider-y').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'width' : '40%',
+                'height' : '15%',
+                'top' : '80%',
+                'left' : '40%',
+                'cursor' : 'pointer'
+            });
+            $('#x-pos-label').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '68%',
+                'left' : '36%',
+                'font-size' : '0.5rem'
+            });
+            $('#y-pos-label').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '83%',
+                'left' : '36%',
+                'font-size' : '0.5rem'
+            });
+            $('#lock-axis').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '53%',
+                'left' : '40%',
+                'height' : '1rem',
+                'width' : '1rem',
+                'border' : 'solid 0.5px'
+            });
+            $('#lock-axis-label').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '54%',
+                'left' : '50%',
+                'font-size' : '0.5rem'
+            });
+            svg_ribbon = $('<svg id="addImage-ribbon" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 90"><polygon points="0 0, 130 0, 150 45, 130 90, 0 90" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg>').appendTo('#add-image-form');
+            // svg_ribbon viewbox aspect ratio is 5:3, use for all scaling
             svg_ribbon_2 = $('<div id="svg-div-2"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form-2');
             close_add_image = $('<div id="close-add-image">X</div>').appendTo('#add-image-form');
             close_add_price = $('<div id="close-add-price">X</div>').appendTo('#add-image-form-2');
-            svg_ribbon.css
+            $('#addImage-ribbon').css
             ({
                 'position' : 'absolute',
                 'top' : '0',
                 'left' : '0',
-                'z-index' : '3'
+                'z-index' : '3',
+                'height' : '100%',
+                'display' : 'block'
+            });
+            $("#add-image-formId").css
+            ({
+                'position' : 'absolute',
+                'top' : '12%',
+                'width' : '100%'
             });
             svg_ribbon_2.css
             ({
@@ -629,14 +683,60 @@ $(document).ready(function ()
     );
 
     $('#shopping-page-main').on('input',
-        '#image-size-slider',
+        '#image-size-slider-x',
         function ()
         {
             let new_val = $(this).val();
-            let new_val_str = new_val + "% " + new_val + "%";
-            $('#blankItem').css('background-size', new_val_str);
+            if (lock_xy === false)
+            {
+                let old_val = $('#blankItem').css('background-size').split('%')[1];
+                let new_val_str = new_val + "% " + old_val + "%";
+                $('#blankItem').css('background-size', new_val_str);
+            }
+            else
+            {
+                let new_val_str = new_val + "% " + new_val + "%";
+                $('#blankItem').css('background-size', new_val_str);
+                $('#image-size-slider-y').val(new_val);
+            }
         }
     );
+    $('#shopping-page-main').on('input',
+        '#image-size-slider-y',
+        function ()
+        {
+            let new_val = $(this).val();
+            if (lock_xy === false)
+            {
+                let old_val = $('#blankItem').css('background-size').split('%')[0];
+                let new_val_str = old_val + "% " + new_val + "%";
+                $('#blankItem').css('background-size', new_val_str);
+            }
+            else
+            {
+                let new_val_str = new_val + "% " + new_val + "%";
+                $('#blankItem').css('background-size', new_val_str);
+                $('#image-size-slider-x').val(new_val);
+            }
+        }
+    );
+    $('#shopping-page-main').on('click',
+        '#lock-axis',
+        function () 
+        {
+            console.log('clicked');
+            if (lock_xy === false)
+            {
+                lock_xy = true;
+                $(this).css('background-color', 'black');
+            }
+            else if (lock_xy === true)
+            {
+                lock_xy = false;
+                $(this).css('background-color', 'transparent');
+            }
+        }
+    )
 
     // EVENT HANDLERS FOR EDITING
 
@@ -1279,7 +1379,8 @@ $(document).ready(function ()
                 text_size = name_tag.css('font-size').split('p')[0];
                 background_color = name_tag.css('background-color');
             }
-            background_size = $('#blankItem').css('background-size');
+            background_size_x = $('#blankItem').css('background-size').split('%')[0];
+            background_size_y = $('#blankItem').css('background-size').split('%')[1];
             background_pos = $('#blankItem').css('background-position');
             text_box_cat = $('#subcat-name').text();
             item_price = $('.add-price-input').val();
@@ -1345,9 +1446,13 @@ $(document).ready(function ()
             {
                 formData.append('item_quantity', item_quantity);
             }
-            if (background_size)
+            if (background_size_x)
             {
-                formData.append('background_size', background_size);
+                formData.append('background_size_x', background_size_x);
+            }
+            if (background_size_y)
+            {
+                formData.append('background_size_y', background_size_y);
             }
             if (background_pos)
             {
@@ -1388,7 +1493,8 @@ $(document).ready(function ()
             edit_box_top -= border;
             edit_box_left -= border;
             var edit_box_img = $(this).css('background-image');
-            var edit_img_size = $(this).css('background-size');
+            var edit_img_size_x = $(this).css('background-size').split('%')[0];
+            var edit_img_size_y = $(this).css('background-size').split('%')[1];
             var edit_img_pos = $(this).css('background-position');
             var container_height_25percent = parseFloat($('#shopping-page-main').css('height')) / 4;
             var page_width_20percent = $(window).width() / 5;
@@ -1416,7 +1522,7 @@ $(document).ready(function ()
                 'top' : edit_box_top + 'px',
                 'left' : edit_box_left + 'px',
                 'background-image' : edit_box_img,
-                'background-size' : edit_img_size,
+                'background-size' : edit_img_size_x + "% " + edit_img_size_y + "%",
                 'background-position' : edit_img_pos
             });
             close_edit.css
@@ -1454,7 +1560,7 @@ $(document).ready(function ()
             add_name_edit = $('<div id="add-name-edit"></div>').appendTo('#item-settings-wrapper');
             add_price_edit = $('<div id="add-price-edit"></div>').appendTo('#item-settings-wrapper');
             add_image_input = $(`<div id="add-image-form">
-                    <form id="add-image-formId">
+                    <form id="add-image-formId-edit">
                         <label class="add-image" for="imageinput">Select an image:</label>
                         <input class="add-image" type="file" name="imageinput" id="image-edit" accept="image/*">
                     </form>
@@ -1466,7 +1572,12 @@ $(document).ready(function ()
                         </div>
                         <div class="image-pos-edit-edit" id="image-x-plus-edit">></div>
                     </div>
-                    <input id="image-size-slider-edit" type="range" min="100" max="200" step="10" value="${edit_img_size.split('%')[0]}">
+                    <div id="lock-axis-edit"></div>
+                    <span id="lock-axis-label-edit">Lock X and Y axis</span>
+                    <label id="x-pos-label-edit" for="image-size-slider-x">X</label>
+                    <input id="image-size-slider-x-edit" type="range" min="100" max="200" step="10" value="${edit_img_size_x}">
+                    <label id="y-pos-label-edit" for="image-size-slider-y">Y</label>
+                    <input id="image-size-slider-y-edit" type="range" min="100" max="200" step="10" value="${edit_img_size_y}">
                 </div>`).appendTo('#blankItemEdit');
             add_price_input = $(`<div id="add-price-form">
                     <form id="add-price-formId">
@@ -1550,15 +1661,10 @@ $(document).ready(function ()
                 'left' : '5%',
                 'top' : '50%',
                 'width' : '15rem',
-                'height' : '7rem',
+                'height' : '9rem',
                 'overflow' : 'visible',
                 'display' : 'none'
             })
-            $("#add-image-formId").css
-            ({
-                'position' : 'absolute',
-                'top' : '15%'
-            });
             add_price_input.css
             ({
                 'z-index' : '2',
@@ -1586,8 +1692,8 @@ $(document).ready(function ()
             ({
                 'z-index' : '4',
                 'position' : 'absolute',
-                'top' : '63%',
-                'left' : '7%',
+                'top' : '60%',
+                'left' : '3%',
                 'height' : '35%',
                 'width' : '30%',
                 'display' : 'flex',
@@ -1614,27 +1720,79 @@ $(document).ready(function ()
             $('#image-y-minus-edit').css('flex', '1');
             $('#image-x-plus-edit').css('flex', '0.4');
             $('#image-x-minus-edit').css('flex', '0.4');
-            $('#image-size-slider-edit').css
+            $('#image-size-slider-x-edit').css
             ({
                 'z-index' : '4',
                 'position' : 'absolute',
                 'width' : '40%',
                 'height' : '15%',
-                'top' : '70%',
+                'top' : '65%',
                 'left' : '40%',
                 'cursor' : 'pointer'
             });
-            svg_ribbon = $('<div id="svg-div"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-image-form');
+            $('#image-size-slider-y-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'width' : '40%',
+                'height' : '15%',
+                'top' : '80%',
+                'left' : '40%',
+                'cursor' : 'pointer'
+            });
+            $('#x-pos-label-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '68%',
+                'left' : '36%',
+                'font-size' : '0.5rem'
+            });
+            $('#y-pos-label-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '83%',
+                'left' : '36%',
+                'font-size' : '0.5rem'
+            });
+            $('#lock-axis-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '53%',
+                'left' : '40%',
+                'height' : '1rem',
+                'width' : '1rem',
+                'border' : 'solid 0.5px'
+            });
+            $('#lock-axis-label-edit').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'top' : '54%',
+                'left' : '50%',
+                'font-size' : '0.5rem'
+            });
+            svg_ribbon = $('<svg id="addImage-ribbon-edit" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 90"><polygon points="0 0, 130 0, 150 45, 130 90, 0 90" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg>').appendTo('#add-image-form');
             svg_ribbon_2 = $('<div id="svg-div-2"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-price-form');
             close_add_image = $('<div id="close-add-image">X</div>').appendTo('#add-image-form');
             close_add_price = $('<div id="close-add-price">X</div>').appendTo('#add-price-form');
-            svg_ribbon.css
+            $('#addImage-ribbon-edit').css
             ({
                 'position' : 'absolute',
                 'top' : '0',
                 'left' : '0',
-                'z-index' : '3'
+                'z-index' : '3',
+                'height' : '100%',
+                'display' : 'block'
             })
+            $("#add-image-formId-edit").css
+            ({
+                'position' : 'absolute',
+                'top' : '10%',
+                'width' : '100%'
+            });
             svg_ribbon_2.css
             ({
                 'position' : 'absolute',
@@ -1944,12 +2102,41 @@ $(document).ready(function ()
     );
 
     $('#shopping-page-main').on('input',
-        '#image-size-slider-edit',
+        '#image-size-slider-x-edit',
         function ()
         {
             let new_val = $(this).val();
-            let new_val_str = new_val + "% " + new_val + "%";
-            $('#blankItemEdit').css('background-size', new_val_str);
+            if (lock_xy === false)
+            {
+                let old_val = $('#blankItemEdit').css('background-size').split('%')[1];
+                let new_val_str = new_val + "% " + old_val + "%";
+                $('#blankItemEdit').css('background-size', new_val_str);
+            }
+            else
+            {
+                let new_val_str = new_val + "% " + new_val + "%";
+                $('#blankItemEdit').css('background-size', new_val_str);
+                $('#image-size-slider-y-edit').val(new_val);
+            }
+        }
+    );
+    $('#shopping-page-main').on('input',
+        '#image-size-slider-y-edit',
+        function ()
+        {
+            let new_val = $(this).val();
+            if (lock_xy === false)
+            {
+                let old_val = $('#blankItemEdit').css('background-size').split('%')[0];
+                let new_val_str = old_val + "% " + new_val + "%";
+                $('#blankItemEdit').css('background-size', new_val_str);
+            }
+            else
+            {
+                let new_val_str = new_val + "% " + new_val + "%";
+                $('#blankItemEdit').css('background-size', new_val_str);
+                $('#image-size-slider-x-edit').val(new_val);
+            }
         }
     );
 
@@ -2330,7 +2517,8 @@ $(document).ready(function ()
             text_box_content = text_box_edit.val();
             text_color = text_box_edit.css('color');
             background_color = text_box_edit.css('background-color');
-            background_size = $('#blankItemEdit').css('background-size');
+            background_size_x = $('#blankItemEdit').css('background-size').split('%')[0];
+            background_size_y = $('#blankItemEdit').css('background-size').split('%')[1];
             background_pos = $('#blankItemEdit').css('background-position');
             text_font = text_box_edit.css('font-family');
             item_name = $('.add-name-input-edit').val();
@@ -2408,10 +2596,15 @@ $(document).ready(function ()
             {
                 formDataEdit.append('item_quantity', item_quantity);
             }
-            if (background_size)
+            if (background_size_x)
             {
-                formDataEdit.append('background_size', background_size);
-                console.log(background_size);
+                formDataEdit.append('background_size_x', background_size_x);
+                console.log(background_size_x);
+            }
+            if (background_size_y)
+            {
+                formDataEdit.append('background_size_y', background_size_y);
+                console.log(background_size_y);
             }
             if (background_pos)
             {

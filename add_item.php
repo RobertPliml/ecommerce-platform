@@ -11,7 +11,8 @@ $text_box_width = filter_input(INPUT_POST, 'text_box_width', FILTER_VALIDATE_INT
 $text_box_content = filter_input(INPUT_POST, 'text_box_content', FILTER_SANITIZE_SPECIAL_CHARS);
 $text_color = filter_input(INPUT_POST, 'text_color', FILTER_SANITIZE_SPECIAL_CHARS);
 $background_color = filter_input(INPUT_POST, 'background_color', FILTER_SANITIZE_SPECIAL_CHARS);
-$background_size = filter_input(INPUT_POST, 'background_size', FILTER_SANITIZE_SPECIAL_CHARS);
+$background_size_x = filter_input(INPUT_POST, 'background_size_x', FILTER_SANITIZE_SPECIAL_CHARS);
+$background_size_y = filter_input(INPUT_POST, 'background_size_y', FILTER_SANITIZE_SPECIAL_CHARS);
 $background_pos = filter_input(INPUT_POST, 'background_pos', FILTER_SANITIZE_SPECIAL_CHARS);
 $text_font = filter_input(INPUT_POST, 'text_font', FILTER_SANITIZE_SPECIAL_CHARS);
 $text_size = filter_input(INPUT_POST, 'text_size', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -113,10 +114,15 @@ if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
             $fields[] = "text_size = :text_size";
             $params['text_size'] = $text_size;
         }
-        if (isset($background_size))
+        if (isset($background_size_x))
         {
-            $fields[] = "background_size = :background_size";
-            $params['background_size'] = $background_size;
+            $fields[] = "background_size_x = :background_size_x";
+            $params['background_size_x'] = $background_size_x;
+        }
+        if (isset($background_size_y))
+        {
+            $fields[] = "background_size_y = :background_size_y";
+            $params['background_size_y'] = $background_size_y;
         }
         if (isset($background_pos))
         {
@@ -248,11 +254,17 @@ if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
             $placeholders[] = ":text_size";
             $params['text_size'] = $text_size;
         }
-        if (isset($background_size))
+        if (isset($background_size_x))
         {
-            $fields[] = "background_size";
-            $placeholders[] = ":background_size";
-            $params['background_size'] = $background_size;
+            $fields[] = "background_size_x";
+            $placeholders[] = ":background_size_x";
+            $params['background_size_x'] = $background_size_x;
+        }
+        if (isset($background_size_y))
+        {
+            $fields[] = "background_size_y";
+            $placeholders[] = ":background_size_y";
+            $params['background_size_y'] = $background_size_y;
         }
         if (isset($background_pos))
         {

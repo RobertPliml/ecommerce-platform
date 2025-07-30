@@ -156,7 +156,8 @@ echo"
         $height_in_rem = $text_box_height !== null ? $text_box_height / 16 : null;
         $width_in_rem = $text_box_width !== null ? $text_box_width / 16 : null;
         $text_size_in_rem = $text_size !== null ? $text_size / 16 : null;
-        $background_size = $item['background_size'];
+        $background_size_x = $item['background_size_x'];
+        $background_size_y = $item['background_size_y'];
         $background_pos = $item['background_pos'];
         echo "
         <style>
@@ -166,7 +167,7 @@ echo"
             height: 19rem;
             width: 19rem;
             background-image: url('".$item_img_url."');
-            background-size: ".$background_size.";
+            background-size: ".$background_size_x."% ".$background_size_y."%;
             background-position: ".$background_pos.";
             box-shadow: 8px 2px 10px gray;
         }

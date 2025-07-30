@@ -290,7 +290,8 @@ include "navigation.php";
                         $item_name = $item['item_name'];
                         $item_quantity = $item['item_quantity'];
                         $item_img_url = $item['item_image_url'];
-                        $background_size = $item['background_size'];
+                        $background_size_x = $item['background_size_x'];
+                        $background_size_y = $item['background_size_y'];
                         $background_pos = $item['background_pos'];
                         echo "
                         <style>
@@ -308,7 +309,7 @@ include "navigation.php";
                         #inventory-item-".$item_id."
                         {
                             background-image: url('".$item_img_url."');
-                            background-size: ".$background_size.";
+                            background-size: ".$background_size_x."% ".$background_size_y."%;
                             background-position: ".$background_pos.";
                         }
                         .subtract-stock
