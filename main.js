@@ -108,7 +108,7 @@ function updateCartDisplay ()
                 // add the data to the new html object
                 html += `
                   <div class="cart-item">
-                    <img src="${item.item_image_url}" alt="${item.item_name}" class="shopping-cart-img">
+                    <div style="background-image: url('${item.item_image_url}'); background-size: ${item.background_size_x}% ${item.background_size_y}%; background-position: ${item.background_pos}" class="shopping-cart-img"></div>
                     <h4 class="cart-item-info">${item.item_name}</h4>
                     <p class="cart-item-info">Price: $${totalPrice}</p>
                     <div class="cart-counter-container">
@@ -179,16 +179,16 @@ function updateCheckoutDisplay ()
                 const totalPrice = (item.item_price * quantity).toFixed(2);
                 // add the data to the new html object
                 html += `
-                  <div class="cart-item">
-                    <img src="${item.item_image_url}" alt="${item.item_name}" class="shopping-cart-img">
-                    <h4 class="cart-item-info">${item.item_name}</h4>
-                    <p class="cart-item-info">Price: $${totalPrice}</p>
-                    <div class="cart-counter-container">
+                  <div class="checkout-cart-item">
+                    <div style="background-image: url('${item.item_image_url}'); background-size: ${item.background_size_x}% ${item.background_size_y}%; background-position: ${item.background_pos}" class="shopping-cart-img"></div>
+                    <h4 class="checkout-cart-item-info">${item.item_name}</h4>
+                    <p class="checkout-cart-item-info">Price: $${totalPrice}</p>
+                    <div class="checkout-cart-counter-container">
                         <div class="cart-counter-subtract" id="checkoutsubtract-${item.item_id}">-</div>
                         <div class="cart-counter-value">${quantity}</div>
                         <div class="cart-counter-add" id="checkoutadd-${item.item_id}">+</div>  
                     </div>
-                    <p class="stock-counter">In Stock</p>
+                    <p class="checkout-stock-counter">In Stock</p>
                   </div>
                 `;
                 grand_total+=parseInt(totalPrice);
@@ -236,26 +236,6 @@ $(document).ready(function ()
         }
     }, 1000);*/
     console.log('DOM LOADED');
-    // Initialize Swiper
-    const swiper = new Swiper('.swiper-container', 
-        {
-        loop: true,  // Enables infinite loop of slides
-        autoplay: 
-        {
-            delay: 10000,  // Time between each slide transition (in milliseconds)
-            disableOnInteraction: false,  // Keep autoplay even if user interacts
-        },
-        navigation: 
-        {
-            nextEl: '.swiper-button-next',  // Next button
-            prevEl: '.swiper-button-prev',  // Previous button
-        },
-        pagination: 
-        {
-            el: '.swiper-pagination',  // Pagination dots (optional)
-            clickable: true,  // Make dots clickable
-        },
-    });
 
     // caseid#20949316 
     // Controls for login box
@@ -938,21 +918,31 @@ $(document).ready(function ()
             window.location.assign('checkout.php');
         }
     )
+    // CHECKOUT PAGE FUNCTIONS
+
+    $('#checkout-page-main').on('click',
+        '#checkout-submit-order',
+        function () 
+        {
+            submitCart(); // places necessary cart info into table named orders
+            clearCart(); // clears my localStorage 'cart'
+            updateCartDisplay(); // updates the display in my shopping cart to show success
+            updateCheckoutDisplay(); // same thing
+            // payment action with paypal commerce platform
+            window.location.assign('order_confirm.php'); // move this to the success function for payment system
+        }
+    );
+
+    // ORDER CONFIRMED 
+
+    $('#order-confirm-main').on('click',
+        '#return-home',
+        function ()
+        {
+            window.location.assign('index.php');
+        }
+    );
 });
-
-// CHECKOUT PAGE FUNCTIONS
-
-$('#checkout-page-main').on('click',
-    '#checkout-submit-order',
-    function () 
-    {
-        submitCart();
-        clearCart();
-        updateCartDisplay();
-        updateCheckoutDisplay();
-    }
-)
-
 
 // fancy scroll effects for select elements
 

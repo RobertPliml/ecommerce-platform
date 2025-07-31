@@ -39,24 +39,63 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    max-width: 100vw;
 }
 
 body
 {
     overflow-x: hidden;
-    height: 100%;
+    min-height: 100vh;
+    max-width: 100vw;
 }
 
 html
 {
-    height: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-#top
+.logo
 {
-    position: absolute;
+    position: relative;
+    height: 5rem;
+    width: 5rem;
+    top: 10%;
+    left: 1%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#site-logo
+{
+    position: relative;
     height: 100%;
     width: 100%;
+    background-image: url('uploads/logo.jpeg');
+    background-size: cover;
+    border: solid 4px;
+    border-radius: 90%;
+}
+
+.logo:hover,
+.logo:focus
+{
+    cursor: pointer;
+}
+
+#main-button-wrapper
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /*transform: translate(-50%, -50%);*/
+    width: 80%;         /* scales with viewport */
+    max-width: 80%;   /* limit width on larger screens */
+    background: rgba(0,0,0,0.7);
+    color: white;
+    text-align: center;
+    border-radius: 10px;
 }
 
 #main-header-h1
@@ -64,6 +103,8 @@ html
     z-index: 2;
     position: relative;
     top: 40%;
+    left: 35%;
+    max-width: 30%;
     text-align: center;
     font-family: 'font_3_bold';
     font-weight: bold;
@@ -75,7 +116,9 @@ html
 {
     z-index: 2;
     position: relative;
-    top: 40%;
+    top: 55%;
+    left: 37.5%;
+    max-width: 25%;
     text-align: center;
     font-family: 'font_3';
     font-size: 3rem;
@@ -86,10 +129,11 @@ html
 {
     z-index: 2;
     position: relative;
-    top: 40%;
+    top: 70%;
+    left: 47.5%;
+    max-width: 5%;
     margin: auto;
     height: 2rem;
-    width: 8rem;
     border-radius: 1rem;
     background-color: white;
     display: flex;
@@ -105,23 +149,69 @@ html
     cursor: pointer;
 }
 
+.carousel
+{
+    height: 100vh;
+    width: 100vw;
+}
+
+.carousel-cell
+{
+    height: 100vh;
+    width: 100%;
+    background-size: cover;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: #fff;
+}
+
+#cell-1
+{
+    background-image: url('uploads/placeholder_1.png');
+}
+#cell-2
+{
+    background-image: url('uploads/placeholder_2.jpeg');
+}
+#cell-3
+{
+    background-image: url('uploads/placeholder_3.jpeg');
+}
+
 /* MAIN */
 
 #main
 {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
-    height: 40rem;
-    border-bottom: solid black 0.1rem;
-    overflow: hidden;
+    height: 100vh;
+}
+
+#navigation, #top 
+{
+    height: auto;      /* or no height set at all */
+    min-height: 0;     /* important to allow shrinking */
+    display: flex;
+    flex-direction: row; /* or column as needed */
+    flex-wrap: wrap;   /* allow children to wrap and not overflow */
+    width: 100%;       /* avoid 100vw unless intentionally breaking out */
+    position: relative;
+    background-color: rgb(225, 225, 225);
+    align-items: flex-start;
+}
+#top > * 
+{
+    flex: 1 1 auto;  /* allow grow and shrink */
+    min-width: 0;    /* super important to prevent overflow from content */
+    min-height: 0;
+    position: relative;
 }
 
 #isAdmin-container
 {
     z-index: 2;
-    position: relative;
+    position: fixed;
     height: 3rem;
     width: 8rem;
     left: 80%;
@@ -157,7 +247,7 @@ html
 
 #board-container
 {
-    position: absolute;
+    position: relative;
     height: 92%;
     width: 96%;
     left: 2%;
@@ -174,7 +264,6 @@ html
 {
     position: relative;
     left: 0;
-    top: 40rem;
     width: 100%;
     height: 45rem;
     background-color: rgb(225, 225, 225);
@@ -195,7 +284,7 @@ html
 
 #main-reviews-container-inner
 {
-    position: absolute;
+    position: relative;
     height: 40rem;
     width: 100%;
     bottom: 10%;
@@ -256,8 +345,7 @@ html
 #socialMedia
 {
     position: relative;
-    top: 40rem;
-    height: 40rem;
+    height: 100vh;
     width: 100%;
     background-color: rgb(225, 225, 225);
     border-bottom: solid 2px;
@@ -293,7 +381,7 @@ html
 
 #shopping-page-main
 {
-    position: absolute;
+    position: relative;
     height: 40rem;
     top: 0;
     left: 0;
@@ -308,9 +396,10 @@ html
 {
     z-index: 4;
     position: fixed;
-    height: 100%;
+    height: 100vh;
     width: 22rem;
     right: 0;
+    top: 0;
     border: solid white 2px;
     transform: translateX(20rem);
     transition: transform 0.6s ease;
@@ -322,6 +411,7 @@ html
 #shopping-cart-slider
 {
     width: 2rem;
+    height: 100vh;
     background-color: rgb(215, 215, 215);
     cursor: pointer;
     display: flex;
@@ -501,7 +591,6 @@ html
 #footer-div
 {
     position: relative;
-    top: 40rem;
     left: 0;
     width: 100%;
     height: 20rem;
@@ -570,7 +659,7 @@ html
 
 #admin-main
 {
-    position: absolute;
+    position: relative;
     top: 0;
     left: 0;
     height: 40rem;
@@ -613,7 +702,7 @@ html
 
 #checkout-page-main
 {
-    position: absolute;
+    position: relative;
     height: 40rem;
     width: 100vw;
     left: 0;
@@ -624,7 +713,7 @@ html
 #checkout-list-wrapper
 {
     position: absolute;
-    top: 20%;
+    top: 25%;
     height: 70%;
     width: 35%;
     left: 5%;
@@ -633,7 +722,7 @@ html
 #checkout-items-wrapper
 {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     overflow-x: hidden;
     position: relative;
     height: 90%;
@@ -658,10 +747,10 @@ html
 #checkout-shipping-info
 {
     position: absolute;
-    top: 20%;
+    top: 25%;
     left: 45%;
     width: 50%;
-    height: 30%;
+    height: 70%;
     border: solid 1px;
 }
 #address-line-1,
@@ -701,19 +790,10 @@ html
     width: 22.5%;
 }
 
-#checkout-payment-info
-{
-    position: absolute;
-    top: 60%;
-    left: 45%;
-    width: 50%;
-    height: 30%;
-    border: solid 1px;
-}
 #checkout-submit-order
 {
     color: white;
-    position: relative;
+    position: absolute;
     height: 20%;
     width: 100%;
     top: 80%;
@@ -734,8 +814,82 @@ html
     /*background-repeat: no-repeat, no-repeat;*/
     background-position: 0% 0%, center center;
 }
+#email
+{
+    position: relative;
+    width: 98%;
+    height: 18%;
+    padding: 1%;
+    margin: 1%;
+}
 #checkout-submit-order:hover
 {
     cursor: pointer;
     animation: shimmer-animation 2s infinite;
+}
+.checkout-cart-item
+{
+    position: relative;
+    max-height: 10rem;
+    width: 100%;
+    flex: 1;
+    border-bottom: dotted 1px;
+}
+.checkout-cart-item-info
+{
+    position: relative;
+    left: 40%;
+    top: -10rem;
+}
+.checkout-stock-counter
+{
+    position: relative;
+    font-weight: bold;
+    color: green;
+    top: -9rem;
+    left: 40%;
+}
+.checkout-cart-counter-container
+{
+    position: relative;
+    height: 2.5rem;
+    width: 8rem;
+    border: solid rgb(215, 215, 215) 1.5px;
+    border-radius: 0% 45% 0% 45%; 
+    left: 40%;
+    top: -10rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ORDER CONFIRMATION PAGE */
+
+#order-confirm-main
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 40rem;
+    width: 100vw;
+    background-color: rgb(225, 225, 225);
+}
+#return-home
+{
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    height: 5rem;
+    width: 8rem;
+    background-image: url('uploads/upArrow.jpeg');
+    background-size: cover;
+}
+#order-confirm-main-text
+{
+    font-size: 2.5rem;
+    font-family: 'font_3';
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    width: 20%;
 }

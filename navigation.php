@@ -127,16 +127,14 @@
 
                 #header-options
                 {
-                    position: absolute;
-                    width: 70%;
-                    left: 15%;
-                    height: 5rem;
+                    position: relative;
                     text-align: center;
+                    max-width: 50%;
                     z-index: 3;
-                    top: 1rem;
-                    display: block;
-                    padding: 0;
-                    margin: 0;
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    justify-content: center;
                     ";
                     if ($_SESSION['editMenuBar'] === false)
                     {
@@ -151,20 +149,14 @@
 
                 .logo
                 {
-                    position: absolute;
-                    height: 5rem;
-                    width: 5rem;
-                    top: 1rem;
-                    left: -8rem;
+                    max-width: 25%;
                 }
 
                 #site-logo
                 {
                     position: relative;
-                    height: 8rem;
-                    width: 8rem;
-                    top: -30%;
-                    left: -50%;
+                    height: 5rem;
+                    width: 5rem;
                     background-image: url('uploads/logo.jpeg');
                     background-size: cover;
                     border: solid 4px;
@@ -179,17 +171,15 @@
 
                 .alt-header
                 {
-                    position: absolute;
-                    height: 3rem;
-                    width: 10rem;
-                    right: -10rem;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-around;
+                    max-width: 25%;
                 }
 
                 #search
                 {
-                    position: absolute;
-                    left: 15%;
-                    top: 0.1rem;
+                    position: relative;
                     height: 2.5rem;
                     width: 2.5rem;
                     background-image: url('images/searchIcon.png');
@@ -198,9 +188,7 @@
 
                 #cart
                 {
-                    position: absolute;
-                    right: 10%;
-                    top: 0;
+                    position: relative;
                     height: 2.5rem;
                     width: 2.5rem;
                     background-image: url('images/cart.png');
@@ -214,15 +202,10 @@
                 }
 
             </style>
-
-            <ul id='header-options'>
             <div class='logo'>
                 <div id='site-logo'></div>
             </div>
-            <div class='alt-header'>
-                <div id='search'></div>
-                <div id='cart'></div>
-            </div>
+            <ul id='header-options'>
             ";
             $counter = 0;
             foreach ($cats as $cat)
@@ -807,6 +790,40 @@
             }
             echo"
         </ul>
+        <div class='alt-header'>
+            <div id='search'></div>
+            <div id='cart'></div>
+            ";
+            $userIp = $_SERVER['REMOTE_ADDR'];
+            // IPV4 (127.0.0.1) or (10.0.0.144) is optional, but 
+            // IPV6 (::1) is required.
+            $allowedIps = ['::1', '127.0.0.1', '10.0.0.144'];
+            if (in_array($userIp, $allowedIps))
+            {
+                echo "
+                <div class='meta-control'></div>
+                <div class='header-meta'>
+                    <form>
+                        ";
+                        if ($_SESSION['isAdmin'] === false)
+                        {
+                            echo "
+                            <input id='username' type='text' placeholder='Username' required>
+                            <input id='password' type='password' placeholder='Password' required>
+                            <div class='submit-login'>Login</div>
+                            ";
+                        }
+                        else if ($_SESSION['isAdmin'] === true)
+                        {
+                            echo "
+                            <div class='submit-logout'>Logout</div>
+                            ";
+                        }
+                        echo"
+                    </form>
+                </div>";
+            }echo"
+        </div>
         <style>
 
         .header-meta
@@ -885,9 +902,7 @@
         .meta-control
         {
             z-index: 150;
-            position: absolute;
-            top: 14.9rem;
-            left: 1.1rem;
+            position: relative;
             height: 2rem;
             width: 2rem;
             border: 1px solid;
@@ -905,36 +920,6 @@
         <br>
         ";?>
         <?php
-        $userIp = $_SERVER['REMOTE_ADDR'];
-        // IPV4 (127.0.0.1) or (10.0.0.144) is optional, but 
-        // IPV6 (::1) is required.
-        $allowedIps = ['::1', '127.0.0.1', '10.0.0.144'];
-        if (in_array($userIp, $allowedIps))
-        {
-            echo "
-            <div class='meta-control'></div>
-            <div class='header-meta'>
-                <form>
-                    ";
-                    if ($_SESSION['isAdmin'] === false)
-                    {
-                        echo "
-                        <input id='username' type='text' placeholder='Username' required>
-                        <input id='password' type='password' placeholder='Password' required>
-                        <div class='submit-login'>Login</div>
-                        ";
-                    }
-                    else if ($_SESSION['isAdmin'] === true)
-                    {
-                        echo "
-                        <div class='submit-logout'>Logout</div>
-                        ";
-                    }
-                    echo"
-                </form>
-            </div>";
-        }
-
         if($_SESSION['isAdmin'] === true) : ?>
             <div id="isAdmin-container">
                 <p id="isAdmin">ADMIN</p>

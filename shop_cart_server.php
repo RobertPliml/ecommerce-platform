@@ -30,7 +30,7 @@ try
                 exit;
             }
             $placeholders = implode(',', array_fill(0, count($itemIds), '?'));
-            $query = "SELECT item_id, item_name, item_price, item_image_url FROM items WHERE item_id IN ($placeholders)";
+            $query = "SELECT item_id, item_name, item_price, item_image_url, background_size_x, background_size_y, background_pos FROM items WHERE item_id IN ($placeholders)";
             $stm = $DB->prepare($query);
             $stm->execute($itemIds);
             $items = $stm->fetchAll(PDO::FETCH_ASSOC);

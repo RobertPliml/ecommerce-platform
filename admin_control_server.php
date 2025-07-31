@@ -8,6 +8,23 @@ if ($new_key)
 }
 $item_id = filter_input(INPUT_POST, 'item_id', FILTER_SANITIZE_SPECIAL_CHARS);
 $method = filter_input(INPUT_POST, 'method', FILTER_SANITIZE_SPECIAL_CHARS);
+$input = json_decode(file_get_contents('php://input'), true);
+$item_id_delete = $input['item_id'];
+if ($item_id_delete)
+{
+    try
+    {
+        $DB->beginTransaction();
+        $stm = $DB->prepare('DELETE FROM items WHERE item_id = :item_id');
+        $stm->execute([':item_id' => $item_id_delete]);
+        $DB->commit();
+    }
+    catch(PDOException $e)
+    {
+        $DB->rollBack();
+        echo "Error: " . $e->getMessage();
+    }
+}
 if ($item_id && $method) 
 {
     if ($method === "add")

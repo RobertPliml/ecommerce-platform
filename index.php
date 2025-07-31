@@ -1,75 +1,22 @@
 <?php 
 include "header.php"; 
 include "navigation.php";
-include "shopping_cart.php";
 ?>
 <div id="main">
-    <h3 id="main-header-h3">Catch the Moment</h3>
-    <h1 id="main-header-h1">Live the Journey</h1>
-    <div id="get-started-button">Get Started</div>
-</div>
-<div class='swiper-container'>
-<?php 
-echo"
-    <style>
-
-    .swiper-container
-    {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 39.9rem;
-        width: 100%;
-        overflow-x: hidden;
-    }
-
-    .swiper-slide,
-    .swiper-wrapper
-    {
-        width: 100% !important;
-    }
-
-    #slide-1
-    {
-        position: relative;
-        background-image: url('images/slide_6.jpeg');
-        background-size: 100%;
-        width: 100%;
-    }
-
-    #slide-2
-    {
-        position: relative;
-        background-image: url('images/slide_2.jpeg');
-        background-size: 100%;
-        width: 100%;
-    }
-
-    #slide-3
-    {
-        position: relative;
-        background-image: url('images/slide_3.jpeg');
-        background-size: 100%;
-        width: 100%;
-    }
-
-    </style>
-    <div class='swiper-wrapper'>
-        <div id='slide-1' class='swiper-slide'></div>
-        <div id='slide-2' class='swiper-slide'></div>
-        <div id='slide-3' class='swiper-slide'></div>
+    <div id="main-button-wrapper">
+        <!--<h3 id="main-header-h3">Catch the Moment</h3>
+        <h1 id="main-header-h1">Live the Journey</h1>
+        <div id="get-started-button">Get Started</div>-->
     </div>
-    <!-- Add Pagination -->
-    <div class='swiper-pagination'></div>
-    <!-- Add Side Buttons -->
-    <div class='swiper-button-next'></div>
-    <div class='swiper-button-prev'></div>
-    ";
-?>
+    <div class="carousel" data-flickity='{ "wrapAround": true, "autoPlay": true }'>
+        <div id="cell-1" class="carousel-cell"></div>
+        <div id="cell-2" class="carousel-cell"></div>
+        <div id="cell-3" class="carousel-cell"></div>
+    </div>
 </div>
-<div id="board">
+<!--<div id="board">
     <div id="board-container">
-        <?php 
+        <?php /* 
         $query = "SELECT * FROM dreamboard_items";
         $stm = $DB->prepare($query);
         $stm->execute();
@@ -229,8 +176,8 @@ echo"
         <div id='wheel-dot'></div>
     </div>
     ";
-    ?>
-</div>
+    */?>
+</div>-->
 <div id="main-reviews">
     <h1 id="main-reviews-header">Hear from our happy customers...</h1>
     <div id="main-reviews-container-outer">

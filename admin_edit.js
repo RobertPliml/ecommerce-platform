@@ -1587,6 +1587,8 @@ $(document).ready(function ()
                         <input type="text" class="add-price-input-edit">
                         <label class="add-quantity-label-edit" for="add-quantity-input-edit">Change Quantity: </label>
                         <input type="text" class="add-quantity-input-edit">
+                        <label class="remove-item" for="remove-item-button">Remove Item</label>
+                        <button class="remove-item-button" id="remove-item-button-${edit_id}"></button>
                     </form>
                 </div>`).appendTo('#blankItemEdit');
             add_image_edit = $('<div id="add-image"></div>').appendTo('#item-settings-wrapper');
@@ -1773,6 +1775,27 @@ $(document).ready(function ()
                 'top' : '54%',
                 'left' : '50%',
                 'font-size' : '0.5rem'
+            });
+            $('.remove-item').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'left' : '60%',
+                'top' : '45%',
+                'font-size' : '0.75rem',
+                'font-family' : 'font_3',
+                'color' : 'red'
+            });
+            $('.remove-item-button').css
+            ({
+                'z-index' : '4',
+                'position' : 'absolute',
+                'border' : 'solid 1px',
+                'height' : '1rem',
+                'width' : '1rem',
+                'left' : '50%',
+                'top' : '45%',
+                'border-radius' : '90%'
             });
             svg_ribbon = $('<svg id="addImage-ribbon-edit" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 90"><polygon points="0 0, 130 0, 150 45, 130 90, 0 90" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg>').appendTo('#add-image-form');
             svg_ribbon_2 = $('<div id="svg-div-2"><svg id="addImage-ribbon" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" viewBox="0 0 150 70"><polygon points="0 0, 120 0, 150 35, 120 70, 0 70" fill="rgb(225, 225, 225)" stroke="#333" stroke-width="1" /></svg></div>').appendTo('#add-price-form');
@@ -2139,7 +2162,33 @@ $(document).ready(function ()
             }
         }
     );
-
+    $('#shopping-page-main').on('click',
+        '.remove-item-button',
+        function (e)
+        {
+            e.preventDefault();
+            item_id = $(this).attr('id').split('-')[3];
+            $.ajax
+            ({
+                type: "POST",
+                url: "admin_control_server.php",
+                data: JSON.stringify
+                ({
+                    item_id : item_id
+                }),
+                cache: false,
+                contentType: 'application/json',
+                success : function ()
+                {
+                    location.reload();
+                },
+                error : function (xhr, status, error)
+                {
+                    console.error(xhr);
+                }
+            });
+        }
+    )
     $('#shopping-page-main').on('mouseenter mouseleave',
         '#close_edit',
         function () 

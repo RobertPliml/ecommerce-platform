@@ -19,13 +19,8 @@
         <!-- CSS File -->
         <link rel="stylesheet" type="text/css" href="project_2-main.css?v=<?php echo time();?>">
 
-        <!-- Swiper CSS File -->
-
-        <link rel="stylesheet" href="https://unpkg.com/swiper@9.0.0/swiper-bundle.min.css"/>
-
-        <!-- Swiper JS File -->
-
-        <script src="https://unpkg.com/swiper@9.0.0/swiper-bundle.min.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+        <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 
         <script src="main.js" defer></script>
 
