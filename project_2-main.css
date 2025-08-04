@@ -40,6 +40,7 @@
     margin: 0;
     padding: 0;
     max-width: 100vw;
+    /*border: solid red 1px !important;*/
 }
 
 body
@@ -53,35 +54,6 @@ html
 {
     min-height: 100vh;
     overflow-x: hidden;
-}
-
-.logo
-{
-    position: relative;
-    height: 5rem;
-    width: 5rem;
-    top: 10%;
-    left: 1%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#site-logo
-{
-    position: relative;
-    height: 100%;
-    width: 100%;
-    background-image: url('uploads/logo.jpeg');
-    background-size: cover;
-    border: solid 4px;
-    border-radius: 90%;
-}
-
-.logo:hover,
-.logo:focus
-{
-    cursor: pointer;
 }
 
 #main-button-wrapper
@@ -168,7 +140,7 @@ html
 
 #cell-1
 {
-    background-image: url('uploads/placeholder_1.png');
+    background-image: url('uploads/placeholder_1.jpeg');
 }
 #cell-2
 {
@@ -187,23 +159,33 @@ html
     width: 100%;
     height: 100vh;
 }
+@media(max-width: 600px)
+{
+    #main
+    {
+        height: 30rem;
+    }
+}
 
 #navigation, #top 
 {
-    height: auto;      /* or no height set at all */
-    min-height: 0;     /* important to allow shrinking */
+    height: auto;
+    min-height: 0;
     display: flex;
-    flex-direction: row; /* or column as needed */
-    flex-wrap: wrap;   /* allow children to wrap and not overflow */
-    width: 100%;       /* avoid 100vw unless intentionally breaking out */
+    flex-direction: row;
+    flex-wrap: nowrap;   
+    width: 100%;      
     position: relative;
     background-color: rgb(225, 225, 225);
     align-items: flex-start;
+    padding: 1%;
+    justify-content: flex-start;
+    z-index: 4;
 }
 #top > * 
 {
-    flex: 1 1 auto;  /* allow grow and shrink */
-    min-width: 0;    /* super important to prevent overflow from content */
+    flex: 1 1 auto;
+    min-width: 0;
     min-height: 0;
     position: relative;
 }
@@ -270,7 +252,13 @@ html
     overflow: hidden;
     border-bottom: solid 2px;
 }
-
+@media (max-width: 600px) 
+{
+    #main-reviews 
+    {
+        height: 30rem;
+    }
+}
 #main-reviews-container-outer
 {
     position: relative;
@@ -289,7 +277,7 @@ html
     width: 100%;
     bottom: 10%;
     background-image: url('images/slide_4.jpeg');
-    background-size: 100%;
+    background-size: cover;
     background-position: 0% 30%;
 }
 
@@ -315,7 +303,6 @@ html
     font-weight: bold;
     clip-path: polygon(0% 0%, 50% 15%, 100% 0%, 100% 100%, 0% 100%);
 }
-
 #ribbon-header
 {
     position: relative;
@@ -323,6 +310,7 @@ html
     top: 25%;
     color: black;
     font-family: 'font_3';
+    font-size: 1.5rem;
 }
 
 #ribbon-text
@@ -333,11 +321,38 @@ html
     width: 90%;
     color: black;
     font-family: 'font_3';
+    font-size: 1.25rem;
+}
+@media(max-width: 600px)
+{
+    #ribbon
+    {
+        top: -40%;
+        height: 46%;
+        clip-path: polygon(0% 0%, 50% 10%, 100% 0%, 100% 100%, 0% 100%);
+    }
+    #ribbon-header
+    {
+        top: 15%;
+        font-size: 0.5rem;
+    }
+    #ribbon-text
+    {
+        top: 15%;
+        font-size: 0.45rem;
+    }
 }
 
 #ribbon-border
 {
     position: absolute;
+}
+@media(max-width: 600px)
+{
+    #ribbon-border
+    {
+        top: -13%;
+    }
 }
 
 /* SOCIAL MEDIA */
@@ -349,6 +364,13 @@ html
     width: 100%;
     background-color: rgb(225, 225, 225);
     border-bottom: solid 2px;
+}
+@media(max-width: 600px)
+{
+    #socialMedia
+    {
+        height: 30rem;
+    }
 }
 
 #socialMedia-header
@@ -388,6 +410,9 @@ html
     width: 100%;
     background-color: rgb(225, 225, 225);
     overflow-y: auto;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }
 
 /* SHOPPING CART */
@@ -420,6 +445,18 @@ html
     font-size: 2rem;
     color: white;
 }
+@media(max-width: 600px)
+{
+    #shopping-cart-container
+    {
+        height: 75%;
+        top: 25%;
+    }
+    #shopping-cart-slider
+    {
+        height: 100%;
+    }
+}
 
 #shopping-cart-main
 {
@@ -435,7 +472,6 @@ html
     overflow-x: hidden;
     max-height: 90%;
 }
-
 .cart-item
 {
     position: relative;
@@ -448,6 +484,7 @@ html
     position: relative;
     height: 10rem;
     width: 10rem;
+    max-width: 48%;
 }
 
 .cart-item-info
@@ -462,11 +499,13 @@ html
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 4rem;
+    height: 10%;
+    max-height: 10%;
     width: 100%;
     border-top: solid 0.25px;
     padding: 0.5rem;
     display: flex;
+    z-index: 5;
 }
 #empty-cart
 {
@@ -595,7 +634,7 @@ html
     width: 100%;
     height: 20rem;
     background-color: rgb(225, 225, 225);
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 #footer-options
@@ -619,10 +658,44 @@ html
 {
     position: relative;
     text-align: center;
-    top: 85%;
+    top: 80%;
     color: black;
     font-family: 'font_3';
     font-size: medium;
+}
+
+@media(max-width: 600px)
+{
+    #footer-div
+    {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: nowrap;
+    }
+
+    #footer-options
+    {
+        position: relative;
+        font-size: 0.75rem;
+        max-height: 100%;
+        width: 40%;
+    }
+    #footer-credentials
+    {
+        position: relative;
+        font-size: 0.75rem;
+        max-height: 100%;
+        width: 40%;
+    }
+
+    #copyright
+    {
+        font-size: 0.75rem;
+        top: 50%;
+        text-align: left;
+        left: -10%;
+    }
 }
 
 .footer-a
@@ -708,15 +781,17 @@ html
     left: 0;
     top: 0;
     background-color: rgb(225, 225, 225);
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 #checkout-list-wrapper
 {
-    position: absolute;
-    top: 25%;
-    height: 70%;
+    position: relative;
+    height: 90%;
     width: 35%;
-    left: 5%;
     border: solid 1px;
 }
 #checkout-items-wrapper
@@ -746,11 +821,9 @@ html
 
 #checkout-shipping-info
 {
-    position: absolute;
-    top: 25%;
-    left: 45%;
+    position: relative;
     width: 50%;
-    height: 70%;
+    height: 90%;
     border: solid 1px;
 }
 #address-line-1,
@@ -861,6 +934,39 @@ html
     display: flex;
     align-items: center;
     justify-content: center;
+}
+@media(max-width: 600px)
+{
+    #checkout-page-main
+    {
+        height: 70rem;
+    }
+    #checkout-list-wrapper
+    {
+        position: relative;
+        height: 45%;
+        width: 90%;
+        border: solid 1px;
+    }
+    #checkout-shipping-info
+    {
+        position: relative;
+        width: 90%;
+        height: 45%;
+        border: solid 1px;
+    }
+    .checkout-cart-item-info
+    {
+        left: 50%;
+    }
+    .checkout-stock-counter
+    {
+        left: 50%;
+    }
+    .checkout-cart-counter-container
+    {
+        left: 50%;
+    }
 }
 
 /* ORDER CONFIRMATION PAGE */

@@ -8,31 +8,39 @@ include "shopping_cart.php";
 <div id='shopping-page-main'>
 <?php
 $id = $_SESSION['page_search_id'];
-$query = "SELECT * FROM subcats WHERE subcat_id = :subcat_id LIMIT 1";
-$stm = $DB->prepare($query);
-$stm->bindParam(':subcat_id', $id, PDO::PARAM_INT);
-$stm->execute();
-$subcat = $stm->fetch();
-$subcat_name_one = htmlspecialchars($subcat['subcat_name'], ENT_QUOTES, 'UTF-8');
+$grand_cat = $_SESSION['grand_cat'];
+if ($grand_cat === false)
+{
+    $stm = $DB->prepare("SELECT * FROM subcats WHERE subcat_id = :subcat_id LIMIT 1");
+    $stm->execute([':subcat_id' => $id]);
+    $subcat = $stm->fetch();
+    $header_name = $subcat['subcat_name'];
+}
+else if ($grand_cat === true)
+{
+    $stm = $DB->prepare("SELECT * FROM cats WHERE id = :subcat_id");
+    $stm->execute([':subcat_id' => $id]);
+    $subcat = $stm->fetch();
+    $header_name = $subcat['cat_name'];
+}
 echo "
     <style>
     #subcat-name
     {
         position: relative;
         text-align: center;
-        top: 17%;
         font-family: 'font_3';
+        width: 100%;
     }
     #sidebar-list-container
     {
-        position: absolute;
+        position: relative;
         height: 75%;
         width: 18%;
-        left: 2%;
-        top: 25%;
         border: solid 1px;
         overflow-y: auto;
         background-color: white;
+        left: 2%;
     }
     
     .sidebar-cats
@@ -67,7 +75,7 @@ echo "
     }
 
     </style>
-    <h1 id='subcat-name'>".$subcat_name_one."</h1>
+    <h1 id='subcat-name'>".$header_name."</h1>
 <div id='sidebar-list-container'>
 ";
 $query = "SELECT * FROM cats";
@@ -77,7 +85,8 @@ $cats = $stm->fetchAll();
 foreach ($cats as $cat)
 {
     $cat_name = htmlspecialchars($cat['cat_name'], ENT_QUOTES, 'UTF-8');
-    echo "<div class='sidebar-cats'>".$cat_name."</div>";
+    $grand_cat_id = $cat['id'];
+    echo "<div class='sidebar-cats' id='".$grand_cat_id."'>".$cat_name."</div>";
     $query = "SELECT * FROM subcats WHERE cat_name = :cat_name";
     $stm = $DB->prepare($query);
     $stm->bindParam(':cat_name', $cat_name, PDO::PARAM_STR);
@@ -95,17 +104,29 @@ echo"
 <style>
     #shopping-items-container
     {
-        position: absolute;
+        position: relative;
         height: 75%;
         width: 78%;
-        top: 25%;
-        left: 20%;
         border: solid 1px;
         overflow-y: auto;
         display: flex;
         flex-wrap: wrap;
         padding: 1.25rem;
         gap: 1.25rem;
+        left: 2%;
+    }
+
+    @media(max-width: 600px)
+    {
+        #sidebar-list-container
+        {
+            display: none;
+        }
+        #shopping-items-container
+        {
+            width: 95%;
+            height: 90%;
+        }
     }
 
     #blank-item
@@ -137,10 +158,15 @@ echo"
 </style>
 <div id='shopping-items-container'>
     ";
-    $query = "SELECT * FROM items WHERE text_box_cat = :text_box_cat";
-    $stm = $DB->prepare($query);
-    $stm->bindParam(':text_box_cat', $subcat_name_one, PDO::PARAM_STR);
-    $stm->execute();
+    if ($grand_cat === false)
+    {
+        $stm = $DB->prepare("SELECT * FROM items WHERE text_box_cat = :header_name");
+    }
+    else if ($grand_cat === true)
+    {
+        $stm = $DB->prepare("SELECT * FROM items WHERE text_box_grandCat = :header_name");
+    }
+    $stm->execute([':header_name' => $header_name]);
     $items = $stm->fetchAll();
     foreach ($items as $item) 
     {
@@ -236,5 +262,6 @@ echo"
 </div>
 ";
 ?>
+<!--<div id="debug-log" style="position:fixed;bottom:0;left:0;right:0;background:#111;color:#0f0;padding:8px;font-size:12px;z-index:9999;font-family:monospace;white-space:pre;"></div>-->
 </div>
 <?php include "footer.php"; ?>

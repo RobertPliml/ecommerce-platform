@@ -222,6 +222,12 @@ function clearCart ()
     $("#cart-items-wrapper").html("<p id='cart-is-empty'>Cart is empty.</p>");
 }
 
+function log(msg) // for debugging on my phone because my macbook hates me
+{
+    const logBox = document.getElementById('debug-log');
+    logBox.textContent = (logBox.textContent + '\n' + msg).slice(-500); // keep last ~500 chars
+}
+
 $(document).ready(function () 
 {   
     updateCartDisplay();
@@ -337,34 +343,93 @@ $(document).ready(function ()
     }
 
     // Dropdown Menu functions
-    $("#navigation").on('mouseenter',
-    '.listItems',    
-        function () 
-        {
-            var idStr = $(this).attr('id');
-            var id = idStr.split('-')[1];
-            var catName = idStr.split('-')[2];
-            // seperate the way in which the 'shop all' menu displays v others
-            if (catName === 'Shop\ All')
+    let timesClicked = 0;
+    if (!('ontouchstart' in window || navigator.maxTouchPoints > 0))
+    {
+        $("#navigation").on('mouseenter',
+        '.listItems',    
+            function () 
             {
-                $('#dropdown-' + id).css('display', 'flex');
+                var idStr = $(this).attr('id');
+                var id = idStr.split('-')[1];
+                var catName = idStr.split('-')[2];
+                // seperate the way in which the 'shop all' menu displays v others
+                if (catName === 'Shop\ All')
+                {
+                    $('#dropdown-' + id).css('display', 'flex');
+                }
+                else
+                {
+                    $('#dropdown-' + id).css('display', 'block');
+                }
             }
-            else
+        );
+        $("#navigation").on('mouseleave',
+            '.listItems',
+            function () 
             {
-                $('#dropdown-' + id).css('display', 'block');
+                let idStr = $(this).attr('id');
+                let id = idStr.split('-')[1];
+                $('#dropdown-' + id).css('display', 'none');
             }
-        }
-    );
-    $("#navigation").on('mouseleave',
-        '.listItems',
-        function () 
-        {
-            var idStr = $(this).attr('id');
-            var id = idStr.split('-')[1];
-            $('#dropdown-' + id).css('display', 'none');
-        }
-    );
-
+        );
+    }
+    else
+    {
+        $("#navigation").on('touchstart',
+            '.header-wrapper',    
+            function () 
+            {
+                var idStr = $(this).attr('id');
+                var id = idStr.split('-')[0];
+                var grandCatId = idStr.split('-')[1];
+                var catName = idStr.split('-')[2];
+                // seperate the way in which the 'shop all' menu displays v others
+    
+                if (timesClicked === 0)
+                {
+                    if (catName === 'Shop\ All')
+                    {
+                        $('#dropdown-' + id).css('display', 'flex');
+                    }
+                    else
+                    {
+                        $('#dropdown-' + id).css('display', 'block');
+                    }
+                    timesClicked = 1;
+                }
+                else
+                {
+                    $.ajax
+                    ({
+                        type: 'POST',
+                        url: 'shop_page_server.php',
+                        data : 
+                        {
+                            cat_id : grandCatId,
+                            grand_cat : true
+                        },
+                        cache: false,
+                        success: function ()
+                        {
+                            window.location.href = 'shopping_page.php';
+                        }
+                    });
+                    timesClicked = 0;
+                }
+            }
+        );
+        $("#navigation").on('mouseleave',
+            '.listItems',
+            function () 
+            {
+                let idStr = $(this).attr('id');
+                let id = idStr.split('-')[1];
+                $('#dropdown-' + id).css('display', 'none');
+                timesClicked = 0;
+            }
+        );
+    }
     // Drop Down Menu Editing Functions
 
     $('#navigation').on('mouseenter',
@@ -747,20 +812,47 @@ $(document).ready(function ()
             }
         }
     )
+    if (!('ontouchstart' in window || navigator.maxTouchPoints > 0))
+    {
+        $("#navigation").on('click',
+            '.header-wrapper',
+            function ()
+            {
+                let id = $(this).attr('id');
+                console.log(id);
+                $.ajax
+                ({
+                    type: 'POST',
+                    url: 'shop_page_server.php',
+                    data : 
+                    {
+                        cat_id : id,
+                        grand_cat : true
+                    },
+                    cache: false,
+                    success: function ()
+                    {
+                        window.location.href = 'shopping_page.php';
+                    }
+                });
+            }
+        )
+    }
     $("#navigation").on('click',
         '.subcat-text',
         function (event)
         {
             event.preventDefault();
             let id = $(this).attr('id').split('-')[2];
+            console.log(id);
             $.ajax
             ({
                 type: 'POST',
                 url: 'shop_page_server.php',
                 data:
                 {
-                    csrf_token : csrf_token,
-                    cat_id : id
+                    cat_id : id,
+                    grand_cat : false
                 },
                 cache: false,
                 success : function (data)
@@ -793,8 +885,35 @@ $(document).ready(function ()
                 url: 'shop_page_server.php',
                 data: 
                 {
-                    csrf_token : csrf_token,
-                    cat_id : id
+                    cat_id : id,
+                    grand_cat : false
+                },
+                cache: false,
+                success : function (data) 
+                {
+                    //alert(data);
+                    window.location.reload();
+                },
+                error : function (xhr, status, error) 
+                {
+                    console.error(xhr);
+                }
+            })
+        }
+    )
+    $('#shopping-page-main').on('click',
+        '.sidebar-cats',
+        function ()
+        {
+            let id = $(this).attr('id');
+            $.ajax
+            ({
+                type: 'POST',
+                url: 'shop_page_server.php',
+                data: 
+                {
+                    cat_id : id,
+                    grand_cat : true
                 },
                 cache: false,
                 success : function (data) 

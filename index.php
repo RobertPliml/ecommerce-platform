@@ -184,7 +184,7 @@ include "navigation.php";
         <div id="main-reviews-container-inner"></div>
     </div>
     <div id="ribbon">
-        <svg id="ribbon-border" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox= "0 0 100 100">
+        <svg id="ribbon-border" preserveAspectRatio="xMIDyMID meet" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox= "0 0 100 100">
             <polygon points="2 -10, 47 7, 91.5 -10, 91.5 150, 2 150" fill="transparent" stroke="#333" stroke-width="1"/>
         </svg>
         <h1 id="ribbon-header">5 / 5 stars!</h1>

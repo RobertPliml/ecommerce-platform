@@ -26,6 +26,11 @@
             $_SESSION['show_login_container'] = false;
         }
 
+        if (!isset($_SESSION['grand_cat']))
+        {
+            $_SESSION['grand_cat'] = false;
+        }
+
         if (!isset($_SESSION['csrf_token']))
         {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -115,6 +120,7 @@
                     font-family: 'font_3_bold';
                     font-weight: bold;
                     position: relative;
+                    text-wrap: nowrap;
                 }
 
                 .listItems:hover,
@@ -128,13 +134,13 @@
                 #header-options
                 {
                     position: relative;
-                    text-align: center;
-                    max-width: 50%;
+                    width: 75%;
+                    max-width: 75%;
                     z-index: 3;
                     display: flex;
                     flex-direction: row;
                     flex-wrap: wrap;
-                    justify-content: center;
+                    justify-content: flex-start;
                     ";
                     if ($_SESSION['editMenuBar'] === false)
                     {
@@ -149,7 +155,7 @@
 
                 .logo
                 {
-                    max-width: 25%;
+                    max-width: 20%;
                 }
 
                 #site-logo
@@ -174,7 +180,9 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: space-around;
-                    max-width: 25%;
+                    flex-wrap: wrap;
+                    max-height: 100%;
+                    max-width: 15%;
                 }
 
                 #search
@@ -629,7 +637,7 @@
                 }
 
                 </style>
-                <li class='listItems' id='listItem-".$counter."-".$catName."'>".$catName."
+                <li class='listItems' id='listItem-".$counter."-".$catName."'><div id='".$counter."-".$catId."-".$catName."' class='header-wrapper'>".$catName."</div>
                     <div class='dropdown' id='dropdown-".$counter."'>
                         ";
                         $query = "SELECT * FROM subcats WHERE cat_name = :cat_name";
@@ -924,6 +932,7 @@
             <div id="isAdmin-container">
                 <p id="isAdmin">ADMIN</p>
             </div>
-        <?php endif; ?>
+        <?php endif; 
+        //var_dump($_SESSION);?>
         </div>
 </div>

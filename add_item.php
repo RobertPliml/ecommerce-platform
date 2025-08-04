@@ -20,6 +20,7 @@ $edit_sub = filter_input(INPUT_POST, 'edit_sub', FILTER_VALIDATE_BOOLEAN);
 $item_id = filter_input(INPUT_POST, 'edit_id', FILTER_VALIDATE_INT);
 $file_des = $_POST['file'];
 $text_box_cat = filter_input(INPUT_POST, 'text_box_cat', FILTER_SANITIZE_SPECIAL_CHARS);
+$text_box_grandCat = filter_input(INPUT_POST, 'text_box_grandCat', FILTER_SANITIZE_SPECIAL_CHARS);
 if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
 {
     if ($edit_sub)
@@ -129,7 +130,7 @@ if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
             $fields[] = "background_pos = :background_pos";
             $params['background_pos'] = $background_pos;
         }
-        if(!empty($fields))
+        if (!empty($fields))
         {
             $query = "UPDATE items SET " . implode(',', $fields) . " WHERE item_id = :item_id";
             $params['item_id'] = $item_id;
@@ -165,31 +166,7 @@ if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
         {
             $fileDestination = 'uploads/placeholder.png';
         }
-        /*$query = "INSERT INTO items (item_name, item_price, item_quantity, item_image_url, text_box_height, text_box_width, text_box_content, text_color, background_color, text_font, text_size, text_box_cat, background_size, background_pos) 
-        VALUES (:item_name, :item_price, :item_quantity, :item_image_url, :text_box_height, :text_box_width, :text_box_content, :text_color, :background_color, :text_font, :text_size, :text_box_cat, :background_size, :background_pos)";
-        $stm = $DB->prepare($query);
-        $stm->bindValue(':item_name', $item_name, PDO::PARAM_STR);
-        $stm->bindValue(':item_price', $item_price, PDO::PARAM_STR);
-        $stm->bindValue(':item_quantity', $item_quantity, PDO::PARAM_STR);
-        $stm->bindValue(':item_image_url', $fileDestination, PDO::PARAM_STR);
-        $stm->bindValue(':text_box_height', $text_box_height, PDO::PARAM_INT);
-        $stm->bindValue(':text_box_width', $text_box_width, PDO::PARAM_INT);
-        $stm->bindValue(':text_box_content', $text_box_content, PDO::PARAM_STR);
-        $stm->bindValue(':text_color', $text_color, PDO::PARAM_STR);
-        $stm->bindValue(':background_color', $background_color, PDO::PARAM_STR);
-        $stm->bindValue(':text_font', $text_font, PDO::PARAM_STR);
-        $stm->bindValue(':text_size', $text_size, PDO::PARAM_STR);
-        $stm->bindValue(':text_box_cat', $text_box_cat, PDO::PARAM_STR);
-        $stm->bindValue(':background_size', $background_size, PDO::PARAM_STR);
-        $stm->bindValue(':background_pos', $background_pos, PDO::PARAM_STR);
-        try 
-        {
-            $stm->execute();
-        }
-        catch (PDOException $e) 
-        {
-            echo " ERROR: " . $e->getMessage();
-        }*/
+        
         $fields = [];
         $placeholders = [];
         $params = [];
@@ -212,6 +189,11 @@ if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
         $fields[] = "text_box_cat";
         $placeholders[] = ":text_box_cat";
         $params['text_box_cat'] = $text_box_cat;
+
+        $fields[] = "text_box_grandCat";
+        $placeholders[] = ":text_box_grandCat";
+        $params['text_box_grandCat'] = $text_box_grandCat;
+
         if (isset($text_box_height))
         {
             $fields[] = "text_box_height";

@@ -83,6 +83,25 @@ function updateOrderStatus (order_id, flag, delete_order)
     });
 }
 
+async function getGrandCat(sub_cat)
+{
+    return $.ajax
+    ({
+        type: 'POST',
+        url: 'shop_page_server.php',
+        data: JSON.stringify
+        ({
+            sub_cat : sub_cat
+        }),
+        contentType: 'application/json',
+        cache: false,
+        error: function(xhr, status, error)
+        {
+            console.error(xhr);
+        }
+    });
+}
+
 function previewOrder (order_id) 
 {
     $.ajax
@@ -1364,7 +1383,7 @@ $(document).ready(function ()
 
     $("#shopping-page-main").on('click',
         '#add-item',
-        function (event)
+        async function (event)
         {
             event.preventDefault();
             editing = false;
@@ -1383,6 +1402,8 @@ $(document).ready(function ()
             background_size_y = $('#blankItem').css('background-size').split('%')[1];
             background_pos = $('#blankItem').css('background-position');
             text_box_cat = $('#subcat-name').text();
+            text_box_grandCat = await getGrandCat(text_box_cat);
+            console.log('GRAND CAT: ' + text_box_grandCat);
             item_price = $('.add-price-input').val();
             item_name = $('.add-name-input').val();
             item_quantity = $('.add-quantity-input').val();
@@ -1432,6 +1453,11 @@ $(document).ready(function ()
             {
                 console.log(text_box_cat);
                 formData.append('text_box_cat', text_box_cat);
+            }
+            if (text_box_grandCat)
+            {
+                console.log(text_box_grandCat);
+                formData.append('text_box_grandCat', text_box_grandCat);
             }
             if (item_price)
             {
