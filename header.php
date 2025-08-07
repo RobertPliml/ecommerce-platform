@@ -16,6 +16,10 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
+        <!-- PayPal -->
+
+        <script src="https://www.paypal.com/sdk/js?client-id=Acj3BplD7LjMhQ2Oik8RcEgg7rw5OEL5ul2FHSokUQmyAW-lTlrmrFM_zIycl9hH5n_WbS2g3u-A_N02&currency=USD" defer></script>
+
         <!-- CSS File -->
         <link rel="stylesheet" type="text/css" href="project_2-main.css?v=<?php echo time();?>">
 
@@ -23,6 +27,7 @@
         <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 
         <script src="main.js" defer></script>
+        <script src="paypal.js" defer></script>
 
         <?php session_start(); if($_SESSION['isAdmin'] === true) : ?>
         <script src="dreamboard.js" defer></script>

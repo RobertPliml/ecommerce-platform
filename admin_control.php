@@ -177,60 +177,66 @@ include "navigation.php";
                 justify-content: flex-start;
                 flex-wrap: nowrap;
                 flex-shrink: 0;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+                border: 1px solid #e0e0e0;
+                background-color: #fff;
+                overflow: hidden;
             }
             .order-bar-order_id
             {
                 position: relative;
-                border-right: solid 0.5px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 width: 25%;
                 max-width: 25%;
                 height: 100%;
-                background-color: white;
                 overflow-x: hidden;
+                padding: 1rem;
+                border-right: 1px solid #e0e0e0;
+                background-color: #fff;
             }
             .order-bar-price
             {
                 position: relative;
-                border-left: solid 0.5px;
-                border-right: solid 0.5px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 width: 10%;
                 max-width: 10%;
                 height: 100%;
-                background-color: white;
                 overflow-x: hidden;
+                padding: 1rem;
+                border-right: 1px solid #e0e0e0;
+                background-color: #fff;
             }
             .order-bar-address
             {
                 position: relative;
-                border-left: solid 0.5px;
-                border-right: solid 0.5px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 width: 35%;
                 max-width: 35%;
                 height: 100%;
-                background-color: white;
+                padding: 1rem;
+                border-right: 1px solid #e0e0e0;
+                background-color: #fff;
                 overflow-x: hidden;
             }
             .order-bar-viewOrder
             {
                 position: relative;
-                border-left: solid 0.5px;
-                border-right: solid 0.5px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 width: 10%;
                 max-width: 10%;
                 height: 100%;
-                background-color: white;
+                padding: 1rem;
+                border-right: 1px solid #e0e0e0;
+                background-color: #fff;
                 overflow-x: hidden;
             }
             .order-bar-flagged,
@@ -238,15 +244,15 @@ include "navigation.php";
             .order-bar-archived
             {
                 position: relative;
-                border-left: solid 0.5px;
-                border-right: solid 0.5px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 width: 10%;
                 max-width: 10%;
                 height: 100%;
-                background-color: white;
+                padding: 1rem;
+                border-right: 1px solid #e0e0e0;
+                background-color: #fff;
                 overflow-x: hidden;
             }
             .order-bar-confirmOrder,
@@ -255,15 +261,14 @@ include "navigation.php";
             .order-bar-archived-2
             {
                 position: relative;
-                border-left: solid 0.5px;
-                border-right: solid 0.5px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 width: 10%;
                 max-width: 10%;
                 height: 100%;
-                background-color: white;
+                padding: 1rem;
+                background-color: #fff;
                 overflow: hidden;
             }
             .order-bar-viewOrder:hover,
@@ -369,7 +374,7 @@ include "navigation.php";
                         echo "
                         <div class='order-bar'>
                             <div class='order-bar-order_id'>".$order['order_id']."</div>
-                            <div class='order-bar-price'>$".explode('$', $order['price'])[1]."</div>
+                            <div class='order-bar-price'>$".$order['price']."</div>
                             <div class='order-bar-address'>".$order['street_address']."</div>
                             <div class='order-bar-viewOrder' id='vieworder-".$order['order_id']."'>View Order</div>
                             <div class='order-bar-flagged' id='flag-order-".$order['order_id']."'>Flag!</div>
@@ -388,7 +393,7 @@ include "navigation.php";
                         echo "
                         <div class='order-bar'>
                             <div class='order-bar-order_id'>".$order['order_id']."</div>
-                            <div class='order-bar-price'>$".explode('$', $order['price'])[1]."</div>
+                            <div class='order-bar-price'>$".$order['price']."</div>
                             <div class='order-bar-address'>".$order['street_address']."</div>
                             <div class='order-bar-viewOrder' id='vieworder-".$order['order_id']."'>View Order</div>
                             <div class='order-bar-flagged' id='flag-order-".$order['order_id']."'>Flag!</div>
@@ -407,7 +412,7 @@ include "navigation.php";
                         echo "
                         <div class='order-bar'>
                             <div class='order-bar-order_id'>".$order['order_id']."</div>
-                            <div class='order-bar-price'>$".explode('$', $order['price'])[1]."</div>
+                            <div class='order-bar-price'>$".$order['price']."</div>
                             <div class='order-bar-address'>".$order['street_address']."</div>
                             <div class='order-bar-viewOrder' id='vieworder-".$order['order_id']."'>View Order</div>
                             <div class='order-bar-flagged' id='flag-order-".$order['order_id']."'>Flag!</div>
@@ -426,7 +431,7 @@ include "navigation.php";
                         echo "
                         <div class='order-bar'>
                             <div class='order-bar-order_id'>".$order['order_id']."</div>
-                            <div class='order-bar-price'>$".explode('$', $order['price'])[1]."</div>
+                            <div class='order-bar-price'>$".$order['price']."</div>
                             <div class='order-bar-address'>".$order['street_address']."</div>
                             <div class='order-bar-viewOrder' id='vieworder-".$order['order_id']."'>View Order</div>
                             <div class='order-bar-delete' id='delete-order-".$order['order_id']."'>Delete</div>

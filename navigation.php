@@ -128,7 +128,7 @@
                 {
                     cursor: pointer;
                     color: black;
-                    background-color: white;
+                    background-color: #E8F5E9;
                 }
 
                 #header-options
@@ -140,7 +140,7 @@
                     display: flex;
                     flex-direction: row;
                     flex-wrap: wrap;
-                    justify-content: flex-start;
+                    justify-content: space-around;
                     ";
                     if ($_SESSION['editMenuBar'] === false)
                     {
@@ -209,6 +209,14 @@
                     cursor: pointer;
                 }
 
+                @media(max-width: 600px)
+                {
+                    #header-options
+                    {
+                        justify-content: flex-start;
+                    }
+                }
+
             </style>
             <div class='logo'>
                 <div id='site-logo'></div>
@@ -249,7 +257,7 @@
                 .dropdown,
                 .sub-dropdown
                 {
-                    z-index: 4;
+                    z-index: 9999;
                     text-wrap: nowrap;
                     background-color: white;
                     padding: .5rem;
@@ -258,6 +266,7 @@
                 #dropdown-".$counter."
                 {
                     display: none;
+                    background-color: #E8F5E9;
                     ";
                     if ($catName === 'Shop All')
                     {
@@ -287,6 +296,7 @@
 
                 .subcatText,
                 .subcatText-edit,
+                .subcatText-shopAll,
                 .edit-cat-buttons
                 {
                     position: relative;
@@ -299,9 +309,11 @@
                 .subcatText:hover,
                 .subcatText:focus,
                 .subcatText-edit:hover,
-                .subcatText-edit:focus
+                .subcatText-edit:focus,
+                .subcatText-shopAll:hover,
+                .subcatText-shopAll:focus
                 {
-                    background-color: rgb(225, 225, 225);
+                    background-color: #9FE2BF;
                 }
 
                 .shop-all-col
@@ -689,7 +701,8 @@
                                     {
                                         $sub_subcat_name = htmlspecialchars($sub_subcat['subcat_name'], ENT_QUOTES, 'UTF-8');
                                         $sub_subcat_url = htmlspecialchars($sub_subcat['subcat_url'], ENT_QUOTES, "UTF-8");
-                                        echo "<p class='subcatText'><a class='subcat-text' href='".$sub_subcat_url."'>".$sub_subcat_name."</a></p>";
+                                        $sub_subcat_id = htmlspecialchars($sub_subcat['subcat_id'], ENT_QUOTES, 'UTF-8');
+                                        echo "<p id='".$sub_subcat_id."' class='subcatText-shopAll'><a class='subcat-text' href='".$sub_subcat_url."'>".$sub_subcat_name."</a></p>";
                                     }
                                     echo"
                                 </div>
@@ -927,6 +940,7 @@
         </style>
         <br>
         ";?>
+        </div>
         <?php
         if($_SESSION['isAdmin'] === true) : ?>
             <div id="isAdmin-container">
@@ -934,5 +948,4 @@
             </div>
         <?php endif; 
         //var_dump($_SESSION);?>
-        </div>
 </div>

@@ -1,3 +1,5 @@
+window.calculatedTotal = 0.00;
+
 function getCart () 
 {
     return JSON.parse(localStorage.getItem("cart")) || {};
@@ -17,53 +19,53 @@ function subtractFromCart (itemId)
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function submitCart ()
+function setCartQuantity(id, qty) 
 {
     const cart = getCart();
-    const price = $('#checkout-subtotal').text();
+    if (qty <= 0) 
+    {
+    delete cart[id];
+    }
+    else 
+    {
+        cart[id] = qty;
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function validateCheckout ()
+{
     let address_1 = $('#address-line-1').val();
     let address_2 = $('#address-line-2').val();
     let city = $('#city').val();
     let state = $('#state').val();
     let zipcode = $('#zip').val();
-    const address = address_1 + " " + address_2 + " " + city + " " + state + ", " + zipcode;
-    console.log(price + ' ' + address + ' ');
-    const items = Object.entries(cart).map(([id, quantity]) => 
-    ({
-        id : parseInt(id),
-        quantity: parseInt(quantity)
-    }));
-    if (items.length === 0)
+    let email = $('#email').val();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!address_1 || !city || !state || !zipcode || !email)
     {
-        $("#cart-items-wrapper").html("<p id='cart-is-empty'>Cart is empty.</p>");
-        return;
-    }
-    console.log("Submitting cart:", items);
-    $.ajax
-    ({
-        type: "POST",
-        url: "shop_cart_server.php",
-        data: JSON.stringify
+        $('#error-text').text('Missing a required field!');
+        $('#error-box').css
         ({
-            items: items,
-            action : 'submitCart',
-            price : price,
-            address : address,
-            order_status : 'pending'
-        }),
-        contentType: "application/json",
-        success: function () 
-        {
-            localStorage.removeItem("cart");
-            // we will expand upon this further when adding payment system, order
-            // confirmations, etc. For now, just clear the cart for visual effect. 
-        },
-        error : function (xhr, status, error) 
-        {
-            $('#cart-items-wrapper').html("<p>Shopping cart failed to update as expected.</p>");
-            console.error(xhr);
-        } 
-    });
+            'display' : 'flex',
+            'justify-content' : 'center',
+            'align-items' : 'flex-start'
+        });
+        return false;
+    }
+    if (!emailRegex.test(email)) 
+    {
+        $('#error-text').text('Invalid email format!');
+        $('#error-box').css
+        ({
+            'display' : 'flex',
+            'justify-content' : 'center',
+            'align-items' : 'flex-start'
+        });
+        return false;
+    }
+
+    return true;
 }
 
 function updateCartDisplay () 
@@ -103,10 +105,40 @@ function updateCartDisplay ()
                 return;
             }
             items.forEach(item => {
-                const quantity = cart[item.item_id];
+                let quantity = cart[item.item_id];
+                const stock = calculateStock(item.item_quantity, quantity);
+                const amount = item.item_quantity - quantity;
+                let color = 'black';
+                if (item.do_not_update === true)
+                {
+                    color = 'rgb(230, 5, 117)';
+                    setCartQuantity(item.item_id, item.item_quantity);
+                    quantity = item.item_quantity;
+                }
+                else
+                {
+                    if (amount > 5) // there are 6 or more quantity than stock
+                    {
+                        color = "rgb(0, 209, 153)";
+                    }
+                    else if (amount <= 5 && amount > 0)
+                    {
+                        color = "rgb(38, 145, 252)";
+                    }
+                    else
+                    {
+                        color = "rgb(230, 5, 117)";
+                    }
+                }
                 const totalPrice = (item.item_price * quantity).toFixed(2);
                 // add the data to the new html object
                 html += `
+                    <style>
+                    #stock-${item.item_id}
+                    {
+                        color : ${color}
+                    }
+                    </style>
                   <div class="cart-item">
                     <div style="background-image: url('${item.item_image_url}'); background-size: ${item.background_size_x}% ${item.background_size_y}%; background-position: ${item.background_pos}" class="shopping-cart-img"></div>
                     <h4 class="cart-item-info">${item.item_name}</h4>
@@ -116,10 +148,10 @@ function updateCartDisplay ()
                         <div class="cart-counter-value">${quantity}</div>
                         <div class="cart-counter-add" id="add-${item.item_id}">+</div>  
                     </div>
-                    <p class="stock-counter">In Stock</p>
+                    <p class="stock-counter" id="stock-${item.item_id}">${stock}</p>
                   </div>
                 `;
-                grand_total+=parseInt(totalPrice);
+                grand_total+=parseFloat(totalPrice);
             });
             html += 
             `<div id="cart-subtotal">
@@ -128,6 +160,7 @@ function updateCartDisplay ()
                 <div id="submit-cart"></div>
             </div>`;
             // now commit our new html to the shopping cart
+            $('#cart-subtotal').remove();
             $("#cart-items-wrapper").html(html);
         },
         error : function () 
@@ -137,8 +170,26 @@ function updateCartDisplay ()
     });
 }
 
+function calculateStock(stock, quantity)
+{
+    let amount = stock - quantity;
+    if (amount > 5) // there are 6 or more quantity than stock
+    {
+        return "In Stock";
+    }
+    else if (amount <= 5 && amount > 0)
+    {
+        return amount + " left in Stock";
+    }
+    else
+    {
+        return "Limit Reached!";
+    }
+}
+
 function updateCheckoutDisplay () 
 {
+    grand_total = 0;
     $('#checkout-cart-subtotal').remove();
     const cart = getCart();
     const items = Object.entries(cart).map(([id, quantity]) => 
@@ -175,11 +226,41 @@ function updateCheckoutDisplay ()
                 return;
             }
             items.forEach(item => {
-                const quantity = cart[item.item_id];
-                const totalPrice = (item.item_price * quantity).toFixed(2);
+                let quantity = cart[item.item_id];
+                const stock = calculateStock(item.item_quantity, quantity);
+                const amount = item.item_quantity - quantity;
+                let color = 'black';
+                if (item.do_not_update === true)
+                {
+                    color = 'rgb(230, 5, 117)';
+                    setCartQuantity(item.item_id, item.item_quantity);
+                    quantity = item.item_quantity;
+                }
+                else
+                {
+                    if (amount > 5) // there are 6 or more quantity than stock
+                    {
+                        color = "rgb(0, 209, 153)";
+                    }
+                    else if (amount <= 5 && amount > 0)
+                    {
+                        color = "rgb(38, 145, 252)";
+                    }
+                    else
+                    {
+                        color = "rgb(230, 5, 117)";
+                    }
+                }
+                const totalPrice = item.item_price * quantity;
                 // add the data to the new html object
                 html += `
-                  <div class="checkout-cart-item">
+                <style>
+                #stock-${item.item_id}
+                {
+                    color : ${color}
+                }
+                </style>
+                <div class="checkout-cart-item">
                     <div style="background-image: url('${item.item_image_url}'); background-size: ${item.background_size_x}% ${item.background_size_y}%; background-position: ${item.background_pos}" class="shopping-cart-img"></div>
                     <h4 class="checkout-cart-item-info">${item.item_name}</h4>
                     <p class="checkout-cart-item-info">Price: $${totalPrice}</p>
@@ -188,10 +269,10 @@ function updateCheckoutDisplay ()
                         <div class="cart-counter-value">${quantity}</div>
                         <div class="cart-counter-add" id="checkoutadd-${item.item_id}">+</div>  
                     </div>
-                    <p class="checkout-stock-counter">In Stock</p>
-                  </div>
+                    <p class="checkout-stock-counter" id="stock-${item.item_id}">${stock}</p>
+                </div>
                 `;
-                grand_total+=parseInt(totalPrice);
+                grand_total+=totalPrice;
             });
             html_2 += 
             `<div id="checkout-cart-subtotal">
@@ -199,7 +280,11 @@ function updateCheckoutDisplay ()
             </div>`;
             // now commit our new html to the shopping cart
             $("#checkout-items-wrapper").html(html);
+            $("#checkout-cart-subtotal").remove();
             $("#checkout-list-wrapper").append(html_2);
+            window.calculatedTotal = parseFloat(grand_total);
+            console.log("REGISTERED ON MAIN.JS: " + window.calculatedTotal);
+            waitForPayPal();
         },
         error : function () 
         {
@@ -208,12 +293,93 @@ function updateCheckoutDisplay ()
     });
 }
 
+function submitCart ()
+{
+    const cart = getCart();
+    if (!validateCheckout())
+    {
+        return Promise.resolve(false);
+    }
+    const address_1 = $('#address-line-1').val();
+    const address_2 = $('#address-line-2').val();
+    const city = $('#city').val();
+    const state = $('#state').val();
+    const zipcode = $('#zip').val();
+    const price = $('#checkout-subtotal').text();
+    const address = address_1 + " " + address_2 + " " + city + " " + state + ", " + zipcode;
+    console.log(price + ' ' + address + ' ');
+    const items = Object.entries(cart).map(([id, quantity]) => 
+    ({
+        id : parseInt(id),
+        quantity: parseInt(quantity)
+    }));
+    if (items.length === 0)
+    {
+        $("#cart-items-wrapper").html("<p id='cart-is-empty'>Cart is empty.</p>");
+        return Promise.resolve(false);
+    }
+    console.log("Submitting cart:", items);
+    return $.ajax
+    ({
+        type: "POST",
+        url: "shop_cart_server.php",
+        data: JSON.stringify
+        ({
+            items: items,
+            action : 'submitCart',
+            price : price,
+            address : address,
+            order_status : 'pending'
+        }),
+        contentType: "application/json"
+    }).then(() => 
+        {
+            localStorage.removeItem("cart");
+            clearCart(); // clears my localStorage 'cart'
+            updateCartDisplay(); // updates the display in my shopping cart to show success
+            updateCheckoutDisplay(); // same thing
+            // payment action with paypal commerce platform
+            return true;
+    }).catch(() => 
+        {
+            $('#cart-items-wrapper').html("<p>Shopping cart failed to update as expected.</p>");
+            let errorMsg = "Something went wrong submitting your order.";
+            try 
+            {
+                const response = JSON.parse(xhr.responseText);
+                if (response.error) 
+                {
+                    errorMsg = response.error;
+                }
+            } 
+            catch (e) 
+            {
+                if (xhr.status === 0) 
+                {
+                    errorMsg = "Network error or server is unreachable.";
+                } 
+                else 
+                {
+                    errorMsg = "Unexpected server response.";
+                }
+            }
+            $('#error-text').text(errorMsg);
+            $('#error-box').css
+            ({
+                'display' : 'flex',
+                'justify-content' : 'center',
+                'align-items' : 'flex-start'
+            });
+            return false;
+        }
+    ); 
+}
+
 function addToCart (itemId) 
 {
     let cart = JSON.parse(localStorage.getItem("cart")) || {};
     cart[itemId] = (cart[itemId] || 0) +  1;
     localStorage.setItem("cart", JSON.stringify(cart));
-    // add code to make sure we don't exceed stock
 }
 
 function clearCart () 
@@ -241,7 +407,7 @@ $(document).ready(function ()
             console.log("No .cart-item found in the DOM");
         }
     }, 1000);*/
-    console.log('DOM LOADED');
+    console.log('DOM LOADED');     
 
     // caseid#20949316 
     // Controls for login box
@@ -357,10 +523,19 @@ $(document).ready(function ()
                 if (catName === 'Shop\ All')
                 {
                     $('#dropdown-' + id).css('display', 'flex');
+                    $('body, html').css
+                    ({
+                        'overflow': 'hidden',
+                        'height': '100%'
+                    });
                 }
                 else
                 {
                     $('#dropdown-' + id).css('display', 'block');
+                    $('body, html').css
+                    ({
+                        'overflow': 'auto'
+                    });
                 }
             }
         );
@@ -373,6 +548,52 @@ $(document).ready(function ()
                 $('#dropdown-' + id).css('display', 'none');
             }
         );
+        $("#navigation").on('click',
+            '.header-wrapper',
+            function ()
+            {
+                let id = $(this).attr('id').split('-')[1];
+                console.log(id);
+                $.ajax
+                ({
+                    type: 'POST',
+                    url: 'shop_page_server.php',
+                    data : 
+                    {
+                        cat_id : id,
+                        grand_cat : true
+                    },
+                    cache: false,
+                    success: function ()
+                    {
+                        window.location.href = 'shopping_page.php';
+                    }
+                });
+            }
+        );
+        $("#navigation").on('click',
+            '.subcatText-shopAll',
+            function ()
+            {
+                let id = $(this).attr('id');
+                console.log(id);
+                $.ajax
+                ({
+                    type: 'POST',
+                    url: 'shop_page_server.php',
+                    data : 
+                    {
+                        cat_id : id,
+                        grand_cat : false
+                    },
+                    cache: false,
+                    success: function ()
+                    {
+                        window.location.href = 'shopping_page.php';
+                    }
+                });
+            }
+        )
     }
     else
     {
@@ -391,6 +612,7 @@ $(document).ready(function ()
                     if (catName === 'Shop\ All')
                     {
                         $('#dropdown-' + id).css('display', 'flex');
+                        return;
                     }
                     else
                     {
@@ -812,32 +1034,6 @@ $(document).ready(function ()
             }
         }
     )
-    if (!('ontouchstart' in window || navigator.maxTouchPoints > 0))
-    {
-        $("#navigation").on('click',
-            '.header-wrapper',
-            function ()
-            {
-                let id = $(this).attr('id');
-                console.log(id);
-                $.ajax
-                ({
-                    type: 'POST',
-                    url: 'shop_page_server.php',
-                    data : 
-                    {
-                        cat_id : id,
-                        grand_cat : true
-                    },
-                    cache: false,
-                    success: function ()
-                    {
-                        window.location.href = 'shopping_page.php';
-                    }
-                });
-            }
-        )
-    }
     $("#navigation").on('click',
         '.subcat-text',
         function (event)
@@ -941,28 +1137,55 @@ $(document).ready(function ()
             window.location.assign('checkout.php');
         }
     )
-
     $('#shopping-cart-container').on('click',
         '#shopping-cart-slider',
         function () 
         {
             if (cartOpen === false)
             {
-                $('#shopping-cart-container').css('transform', 'translateX(0)');
-                $('#shopping-cart-container').css('box-shadow', '-2rem 0 5rem rgba(0,0,0,0.6)');
+                $('#shopping-cart-container').css
+                ({
+                    'transform' : 'translateX(0)',
+                    'box-shadow' : '-2rem 0 5rem rgba(0,0,0,0.6)',
+                    'opacity' : '1'
+                });
                 $('#shopping-cart-slider').text('>');
                 cartOpen = true;
             }
             else if (cartOpen === true)
             {
-                $('#shopping-cart-container').css('transform', 'translateX(20rem)');
-                $('#shopping-cart-container').css('box-shadow', 'none');
+                $('#shopping-cart-container').css
+                ({
+                    'transform' : 'translateX(20rem)',
+                    'box-shadow' : 'none',
+                    'opacity' : '0.5'
+                });
                 $('#shopping-cart-slider').text('<');
                 cartOpen = false;
             }
         }
     )
-
+    $('#shopping-cart-container').on('mouseenter',
+        '#shopping-cart-slider',
+        function () 
+        {
+            $('#shopping-cart-container').css('opacity', '1');
+        }
+    );
+    $('#shopping-cart-container').on('mouseleave',
+        '#shopping-cart-slider',
+        function () 
+        {   
+            if (cartOpen === true)
+            {
+                $('#shopping-cart-container').css('opacity', '1');
+            }
+            else
+            {
+                $('#shopping-cart-container').css('opacity', '0.5');
+            }
+        }
+    );
     // function for handling the adding of objects to cart
     $('#shopping-page-main').on('click',
         '.item-div',
@@ -1039,18 +1262,25 @@ $(document).ready(function ()
     )
     // CHECKOUT PAGE FUNCTIONS
 
-    $('#checkout-page-main').on('click',
+    /*$('#checkout-page-main').on('click',
         '#checkout-submit-order',
         function () 
         {
-            submitCart(); // places necessary cart info into table named orders
-            clearCart(); // clears my localStorage 'cart'
-            updateCartDisplay(); // updates the display in my shopping cart to show success
-            updateCheckoutDisplay(); // same thing
-            // payment action with paypal commerce platform
-            window.location.assign('order_confirm.php'); // move this to the success function for payment system
+            submitCart()
+            .then(success => 
+            {
+                if (success) 
+                {
+                    window.location.assign('order_confirm.php');
+                }
+            })
+            .catch(error => 
+            {
+                // Optional: handle errors if needed
+                console.error('Submit cart failed:', error);
+            });
         }
-    );
+    );*/
 
     // ORDER CONFIRMED 
 
@@ -1061,6 +1291,45 @@ $(document).ready(function ()
             window.location.assign('index.php');
         }
     );
+
+    // more ui stuff
+    $('.item-div').on('click', function(e) 
+    {
+        const $btn = $(this);
+        const offset = $btn.offset();
+        const x = e.pageX - offset.left;
+        const y = e.pageY - offset.top;
+      
+        // Add Ripple
+        const $ripple = $('<span class="ripple"></span>').css({
+          left: x - 50,
+          top: y - 50,
+          width: '8rem',
+          height: '8rem',
+        });
+      
+        $btn.append($ripple);
+        setTimeout(() => $ripple.remove(), 600);
+      
+        // Add Sparkles
+        for (let i = 0; i < 6; i++) 
+        {
+          const angle = Math.random() * 2 * Math.PI;
+          const radius = 40 + Math.random() * 20;
+          const dx = Math.cos(angle) * radius + 'px';
+          const dy = Math.sin(angle) * radius + 'px';
+      
+          const $sparkle = $('<span class="sparkle"></span>').css({
+            left: x,
+            top: y,
+            '--x': dx,
+            '--y': dy
+          });
+      
+          $btn.append($sparkle);
+          setTimeout(() => $sparkle.remove(), 600);
+        }
+      });
 });
 
 // fancy scroll effects for select elements

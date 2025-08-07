@@ -37,10 +37,15 @@ echo "
         position: relative;
         height: 75%;
         width: 18%;
-        border: solid 1px;
         overflow-y: auto;
         background-color: white;
         left: 2%;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        border: 1px solid #e0e0e0;
+        background-color: #fff;
+        padding: 1rem;
+        margin-bottom: 1rem;
     }
     
     .sidebar-cats
@@ -51,7 +56,10 @@ echo "
         padding-top: 1rem;
         padding-bottom: 1rem;
         padding-left: .25rem;
-        border: solid .5px;
+        border-radius: 0.5rem 0.5rem 0 0;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        border: 1px solid #e0e0e0;
+        background-color: #fff;
     }
 
     .sidebar-subcats
@@ -62,16 +70,22 @@ echo "
         padding-top: 1rem;
         padding-bottom: 1rem;
         padding-left: 2.25rem;
-        border: solid .5px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        background-color: #fff;
     }
 
     .sidebar-cats:hover,
-    .sidebar-cats:focus,
+    .sidebar-cats:focus
+    {
+        cursor: pointer;
+        background-color: #E8F5E9;
+    }
     .sidebar-subcats:hover,
     .sidebar-subcats:focus
     {
         cursor: pointer;
-        background-color: rgb(225, 225, 225);
+        background-color: #E8F5E9;
+        border-radius: 0 0 0.5rem 0.5rem;
     }
 
     </style>
@@ -107,13 +121,16 @@ echo"
         position: relative;
         height: 75%;
         width: 78%;
-        border: solid 1px;
         overflow-y: auto;
         display: flex;
         flex-wrap: wrap;
-        padding: 1.25rem;
-        gap: 1.25rem;
+        padding: 1rem;
+        gap: 1.45rem;
         left: 2%;
+        border-radius:0.5rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        border: 1px solid #e0e0e0;
+        background-color: #fff;
     }
 
     @media(max-width: 600px)
@@ -126,6 +143,7 @@ echo"
         {
             width: 95%;
             height: 90%;
+            border-radius: 0.5rem;
         }
     }
 
@@ -196,6 +214,62 @@ echo"
             background-size: ".$background_size_x."% ".$background_size_y."%;
             background-position: ".$background_pos.";
             box-shadow: 8px 2px 10px gray;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        #item-".$item_id.":hover,
+        #item-".$item_id.":focus
+        {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+        #item-".$item_id.":active 
+        {
+            transform: scale(0.96);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .ripple 
+        {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            animation: ripple 0.6s ease-out;
+            transform: scale(0);
+            pointer-events: none;
+        }
+
+        @keyframes ripple 
+        {
+            to 
+            {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        .sparkle 
+        {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: sparkle 0.6s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes sparkle 
+        {
+            0% 
+            {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% 
+            {
+            opacity: 0;
+            transform: translate(var(--x), var(--y)) scale(1.5);
+            }
         }
         ";
         if ($text_box_content !== null)

@@ -6,11 +6,12 @@ include "dbconnect.php";
 include "navigation.php";
 ?>
 <div id="checkout-page-main">
+    <div id="checkout-header">Checkout</div>
     <div id="checkout-list-wrapper">
         <div id="checkout-items-wrapper"></div>
     </div>
     <div id="checkout-shipping-info">
-        <form>
+        <!--<form>
             <input id="address-line-1" type="text" placeholder="Address line 1" required>
             <input id="address-line-2" type="text" placeholder="Address line 2" required>
             <input id="city" type="text" placeholder="City" required>
@@ -69,8 +70,11 @@ include "navigation.php";
             <input id="zip" type="text" placeholder="Zipcode" required>
             <input id="email" type="email" placeholder="Email Address" required>
             <input id="del-notes" type="text" placeholder="Additional Delivery Instructions (max 60 characters)">
-        </form>
-        <div id="checkout-submit-order">SUBMIT ORDER</div>
+        </form>-->
+        <div id="paypal-button-container"></div>
+    </div>
+    <div id="error-box">
+        <p id="error-text"></p>
     </div>
 </div>
 <?php

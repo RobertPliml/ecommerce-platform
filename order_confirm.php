@@ -7,5 +7,3 @@ include "header.php";
     <div id="return-home"></div>
     <span id="order-confirm-main-text">ORDER PLACED!</span>
 </div>
-<?php
-include "footer.php";

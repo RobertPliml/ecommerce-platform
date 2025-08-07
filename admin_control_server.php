@@ -58,10 +58,17 @@ if ($item_id && $method)
             $item_info = $stm->fetch();
             $new_quantity = intval($item_info['item_quantity']) - 1;
             echo $new_quantity;
-            $query = "UPDATE items SET item_quantity = :new_quantity WHERE item_id = :item_id";
-            $stm = $DB->prepare($query);
-            $stm->execute([':new_quantity' => $new_quantity, ':item_id' => $item_id]);
-            $DB->commit();
+            if ($new_quantity >= 0)
+            {
+                $query = "UPDATE items SET item_quantity = :new_quantity WHERE item_id = :item_id";
+                $stm = $DB->prepare($query);
+                $stm->execute([':new_quantity' => $new_quantity, ':item_id' => $item_id]);
+                $DB->commit();
+            }
+            else
+            {
+                echo "Error: Can not go negative with inventory.";
+            }
         }
         catch (PDOException $e)
         {
@@ -143,21 +150,6 @@ if ($order_id)
                 $query = "UPDATE orders SET order_status = :order_status WHERE order_id = :order_id";
                 $stm = $DB->prepare($query);
                 $stm->execute([':order_status' => 'shipped', 'order_id' => $order_id]);
-                $stm = $DB->prepare("SELECT item_id, quantity FROM order_items WHERE order_id = :order_id");
-                $stm->execute([':order_id' => $order_id]);
-                $data = $stm->fetchAll(PDO::FETCH_ASSOC);
-                foreach ($data as $d)
-                {
-                    $item_id = $d['item_id'];
-                    $orderQuantity = $d['quantity'];
-                    $stm = $DB->prepare("SELECT item_quantity FROM items WHERE item_id = :item_id");
-                    $stm->execute([':item_id' => $item_id]);
-                    $oldData = $stm->fetch(PDO::FETCH_ASSOC);
-                    $itemQuantity = $oldData['item_quantity'];
-                    $quantity = $itemQuantity - $orderQuantity;
-                    $stm = $DB->prepare("UPDATE items SET item_quantity = :quantity WHERE item_id = :item_id");
-                    $stm->execute([':quantity' => $quantity, ':item_id' => $item_id]);
-                }
                 $DB->commit();
                 exit();
             }

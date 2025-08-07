@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 session_start();
 header('Content-Type: application/json');
 include "dbconnect.php";
+$response = ['success' => false, 'message' => 'Unknown error occured.'];
 try 
 {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -30,13 +31,28 @@ try
                 exit;
             }
             $placeholders = implode(',', array_fill(0, count($itemIds), '?'));
-            $query = "SELECT item_id, item_name, item_price, item_image_url, background_size_x, background_size_y, background_pos FROM items WHERE item_id IN ($placeholders)";
+            $query = "SELECT item_id, item_name, item_price, item_quantity, item_image_url, background_size_x, background_size_y, background_pos FROM items WHERE item_id IN ($placeholders)";
             $stm = $DB->prepare($query);
             $stm->execute($itemIds);
-            $items = $stm->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($items);
+            $dbItems = $stm->fetchAll(PDO::FETCH_ASSOC);
+            $result = [];
+            foreach ($dbItems as $dbItem)
+            {
+                $matchingInput = array_filter($itemData, function ($item) use ($dbItem)
+                {
+                    return $item['id'] == $dbItem['item_id'];
+                });
+                $inputItem = array_shift($matchingInput);
+                $requestedQty = $inputItem['quantity'] ?? 0;
+                $stockQty = $dbItem['item_quantity'] ?? 0;
+                $dbItem['requested_quantity'] = $requestedQty;
+                $dbItem['do_not_update'] = $requestedQty > $stockQty;
+                $result[] = $dbItem;
+            }
+            echo json_encode($result);
             break;
         case "submitCart" :
+
             $order_id = uniqid('order#', true);
             $query = "INSERT INTO orders (order_id, price, street_address, order_status) 
             VALUES (:order_id, :price, :street_address, :order_status)";
@@ -64,4 +80,3 @@ catch (Exception $e)
     http_response_code(500);
     echo json_encode(['error' => 'Failed to load cart items: ' . $e->getMessage()]);
 }
-?>
