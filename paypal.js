@@ -60,7 +60,7 @@ function waitForPayPal()
                     {
                         // jQuery AJAX POST to your PHP endpoint
                         $.ajax({
-                        url: '/api/paypal/confirm-payment.php', // ← your PHP handler
+                        url: 'confirm-payment.php', // ← your PHP handler
                         type: 'POST',
                         contentType: 'application/json',
                         dataType: 'json',
@@ -73,15 +73,16 @@ function waitForPayPal()
                         }),
                         success: function (res) 
                         {
+                            alert(res);
                             console.log('Server response:', res);
                             localStorage.removeItem("cart");
                             window.location.assign('order_confirm.php');
-
                         },
                         error: function (xhr, status, error) 
                         {
                             console.error('Payment confirmation failed:', error);
                             alert('Something went wrong. Please contact support.');
+                            alert(status + ", " + error);
                             console.error('Raw response:', xhr.responseText); 
                         }
                         });

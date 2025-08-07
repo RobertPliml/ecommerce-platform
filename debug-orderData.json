@@ -1,0 +1,119 @@
+{
+    "id": "1VU11621NV426360Y",
+    "intent": "CAPTURE",
+    "status": "COMPLETED",
+    "payment_source": {
+        "paypal": {
+            "email_address": "robert@pliml.com",
+            "account_id": "3CPFXDTZBPF4Q",
+            "account_status": "UNVERIFIED",
+            "name": {
+                "given_name": "Robert",
+                "surname": "Pliml"
+            },
+            "address": {
+                "country_code": "US"
+            }
+        }
+    },
+    "purchase_units": [
+        {
+            "reference_id": "default",
+            "amount": {
+                "currency_code": "USD",
+                "value": "4.00",
+                "breakdown": []
+            },
+            "payee": {
+                "email_address": "sb-shtz4345130239@business.example.com",
+                "merchant_id": "XFQAAL8XU4Z66"
+            },
+            "soft_descriptor": "PAYPAL *TEST STORE",
+            "shipping": {
+                "name": {
+                    "full_name": "Robert Pliml"
+                },
+                "address": {
+                    "address_line_1": "246 National Ave Nw",
+                    "admin_area_2": "Grand Rapids",
+                    "admin_area_1": "MI",
+                    "postal_code": "49504",
+                    "country_code": "US"
+                }
+            },
+            "payments": {
+                "captures": [
+                    {
+                        "id": "9PF93040D45488124",
+                        "status": "COMPLETED",
+                        "amount": {
+                            "currency_code": "USD",
+                            "value": "4.00"
+                        },
+                        "final_capture": true,
+                        "seller_protection": {
+                            "status": "ELIGIBLE",
+                            "dispute_categories": [
+                                "ITEM_NOT_RECEIVED",
+                                "UNAUTHORIZED_TRANSACTION"
+                            ]
+                        },
+                        "seller_receivable_breakdown": {
+                            "gross_amount": {
+                                "currency_code": "USD",
+                                "value": "4.00"
+                            },
+                            "paypal_fee": {
+                                "currency_code": "USD",
+                                "value": "0.63"
+                            },
+                            "net_amount": {
+                                "currency_code": "USD",
+                                "value": "3.37"
+                            }
+                        },
+                        "links": [
+                            {
+                                "href": "https:\/\/api.sandbox.paypal.com\/v2\/payments\/captures\/9PF93040D45488124",
+                                "rel": "self",
+                                "method": "GET"
+                            },
+                            {
+                                "href": "https:\/\/api.sandbox.paypal.com\/v2\/payments\/captures\/9PF93040D45488124\/refund",
+                                "rel": "refund",
+                                "method": "POST"
+                            },
+                            {
+                                "href": "https:\/\/api.sandbox.paypal.com\/v2\/checkout\/orders\/1VU11621NV426360Y",
+                                "rel": "up",
+                                "method": "GET"
+                            }
+                        ],
+                        "create_time": "2025-08-07T13:55:25Z",
+                        "update_time": "2025-08-07T13:55:25Z"
+                    }
+                ]
+            }
+        }
+    ],
+    "payer": {
+        "name": {
+            "given_name": "Robert",
+            "surname": "Pliml"
+        },
+        "email_address": "robert@pliml.com",
+        "payer_id": "3CPFXDTZBPF4Q",
+        "address": {
+            "country_code": "US"
+        }
+    },
+    "create_time": "2025-08-07T13:54:36Z",
+    "update_time": "2025-08-07T13:55:25Z",
+    "links": [
+        {
+            "href": "https:\/\/api.sandbox.paypal.com\/v2\/checkout\/orders\/1VU11621NV426360Y",
+            "rel": "self",
+            "method": "GET"
+        }
+    ]
+}
