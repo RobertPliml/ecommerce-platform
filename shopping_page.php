@@ -179,12 +179,18 @@ echo"
     if ($grand_cat === false)
     {
         $stm = $DB->prepare("SELECT * FROM items WHERE text_box_cat = :header_name");
+        $stm->execute([':header_name' => $header_name]);
     }
-    else if ($grand_cat === true)
+    else if ($grand_cat === true && $header_name !== "Shop All")
     {
         $stm = $DB->prepare("SELECT * FROM items WHERE text_box_grandCat = :header_name");
+        $stm->execute([':header_name' => $header_name]);
     }
-    $stm->execute([':header_name' => $header_name]);
+    else if ($grand_cat === true && $header_name === "Shop All")
+    {
+        $stm = $DB->prepare("SELECT * FROM items");
+        $stm->execute();
+    }
     $items = $stm->fetchAll();
     foreach ($items as $item) 
     {

@@ -82,6 +82,11 @@
             $_SESSION['admin_tool'] = "stock";
         }
 
+        if (!isset($_SESSION['order_email']))
+        {
+            $_SESSION['order_email'] = '';
+        }
+
         ?>
         <script>
             const csrf_token = <?= json_encode($_SESSION['csrf_token']); ?>;
@@ -190,8 +195,9 @@
                     position: relative;
                     height: 2.5rem;
                     width: 2.5rem;
-                    background-image: url('images/searchIcon.png');
-                    background-size: cover;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
 
                 #cart
@@ -199,14 +205,24 @@
                     position: relative;
                     height: 2.5rem;
                     width: 2.5rem;
-                    background-image: url('images/cart.png');
-                    background-size: cover;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
 
                 #search:hover,
                 #cart:hover
                 {
                     cursor: pointer;
+                }
+                
+                .bi.bi-cart
+                {
+                    font-size: 2rem;
+                }
+                .bi.bi-search
+                {
+                    font-size: 2rem;
                 }
 
                 @media(max-width: 600px)
@@ -272,9 +288,10 @@
                     {
                         echo"
                         position: fixed;
-                        width: 100%;
-                        height: 36.75rem;
+                        width: 100vw;
                         left: 0;
+                        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
+                        max-height: 100vh;
                         ";
                     }
                     else
@@ -318,8 +335,21 @@
 
                 .shop-all-col
                 {
-                    border: solid black 1px;
                     flex: 1;
+                    background: #fff;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    transition: transform 0.2s;
+                    margin: 1rem;
+                    margin-bottom: 4rem;
+                    padding: 1rem;
+                    border: #D3D3D3 solid 1px;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    flex-direction: column;
+                    max-height: 100%;
+                    overflow-y: auto;
                 }
 
                 .shop-all-header
@@ -702,7 +732,7 @@
                                         $sub_subcat_name = htmlspecialchars($sub_subcat['subcat_name'], ENT_QUOTES, 'UTF-8');
                                         $sub_subcat_url = htmlspecialchars($sub_subcat['subcat_url'], ENT_QUOTES, "UTF-8");
                                         $sub_subcat_id = htmlspecialchars($sub_subcat['subcat_id'], ENT_QUOTES, 'UTF-8');
-                                        echo "<p id='".$sub_subcat_id."' class='subcatText-shopAll'><a class='subcat-text' href='".$sub_subcat_url."'>".$sub_subcat_name."</a></p>";
+                                        echo "<p class='subcatText-shopAll'><a  id='zero-one-".$sub_subcat_id."' class='subcat-text' href='".$sub_subcat_url."'>".$sub_subcat_name."</a></p>";
                                     }
                                     echo"
                                 </div>
@@ -812,8 +842,8 @@
             echo"
         </ul>
         <div class='alt-header'>
-            <div id='search'></div>
-            <div id='cart'></div>
+            <div id='search'><i class='bi bi-search'></i></div>
+            <div id='cart'><i class='bi bi-cart'></i></div>
             ";
             $userIp = $_SERVER['REMOTE_ADDR'];
             // IPV4 (127.0.0.1) or (10.0.0.144) is optional, but 
@@ -843,24 +873,26 @@
                         echo"
                     </form>
                 </div>";
-            }echo"
+            }?>
+            <input type='text' id='search-bar' placeholder='Search for items...'>
+            <div id='results'></div>
+            <?php echo"
         </div>
         <style>
 
         .header-meta
         {
             z-index: 100;
-            position: absolute;
-            top: 10rem;
-            left: 2rem;
+            position: relative;
             height: 6rem;
             width: 12rem;
             background-color: white;
             border: solid 1px;
+            align-items: flex-start;
             ";
             if ($_SESSION['show_login_container'] === true)
             {
-                echo "display: block";
+                echo "display: flex";
             }
             else if ($_SESSION['show_login_container'] === false)
             {
@@ -877,7 +909,6 @@
             left: 1%;
             margin-top: 1%;
             margin-bottom: 1%;
-            font-family: 'haveltica', 'monospace';
         }
 
         .submit-login
@@ -890,7 +921,6 @@
             border: 1px dotted;
             border-radius: 5px;
             bottom: .05rem;
-            font-family: 'haveltica', 'monospace';
         }
 
         .submit-logout
@@ -903,7 +933,6 @@
             justify-content: center;
             border: 1px dotted;
             border-radius: 5px;
-            font-family: 'haveltica', 'monospace';
         }
 
         .submit-login:hover,

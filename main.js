@@ -156,8 +156,8 @@ function updateCartDisplay ()
             html += 
             `<div id="cart-subtotal">
                 <p id="subtotal">Subtotal: $${grand_total.toFixed(2)}</p>
-                <div id="empty-cart"></div>
-                <div id="submit-cart"></div>
+                <div id="empty-cart"><i class="bi bi-trash"></i></div>
+                <div id="submit-cart"><i class="bi bi-check"></i></div>
             </div>`;
             // now commit our new html to the shopping cart
             $('#cart-subtotal').remove();
@@ -283,7 +283,7 @@ function updateCheckoutDisplay ()
             $("#checkout-cart-subtotal").remove();
             $("#checkout-list-wrapper").append(html_2);
             window.calculatedTotal = parseFloat(grand_total);
-            console.log("REGISTERED ON MAIN.JS: " + window.calculatedTotal);
+            //console.log("REGISTERED ON MAIN.JS: " + window.calculatedTotal);
             waitForPayPal();
         },
         error : function () 
@@ -291,88 +291,6 @@ function updateCheckoutDisplay ()
             $('#checkout-items-wrapper').html("<p>Shopping cart failed to update as expected.</p>");
         } 
     });
-}
-
-function submitCart ()
-{
-    const cart = getCart();
-    if (!validateCheckout())
-    {
-        return Promise.resolve(false);
-    }
-    const address_1 = $('#address-line-1').val();
-    const address_2 = $('#address-line-2').val();
-    const city = $('#city').val();
-    const state = $('#state').val();
-    const zipcode = $('#zip').val();
-    const price = $('#checkout-subtotal').text();
-    const address = address_1 + " " + address_2 + " " + city + " " + state + ", " + zipcode;
-    console.log(price + ' ' + address + ' ');
-    const items = Object.entries(cart).map(([id, quantity]) => 
-    ({
-        id : parseInt(id),
-        quantity: parseInt(quantity)
-    }));
-    if (items.length === 0)
-    {
-        $("#cart-items-wrapper").html("<p id='cart-is-empty'>Cart is empty.</p>");
-        return Promise.resolve(false);
-    }
-    console.log("Submitting cart:", items);
-    return $.ajax
-    ({
-        type: "POST",
-        url: "shop_cart_server.php",
-        data: JSON.stringify
-        ({
-            items: items,
-            action : 'submitCart',
-            price : price,
-            address : address,
-            order_status : 'pending'
-        }),
-        contentType: "application/json"
-    }).then(() => 
-        {
-            localStorage.removeItem("cart");
-            clearCart(); // clears my localStorage 'cart'
-            updateCartDisplay(); // updates the display in my shopping cart to show success
-            updateCheckoutDisplay(); // same thing
-            // payment action with paypal commerce platform
-            return true;
-    }).catch(() => 
-        {
-            $('#cart-items-wrapper').html("<p>Shopping cart failed to update as expected.</p>");
-            let errorMsg = "Something went wrong submitting your order.";
-            try 
-            {
-                const response = JSON.parse(xhr.responseText);
-                if (response.error) 
-                {
-                    errorMsg = response.error;
-                }
-            } 
-            catch (e) 
-            {
-                if (xhr.status === 0) 
-                {
-                    errorMsg = "Network error or server is unreachable.";
-                } 
-                else 
-                {
-                    errorMsg = "Unexpected server response.";
-                }
-            }
-            $('#error-text').text(errorMsg);
-            $('#error-box').css
-            ({
-                'display' : 'flex',
-                'justify-content' : 'center',
-                'align-items' : 'flex-start'
-            });
-            return false;
-        }
-    ); 
 }
 
 function addToCart (itemId) 
@@ -414,6 +332,8 @@ $(document).ready(function ()
     // Naming it something arbitrary like 'meta-control' is an intentional added security step. 
     // likely not needed. still.
     const meta_control = document.getElementsByClassName('meta-control');
+    // SEARCH BAR
+
     if (meta_control.length > 0)
     {
         // Button open and close
@@ -523,19 +443,10 @@ $(document).ready(function ()
                 if (catName === 'Shop\ All')
                 {
                     $('#dropdown-' + id).css('display', 'flex');
-                    $('body, html').css
-                    ({
-                        'overflow': 'hidden',
-                        'height': '100%'
-                    });
                 }
                 else
                 {
                     $('#dropdown-' + id).css('display', 'block');
-                    $('body, html').css
-                    ({
-                        'overflow': 'auto'
-                    });
                 }
             }
         );
@@ -571,29 +482,6 @@ $(document).ready(function ()
                 });
             }
         );
-        $("#navigation").on('click',
-            '.subcatText-shopAll',
-            function ()
-            {
-                let id = $(this).attr('id');
-                console.log(id);
-                $.ajax
-                ({
-                    type: 'POST',
-                    url: 'shop_page_server.php',
-                    data : 
-                    {
-                        cat_id : id,
-                        grand_cat : false
-                    },
-                    cache: false,
-                    success: function ()
-                    {
-                        window.location.href = 'shopping_page.php';
-                    }
-                });
-            }
-        )
     }
     else
     {
@@ -611,8 +499,11 @@ $(document).ready(function ()
                 {
                     if (catName === 'Shop\ All')
                     {
-                        $('#dropdown-' + id).css('display', 'flex');
-                        return;
+                        $('#dropdown-' + id).css
+                        ({
+                            'display' : 'flex',
+                            'flex-direction' : 'column'
+                        });
                     }
                     else
                     {
@@ -1329,7 +1220,7 @@ $(document).ready(function ()
           $btn.append($sparkle);
           setTimeout(() => $sparkle.remove(), 600);
         }
-      });
+    });
 });
 
 // fancy scroll effects for select elements

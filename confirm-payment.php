@@ -1,9 +1,18 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+require_once __DIR__ . '/vendor/autoload.php';
+use Dotenv\Dotenv;
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 error_reporting(E_ALL);
-include 'dbconnect.php';
+ini_set('display_errors', 1);
+$email_username = $_ENV['EMAIL_USERNAME'];
+$email_password = $_ENV['EMAIL_PASSWORD'];
+session_start();
 header("Content-type: application/json");
+include 'dbconnect.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+$mail = new PHPMailer(true);
 // ------------------------------
 // CONFIG
 // ------------------------------
@@ -125,6 +134,42 @@ if ($shippingData && isset($shippingData['address']))
     }
 }
 $payerEmail = $payer['email_address'] ?? '';
+try 
+{
+    // Server settings
+    $mail->isSMTP();
+    $mail->Host       = 'smtp.gmail.com';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = $email_username;
+    $mail->Password   = $email_password;
+    $mail->SMTPSecure = 'tls';
+    $mail->Port       = 587;
+
+    // Sender & recipient
+    $mail->setFrom($email_username, 'Robert Pliml');
+    $mail->addAddress(strval($payerEmail), $shippingData['name']['full_name']);
+
+    // Email content
+    $mail->isHTML(true);
+    $mail->Subject = 'Order Confirmation';
+    $mail->Body    = '<b>Thank You!</b> now, blah blah blah.';
+
+    $mail->send();
+    if ($payerEmail)
+    {
+        $_SESSION['order_email'] = $payerEmail;
+    }
+    else
+    {
+        echo "Error: No email provided";
+        exit();
+    }
+} 
+catch (Exception $e) 
+{
+    echo "Email could not be sent. Mailer Error: {$mail->ErrorInfo}";
+}
+
 $currency = $orderData['purchase_units'][0]['amount']['currency_code'] ?? 'USD';
 
 // === Step 5: Insert into DB
@@ -180,8 +225,6 @@ catch (PDOException $e)
     echo json_encode(['error' => 'DB error']);
     exit;
 }
-
-// You'd insert this into your DB here.
 
 // ------------------------------
 // SUCCESS RESPONSE

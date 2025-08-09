@@ -73,7 +73,6 @@ function waitForPayPal()
                         }),
                         success: function (res) 
                         {
-                            alert(res);
                             console.log('Server response:', res);
                             localStorage.removeItem("cart");
                             window.location.assign('order_confirm.php');

@@ -149,18 +149,17 @@ include "navigation.php";
             {
                 display: flex;
                 flex-direction: column;
-                overflow: auto;
             ";
             if ($_SESSION['admin_tool'] === 'stock') 
             {
                 echo "
-                flex-wrap: wrap;";
+                flex-wrap: wrap;
+                overflow: auto;";
             } 
             else 
             {
                 echo "
                 flex-wrap: nowrap;
-                overflow-y: auto;
                 overflow-x: hidden;";
             }
             echo "
