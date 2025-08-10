@@ -1,7 +1,6 @@
 function renderPaypalButtons()
 {
     $('#paypal-button-container').empty();
-    
 }
 function waitForPayPal() 
 {

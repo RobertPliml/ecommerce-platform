@@ -33,41 +33,6 @@ function setCartQuantity(id, qty)
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function validateCheckout ()
-{
-    let address_1 = $('#address-line-1').val();
-    let address_2 = $('#address-line-2').val();
-    let city = $('#city').val();
-    let state = $('#state').val();
-    let zipcode = $('#zip').val();
-    let email = $('#email').val();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!address_1 || !city || !state || !zipcode || !email)
-    {
-        $('#error-text').text('Missing a required field!');
-        $('#error-box').css
-        ({
-            'display' : 'flex',
-            'justify-content' : 'center',
-            'align-items' : 'flex-start'
-        });
-        return false;
-    }
-    if (!emailRegex.test(email)) 
-    {
-        $('#error-text').text('Invalid email format!');
-        $('#error-box').css
-        ({
-            'display' : 'flex',
-            'justify-content' : 'center',
-            'align-items' : 'flex-start'
-        });
-        return false;
-    }
-
-    return true;
-}
-
 function updateCartDisplay () 
 {
     console.log("Cart:", localStorage.getItem("cart"));
@@ -89,8 +54,8 @@ function updateCartDisplay ()
         url: "shop_cart_server.php",
         data: JSON.stringify
         ({
-            items : items,
-            action : 'updateCartDisplay'
+            csrf_token : csrf_token,
+            items : items
         }),
         contentType: "application/json",
         success: function (items) 
@@ -209,8 +174,8 @@ function updateCheckoutDisplay ()
         url: "shop_cart_server.php",
         data: JSON.stringify
         ({
-            items : items,
-            action : 'updateCartDisplay'
+            csrf_token : csrf_token,
+            items : items
         }),
         contentType: "application/json",
         success: function (items) 
@@ -439,6 +404,7 @@ $(document).ready(function ()
                 var idStr = $(this).attr('id');
                 var id = idStr.split('-')[1];
                 var catName = idStr.split('-')[2];
+                $('#paypal-button-container').css('opacity', '0.99');
                 // seperate the way in which the 'shop all' menu displays v others
                 if (catName === 'Shop\ All')
                 {
@@ -457,6 +423,7 @@ $(document).ready(function ()
                 let idStr = $(this).attr('id');
                 let id = idStr.split('-')[1];
                 $('#dropdown-' + id).css('display', 'none');
+                $('#paypal-button-container').css('opacity', '1'); 
             }
         );
         $("#navigation").on('click',
@@ -1150,29 +1117,7 @@ $(document).ready(function ()
         {
             window.location.assign('checkout.php');
         }
-    )
-    // CHECKOUT PAGE FUNCTIONS
-
-    /*$('#checkout-page-main').on('click',
-        '#checkout-submit-order',
-        function () 
-        {
-            submitCart()
-            .then(success => 
-            {
-                if (success) 
-                {
-                    window.location.assign('order_confirm.php');
-                }
-            })
-            .catch(error => 
-            {
-                // Optional: handle errors if needed
-                console.error('Submit cart failed:', error);
-            });
-        }
-    );*/
-
+    );
     // ORDER CONFIRMED 
 
     $('#order-confirm-main').on('click',

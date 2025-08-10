@@ -1,6 +1,7 @@
 $(document).ready(function ()
 {
     let searchBarOpen = false;
+    let searchBarBottomOpen = false;
 
     function debounce(fn, delay)
     {
@@ -17,8 +18,14 @@ $(document).ready(function ()
         const query = $(e.target).val();
         $.post('search.php', {query}).then(function (data)
         {
-            $('#results').html(data);
-            $('#results-footer').html(data);
+            if (searchBarBottomOpen)
+            {
+                $('#results-footer').html(data);
+            }
+            else if (searchBarOpen)
+            {
+                $('#results').html(data);
+            }
         }).catch(function (err)
         {
             console.error("Error: ", err);
@@ -33,12 +40,14 @@ $(document).ready(function ()
             {
                 $('#search-bar').css('display', 'block');
                 $('#results').css('display', 'flex');
+                $('#paypal-button-container').css('opacity', '0.99');
                 searchBarOpen = true;
             }
             else
             {
                 $('#search-bar').css('display', 'none');
                 $('#results').css('display', 'none');
+                $('#paypal-button-container').css('opacity', '1');
                 searchBarOpen = false;
             }
         }
@@ -47,17 +56,17 @@ $(document).ready(function ()
         '#footer-search',
         function ()
         {
-            if (searchBarOpen === false)
+            if (searchBarBottomOpen === false)
             {
                 $('#search-bar-footer').css('display', 'block');
                 $('#results-footer').css('display', 'flex');
-                searchBarOpen = true;
+                searchBarBottomOpen = true;
             }
             else
             {
                 $('#search-bar-footer').css('display', 'none');
                 $('#results-footer').css('display', 'none');
-                searchBarOpen = false;
+                searchBarBottomOpen = false;
             }
             console.log(searchBarOpen);
         }
@@ -68,6 +77,7 @@ $(document).ready(function ()
         function ()
         {
             let id = $(this).attr('id');
+
             $.ajax
             ({
                 type: 'POST',
@@ -78,7 +88,30 @@ $(document).ready(function ()
                     action : 'findpage'
                 },
                 cache: false,
-                success: function ()
+                success: function (data)
+                {
+                    window.location.href = 'shopping_page.php';
+                }
+            });
+        }
+    )
+    $('#footer-div').on('click',
+        '.result-item',
+        function ()
+        {
+            let id = $(this).attr('id');
+
+            $.ajax
+            ({
+                type: 'POST',
+                url: 'shop_page_server.php',
+                data : 
+                {
+                    cat_id : id,
+                    action : 'findpage'
+                },
+                cache: false,
+                success: function (data)
                 {
                     window.location.href = 'shopping_page.php';
                 }

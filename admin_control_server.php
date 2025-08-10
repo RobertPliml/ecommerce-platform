@@ -12,18 +12,8 @@ $input = json_decode(file_get_contents('php://input'), true);
 $item_id_delete = $input['item_id'];
 if ($item_id_delete)
 {
-    try
-    {
-        $DB->beginTransaction();
-        $stm = $DB->prepare('DELETE FROM items WHERE item_id = :item_id');
-        $stm->execute([':item_id' => $item_id_delete]);
-        $DB->commit();
-    }
-    catch(PDOException $e)
-    {
-        $DB->rollBack();
-        echo "Error: " . $e->getMessage();
-    }
+    $stm = $DB->prepare('DELETE FROM items WHERE item_id = :item_id');
+    $stm->execute([':item_id' => $item_id_delete]);
 }
 if ($item_id && $method) 
 {
@@ -36,7 +26,6 @@ if ($item_id && $method)
             $stm->execute([':item_id' => $item_id]);
             $item_info = $stm->fetch();
             $new_quantity = intval($item_info['item_quantity']) + 1;
-            echo $new_quantity;
             $query = "UPDATE items SET item_quantity = :new_quantity WHERE item_id = :item_id";
             $stm = $DB->prepare($query);
             $stm->execute([':new_quantity' => $new_quantity, ':item_id' => $item_id]);
@@ -93,77 +82,38 @@ if ($order_id)
     }
     else if ($delete_order === true)
     {
-        try
-        {
-            $DB->beginTransaction();
-            $stm = $DB->prepare("DELETE FROM order_items WHERE order_id = :order_id");
-            $stm->execute(['order_id' => $order_id]);
-            $stm = $DB->prepare("DELETE FROM orders WHERE order_id = :order_id");
-            $stm->execute(['order_id' => $order_id]);
-            $DB->commit();
-            exit();
-        }
-        catch (PDOException $e)
-        {
-            $DB->rollBack();
-            echo "Error: " . $e->getMessage();
-        }
+        $stm = $DB->prepare("DELETE FROM order_items WHERE order_id = :order_id");
+        $stm->execute(['order_id' => $order_id]);
+        $stm = $DB->prepare("DELETE FROM orders WHERE order_id = :order_id");
+        $stm->execute(['order_id' => $order_id]);
+        exit();
     }
     else if ($flag === false && $delete_order === false)
     {
-        try
-        {
-            $DB->beginTransaction();
-            $query = "SELECT order_status FROM orders WHERE order_id = :order_id";
-            $stm = $DB->prepare($query);
-            $stm->execute([':order_id' => $order_id]);
-            $status = $stm->fetch(PDO::FETCH_ASSOC);
-            $DB->commit();
-        }
-        catch (PDOException $e)
-        {
-            $DB->rollBack();
-            echo "Error: " . $e->getMessage();
-        }
+        $DB->beginTransaction();
+        $query = "SELECT order_status FROM orders WHERE order_id = :order_id";
+        $stm = $DB->prepare($query);
+        $stm->execute([':order_id' => $order_id]);
+        $status = $stm->fetch(PDO::FETCH_ASSOC);
         if ($status['order_status'] === 'pending' || $status['order_status'] === 'flagged')
         {
-            try
-            {
-                $DB->beginTransaction();
-                $query = "UPDATE orders SET order_status = :order_status WHERE order_id = :order_id";
-                $stm = $DB->prepare($query);
-                $stm->execute([':order_status' => 'confirmed', 'order_id' => $order_id]);
-                $DB->commit();
-            }
-            catch (PDOException $e)
-            {
-                $DB->rollBack();
-                echo "Error: " . $e->getMessage();
-            }
-            exit();
+
+            $query = "UPDATE orders SET order_status = :order_status WHERE order_id = :order_id";
+            $stm = $DB->prepare($query);
+            $stm->execute([':order_status' => 'confirmed', 'order_id' => $order_id]);
+            $DB->commit();
         }
         else if ($status['order_status'] === 'confirmed')
         {
-            try
-            {
-                $DB->beginTransaction();
-                $query = "UPDATE orders SET order_status = :order_status WHERE order_id = :order_id";
-                $stm = $DB->prepare($query);
-                $stm->execute([':order_status' => 'shipped', 'order_id' => $order_id]);
-                $DB->commit();
-                exit();
-            }
-            catch (PDOException $e)
-            {
-                $DB->rollBack();
-                echo "Error: " . $e->getMessage();
-            }
+            $query = "UPDATE orders SET order_status = :order_status WHERE order_id = :order_id";
+            $stm = $DB->prepare($query);
+            $stm->execute([':order_status' => 'shipped', 'order_id' => $order_id]);
+            $DB->commit();
         }
         else
         {
             try
             {
-                $DB->beginTransaction();
                 $stm = $DB->prepare("SELECT order_id, price, street_address FROM orders WHERE order_id = :order_id");
                 $stm->execute([':order_id' => $order_id]);
                 $itemInfo = $stm->fetchAll(PDO::FETCH_ASSOC);
@@ -215,20 +165,10 @@ if ($order_id)
         {
             $query = "SELECT oi.item_id, oi.quantity, i.item_name, i.item_price, i.item_image_url FROM order_items oi JOIN items i ON oi.item_id = i.item_id WHERE oi.order_id = :order_id";
         }
-        try
-        {
-            $DB->beginTransaction();
-            $stm = $DB->prepare($query);
-            $stm->execute([':order_id' => $order_id]);
-            $order_items = $stm->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($order_items);
-            $DB->commit();
-        }
-        catch (PDOException $e)
-        {
-            $DB->rollBack();
-            echo "Error: " . $e->getMessage();
-        }
+        $stm = $DB->prepare($query);
+        $stm->execute([':order_id' => $order_id]);
+        $order_items = $stm->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($order_items);
         exit();
     }
 }

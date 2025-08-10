@@ -27,7 +27,6 @@
         <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
         <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 
-        <script src="main.js" defer></script>
         <script src="paypal.js" defer></script>
 
         <?php session_start(); if($_SESSION['isAdmin'] === true) : ?>

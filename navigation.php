@@ -97,6 +97,7 @@
             var edit_div_id = <?= json_encode($_SESSION['edit_div_id']); ?>;
             var page_search_id = <?= json_encode($_SESSION['page_search_id']); ?>;
         </script>
+        <script src="main.js" defer></script>
         <div id="top">
         <script id="checkMenuBarEdit">
             var checkEditMenuBar = <?= json_encode($_SESSION['editMenuBar']); ?>;
@@ -127,14 +128,20 @@
                     position: relative;
                     text-wrap: nowrap;
                 }
-
+                .header-wrapper
+                {
+                    width: 100%;
+                    color: white;
+                }   
                 .listItems:hover,
-                .listItems:focus
+                .listItems:focus,
+                .listItems > *:hover,
+                .listItems > *:focus
                 {
                     cursor: pointer;
-                    color: black;
-                    background-color: #E8F5E9;
-                }
+                    color: white;
+                    background-color: #333333;
+                }      
 
                 #header-options
                 {
@@ -275,14 +282,15 @@
                 {
                     z-index: 9999;
                     text-wrap: nowrap;
-                    background-color: white;
                     padding: .5rem;
                 }
 
                 #dropdown-".$counter."
                 {
                     display: none;
-                    background-color: #E8F5E9;
+                    z-index: 9999;
+                    transform: translateZ(0);
+                    will-change: transform;
                     ";
                     if ($catName === 'Shop All')
                     {
@@ -292,6 +300,7 @@
                         left: 0;
                         box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
                         max-height: 100vh;
+                        background-color: #E8F5E9;
                         ";
                     }
                     else
@@ -299,6 +308,7 @@
                         echo"
                         position: absolute;
                         left: 0;
+                        background-color: #333333;
                         ";
                     }
                     echo"
@@ -308,7 +318,7 @@
                 {
                     text-decoration: none;
                     font-family: 'font_3', 'sans-serif';
-                    color: black;
+                    color: white;
                 }
 
                 .subcatText,
@@ -336,7 +346,7 @@
                 .shop-all-col
                 {
                     flex: 1;
-                    background: #fff;
+                    background: #333333;
                     border-radius: 12px;
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                     transition: transform 0.2s;
@@ -350,6 +360,7 @@
                     flex-direction: column;
                     max-height: 100%;
                     overflow-y: auto;
+                    color: white;
                 }
 
                 .shop-all-header

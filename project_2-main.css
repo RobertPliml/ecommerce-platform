@@ -244,13 +244,14 @@ html
     width: 100%;
     top: 5.5rem;
     left: -1rem;
-    z-index: 5;
+    z-index: 9999;
+    transform: translateZ(0);
+    will-change: transform;
     background-color: #E8F5E9;
     justify-content: flex-start;
     align-items: flex-start;
     flex-wrap: wrap;
     border: solid #9FE2BF 2px;
-    /*box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.5);*/
 }
 .result-item
 {
@@ -715,7 +716,8 @@ html
     left: 0;
     width: 100%;
     height: 20rem;
-    background-color: #9FE2BF;
+    /*background-color: #9FE2BF;*/
+    background-color: #333333;
     overflow: hidden;
 }
 
@@ -724,6 +726,13 @@ html
     position: absolute;
     left: 8%;
     top: 2rem;
+}
+@media(max-width: 600px)
+{
+    #footer-search-div
+    {
+        left: 15%;
+    }
 }
 
 #search-bar-footer
@@ -778,7 +787,7 @@ html
     position: relative;
     text-align: center;
     top: 80%;
-    color: black;
+    color: white;
     font-family: 'font_3';
     font-size: medium;
 }
@@ -820,7 +829,7 @@ html
 .footer-a
 {
     text-decoration: none;
-    color: black;
+    color: white;
     font-family: 'font_3';
 }
 
@@ -838,7 +847,7 @@ html
 
 #footer-search
 {
-
+    color: white;
 }
 #footer-search:hover,
 #footer-search:focus
@@ -1099,6 +1108,10 @@ html
     max-width: 96%;
     text-wrap: wrap;
 }
+#paypal-button-container
+{
+    transition: ease 1s;
+}
 @media(max-width: 600px)
 {
 
@@ -1125,7 +1138,6 @@ html
         left: 50%;
     }
 }
-
 /* ORDER CONFIRMATION PAGE */
 
 #order-confirm-main
@@ -1216,4 +1228,19 @@ html
 h3
 {
     font-size: 1.5rem;
+}
+@media(max-width: 600px)
+{
+    #main-wrapper-order-confirm
+    {
+        width: 75%;
+    }
+    #secondary-wrapper-order-confirm
+    {
+        height: 40%;
+    }
+    #return-home
+    {
+        height: 40%;
+    }
 }
