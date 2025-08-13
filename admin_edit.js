@@ -136,8 +136,10 @@ function previewOrder (order_id)
                 'flex-direction' : 'column',
                 'overflow-x' : 'hidden',
                 'overflow-y' : 'auto',
-                'border' : 'solid 1px',
-                'font-family' : 'font_3'
+                'border' : 'solid #D3D3D3 1px',
+                'font-family' : 'font_3',
+                'padding' : '1rem',
+                'border-radius' : '0.5rem'
             });
             closePreview.css
             ({
@@ -160,18 +162,18 @@ function previewOrder (order_id)
                 'background-color' : 'rgba(0, 0, 0, 0.7)',
                 'z-index' : '9'
             });
-            let raw_html = "";
+            let raw_html = "<div id='preview-items-wrapper'>";
             let grand_total = 0;
             order_items.forEach (order_item => 
             {
                 raw_html += `
                 <div class='preview-item' id='item-${order_item.item_id}'>
                     <div class='div-wrapper'>
-                        <div class='preview-img' style='background-image: url("${order_item.item_image_url}")'></div>
+                        <div class='preview-img' style='background-image: url("${order_item.item_image_url}"); background-size: ${order_item.background_size_x + "% " + order_item.background_size_y + "%"}; background-position: ${order_item.background_pos};'></div>
                         <div class='preview-info-wrapper'>
                             <div class='preview-info'>QUANTITY: ${order_item.quantity}</div>
                             <div class='preview-info'>ITEM NAME: ${order_item.item_name}</div>
-                            <div class='preview-info'>PRICE: $${order_item.item_price * order_item.quantity}</div>
+                            <div class='preview-info'>PRICE: $${order_item.item_price}</div>
                         </div>
                     </div>
                 </div>
@@ -180,15 +182,15 @@ function previewOrder (order_id)
             });
             raw_html += 
             `
-            <div class='preview-item' id='preview-grandTotal'>Order Total: $${grand_total}</div>
+            </div>
+            <div id='preview-grandTotal'>Order Total: $${grand_total}</div>
             `;
             $('#preview-box').html(raw_html);
             $('.preview-item').css
             ({
                 'position' : 'relative',
-                'min-height' : '25%',
-                'width' : '100%',
-                'flex-grow' : '1'
+                'height' : '35%',
+                'width' : '100%'
             });
             $('.div-wrapper').css
             ({
@@ -202,23 +204,24 @@ function previewOrder (order_id)
                 'position' : 'relative',
                 'flex-grow' : '1',
                 'width' : '30%',
-                'background-size' : 'cover',
-                'border-bottom' : 'solid 1px',
-                'border-right' : 'solid 1px'
+                'height' : '100%',
+                'border-bottom' : 'solid #D3D3D3 0.5px',
+                'border-right' : 'solid #D3D3D3 0.5px'
             });
             $('.preview-info-wrapper').css
             ({
                 'position' : 'relative',
                 'flex-grow' : '1',
-                'border-bottom' : 'solid 0.5px',
+                'height' : '100%',
                 'width' : '70%',
                 'display' : 'flex',
-                'flex-direction' : 'column'
+                'flex-direction' : 'column',
+                'padding-left' : '1rem'
             });
             $('.preview-info').css
             ({
                 'position' : 'relative',
-                'border-bottom' : 'solid 1px',
+                'border-bottom' : 'solid #D3D3D3 0.5px',
                 'min-height' : '33.33%',
                 'width' : '100%',
                 'flex-grow' : '1',
@@ -231,7 +234,15 @@ function previewOrder (order_id)
                 'display' : 'flex',
                 'justify-content' : 'center',
                 'align-items' : 'center',
-                'font-size' : '4rem'
+                'font-size' : '4rem',
+                'height' : '15%',
+                'width' : '100%'
+            });
+            $('#preview-items-wrapper').css
+            ({
+                'overflow-y' : 'auto',
+                'width' : '100%',
+                'height' : '100%'
             });
         },
         error : function (xhr, status, error) 
@@ -845,7 +856,7 @@ $(document).ready(function ()
         function () 
         {
             blank_item.remove();
-            $('#blank-item').css('display', 'block');
+            $('#blank-item').css('display', 'flex');
         }
     )
     $("#shopping-page-main").on('click',
@@ -907,18 +918,45 @@ $(document).ready(function ()
                 close_name_tag = $('<div id="close-name-tag">X</div>').appendTo('#name-menu');
                 add_name_tag = $('<div id="add-name-tag">O</div>').appendTo('#name-menu');
                 font_size_tag = $('<div id="font-size-tag">Font Size:</div>').appendTo('#name-menu');
-                font_size_select = $('<select id="font-size-select">' +
-                    '<option id="font-small">S</option>' + 
-                    '<option id="font-medium" selected>M</option>' + 
-                    '<option id="font-large">L</option>' + 
-                    '</select>').appendTo('#name-menu');
+                font_size_select = $(`<select id="font-size-select">
+                    <option id="font-small">S</option>
+                    <option id="font-medium" selected>M</option>
+                    <option id="font-large">L</option>
+                    </select>`).appendTo('#name-menu');
                 font_tag = $('<div id="font-tag">Font:</div>').appendTo('#name-menu');
-                font_options = $('<select id="font-options">' +
-                    '<option>Roboto</option>' +
-                    '<option>Helvetica</option>' +
-                    '<option selected>Arial</option>' +
-                    '<option>Georgia</option>' +
-                    '</select>').appendTo('#name-menu');
+                font_options = $(`<select id="font-options">
+                    <option>font_3</option>
+                    <option>Arial</option>
+                    <option>Verdana</option>
+                    <option>Helvetica</option>
+                    <option>Tahoma</option>
+                    <option>Trebuchet MS</option>
+                    <option>Times New Roman</option>
+                    <option>Georgia</option>
+                    <option>Garamond</option>
+                    <option>Courier New</option>
+                    <option>Lucida Console</option>
+                    <option>Segoe UI</option>
+                    <option>Calibri</option>
+                    <option>Cambria</option>
+                    <option>Palatino Linotype</option>
+                    <option>Impact</option>
+                    <option>Franklin Gothic Medium</option>
+                    <option>Century Gothic</option>
+                    <option>Lucida Sans Unicode</option>
+                    <option>Monaco</option>
+                    <option>Consolas</option>
+                    <option>Roboto</option>
+                    <option>Open Sans</option>
+                    <option>Lato</option>
+                    <option>Oswald</option>
+                    <option>Source Sans Pro</option>
+                    <option>Montserrat</option>
+                    <option>PT Sans</option>
+                    <option>Merriweather</option>
+                    <option>Raleway</option>
+                    <option>Noto Sans</option>
+                    </select>`).appendTo('#name-menu');
                 color_tag = $('<div id="color-tag">Color:</div>').appendTo('#name-menu');
                 font_color = $('<div id="font-color"></div>').appendTo('#name-menu');
                 background_color = $('<div id="background-color"></div>').appendTo('#name-menu');
@@ -1096,22 +1134,8 @@ $(document).ready(function ()
         '#font-options',
         function () 
         {
-            let new_font = $('#font-options').val();
-            switch (new_font)
-            {
-                case 'Roboto' :
-                    name_tag.css('font-family', new_font);
-                    break;
-                case 'Helvetica' :
-                    name_tag.css('font-family', new_font);
-                    break;
-                case 'Arial' :
-                    name_tag.css('font-family', new_font);
-                    break;
-                case 'Georgia' :
-                    name_tag.css('font-family', new_font);
-                    break;
-            }
+            let new_font = $(this).val();
+            name_tag.css('font-family', new_font);
         }
     )
     $('#shopping-page-main').on('click',
@@ -1505,29 +1529,33 @@ $(document).ready(function ()
     )
 
     // EDIT THE ITEMS
-
+    let alreadyEditing = false;
     $('#shopping-page-main').on('dblclick',
         '.item-div',
         function () 
         {
+            console.log(alreadyEditing);
+            //e.stopPropogation();
+            if (alreadyEditing) return;
+            alreadyEditing = true;
+            $(this).css('opacity', '0');
             edit_id = $(this).attr('id').split('-')[1];
             var edit_textbox = $('#textbox-' + edit_id);
-            var edit_box_pos = $(this).offset();
+            var edit_box_pos = $(this).position();
             var edit_box_top = edit_box_pos.top + $('#shopping-items-container').scrollTop();
             var edit_box_left = edit_box_pos.left;
-            var border = 1;
-            var padding = 1;
-            edit_box_top -= border;
-            edit_box_top -= padding;
-            edit_box_left -= border;
+            //var offset_top = $(this).height() / 2;
+            //var offset_left = $(this).width() / 2;
+            //edit_box_top -= offset_top;
+            //edit_box_left -= offset_left;
             var edit_box_img = $(this).css('background-image');
             var edit_img_size_x = $(this).css('background-size').split('%')[0];
             var edit_img_size_y = $(this).css('background-size').split('%')[1];
             var edit_img_pos = $(this).css('background-position');
             var container_height_20ishpercent = parseFloat($('#shopping-page-main').css('height')) / 5.5;
             var page_width_20percent = $(window).width() / 5;
-            edit_box_top -= container_height_20ishpercent;
-            edit_box_left -= page_width_20percent;
+            //edit_box_top -= container_height_20ishpercent;
+            //edit_box_left -= page_width_20percent;
             edit_textbox_height = edit_textbox.height();
             edit_textbox_width = edit_textbox.width();
             edit_textbox_content = edit_textbox.val();
@@ -1535,8 +1563,6 @@ $(document).ready(function ()
             edit_textbox_color = edit_textbox.css('color');
             edit_textbox_background = edit_textbox.css('background-color');
             edit_textbox_size = edit_textbox.css('font-size');
-
-            $(this).css('opacity', '0');
 
             blank_item_edit = $('<div id="blankItemEdit"></div>').appendTo('#shopping-items-container');
             close_edit = $('<div id="close_edit">X</div>').appendTo('#blankItemEdit');
@@ -1932,18 +1958,45 @@ $(document).ready(function ()
             close_name_tag_edit = $('<div id="close-name-tag-edit">X</div>').appendTo('#name-menu-edit');
             add_name_tag_edit = $('<div id="add-name-tag-edit">O</div>').appendTo('#name-menu-edit');
             font_size_tag_edit = $('<div id="font-size-tag">Font Size:</div>').appendTo('#name-menu-edit');
-            font_size_select_edit = $('<select id="font-size-select-edit">' +
-                '<option id="font-small">S</option>' + 
-                '<option id="font-medium" selected>M</option>' + 
-                '<option id="font-large">L</option>' + 
-                '</select>').appendTo('#name-menu-edit');
+            font_size_select_edit = $(`<select id="font-size-select-edit">
+                <option id="font-small">S</option>
+                <option id="font-medium" selected>M</option>
+                <option id="font-large">L</option>
+                </select>`).appendTo('#name-menu-edit');
             font_tag_edit = $('<div id="font-tag">Font:</div>').appendTo('#name-menu-edit');
-            font_options_edit = $('<select id="font-options-edit">' +
-                '<option>Roboto</option>' +
-                '<option>Helvetica</option>' +
-                '<option selected>Arial</option>' +
-                '<option>Georgia</option>' +
-                '</select>').appendTo('#name-menu-edit');
+            font_options_edit = $(`<select id="font-options-edit">
+                <option>font_3</option>
+                <option>Arial</option>
+                <option>Verdana</option>
+                <option>Helvetica</option>
+                <option>Tahoma</option>
+                <option>Trebuchet MS</option>
+                <option>Times New Roman</option>
+                <option>Georgia</option>
+                <option>Garamond</option>
+                <option>Courier New</option>
+                <option>Lucida Console</option>
+                <option>Segoe UI</option>
+                <option>Calibri</option>
+                <option>Cambria</option>
+                <option>Palatino Linotype</option>
+                <option>Impact</option>
+                <option>Franklin Gothic Medium</option>
+                <option>Century Gothic</option>
+                <option>Lucida Sans Unicode</option>
+                <option>Monaco</option>
+                <option>Consolas</option>
+                <option>Roboto</option>
+                <option>Open Sans</option>
+                <option>Lato</option>
+                <option>Oswald</option>
+                <option>Source Sans Pro</option>
+                <option>Montserrat</option>
+                <option>PT Sans</option>
+                <option>Merriweather</option>
+                <option>Raleway</option>
+                <option>Noto Sans</option>
+                </select>`).appendTo('#name-menu-edit');
             color_tag_edit = $('<div id="color-tag">Color:</div>').appendTo('#name-menu-edit');
             font_color_edit = $('<div id="font-color-edit"></div>').appendTo('#name-menu-edit');
             background_color_edit = $('<div id="background-color-edit"></div>').appendTo('#name-menu-edit');      
@@ -2084,7 +2137,17 @@ $(document).ready(function ()
             ({
                 'top' : starting_menu_pos
             });
-            $('#image-edit').val('')
+            $(document).on('dblclick',
+                function (e) 
+                {
+                    if (!$(this).is(e.target) && $(this).has(e.target).length === 0)
+                    {
+                        if (!alreadyEditing) return;
+
+                        e.stopImmediatePropogation();
+                    }
+                }
+            );
         }
     )
     $('#shopping-page-main').on('click',
@@ -2232,6 +2295,7 @@ $(document).ready(function ()
             $('#item-' + edit_id).css('opacity', '1');
             editing_existing_box = true;
             editing = false;
+            alreadyEditing = false;
         }
     )
     $('#shopping-page-main').on('click',
@@ -2459,21 +2523,7 @@ $(document).ready(function ()
         function () 
         {
             let new_font = $(this).val();
-            switch (new_font)
-            {
-                case 'Roboto' :
-                    text_box_edit.css('font-family', new_font);
-                    break;
-                case 'Helvetica' :
-                    text_box_edit.css('font-family', new_font);
-                    break;
-                case 'Arial' :
-                    text_box_edit.css('font-family', new_font);
-                    break;
-                case 'Georgia' :
-                    text_box_edit.css('font-family', new_font);
-                    break;
-            }
+            text_box_edit.css('font-family', new_font);
         }
     )
     $("#shopping-page-main").on('click',

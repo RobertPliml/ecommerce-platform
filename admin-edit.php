@@ -1,6 +1,5 @@
 <?php
 session_start();
-session_regenerate_id(true);
 include "dbconnect.php";
 $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_SPECIAL_CHARS);
 $editMenuBar = filter_input(INPUT_POST, 'editMenuBar', FILTER_VALIDATE_BOOLEAN);
@@ -27,77 +26,99 @@ if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
     }
     if ($catName) 
     {
-        switch ($func)
+        try
         {
+            $DB->beginTransaction();
+            switch ($func)
+            {
             case "add-to-cats" :
-                $query = "INSERT INTO cats (cat_name) VALUES (:cat_name)";
-                $stm = $DB->prepare($query);
-                $stm->bindParam(':cat_name', $catName, PDO::PARAM_STR);
-                $stm->execute();
+                $stm = $DB->prepare("INSERT INTO cats (cat_name) VALUES (:cat_name)");
+                $stm->execute([':cat_name' => $catName]);
                 if ($add_to_shopall === true) 
                 {
                     $query = "INSERT INTO subcats (subcat_name, cat_name, subcat_url) VALUES (:subcat_name, 'Shop All', 'shopping_page.php')";
                     $stm = $DB->prepare($query);
-                    $stm->bindParam(':subcat_name', $catName, PDO::PARAM_STR);
-                    $stm->execute();
+                    $stm->execute([':subcat_name' => $catName]);
                 }
                 break;
             case "remove-cat" :
-                $query = "SELECT * FROM subcats WHERE cat_name = :cat_name";
-                $stm = $DB->prepare($query);
-                $stm->bindParam(':cat_name', $catName, PDO::PARAM_STR);
-                $stm->execute();
-                $safety_check = $stm->fetchAll();
-                if (count($safety_check) === 0)
+                $stm = $DB->prepare("SELECT * FROM subcats WHERE cat_name = :cat_name");
+                $stm->execute([':cat_name' => $catName]);
+                $safety_check = $stm->fetchAll(PDO::FETCH_ASSOC);
+                $stm = $DB->prepare("SELECT * FROM items WHERE text_box_cat = :text_box_cat");
+                $stm->execute([':text_box_cat' => $catName]);
+                $res = $stm->fetchAll(PDO::FETCH_ASSOC);
+                if (count($safety_check) === 0 && count($res) === 0)
                 {
-                    $query = "DELETE FROM cats WHERE id = :id";
-                    $stm = $DB->prepare($query);
-                    $stm->bindParam(':id', $id, PDO::PARAM_INT);
-                    $stm->execute();
-                    $query ="DELETE FROM subcats WHERE subcat_name = :subcat_name";
-                    $stm = $DB->prepare($query);
-                    $stm->bindParam(':subcat_name', $catName, PDO::PARAM_STR);
-                    $stm->execute();
+                    $stm = $DB->prepare("DELETE FROM cats WHERE id = :id");
+                    $stm->execute([':id' => $id]);
+                    $stm = $DB->prepare("DELETE FROM subcats WHERE subcat_name = :subcat_name");
+                    $stm->execute([':subcat_name' => $catName]);
                 }
                 break;
             case 'rename-cat' :
-                $query = "UPDATE cats SET cat_name = :cat_name WHERE id = :id";
-                $stm = $DB->prepare($query);
-                $stm->bindParam(':cat_name', $catName, PDO::PARAM_STR);
-                $stm->bindParam(':id', $id, PDO::PARAM_INT);
-                $stm->execute();
+                $stm = $DB->prepare("UPDATE cats SET cat_name = :cat_name WHERE id = :id");
+                $stm->execute([
+                    ':cat_name' => $catName,
+                    ':id' => $id
+                ]);
                 break;
             case 'add-subcat' :
                 $query = "INSERT INTO subcats (subcat_name, cat_name, subcat_url) VALUES (:subcat_name, :cat_name, 'index.php')";
                 $stm = $DB->prepare($query);
-                $stm->bindParam(':subcat_name', $subcat_name, PDO::PARAM_STR);
-                $stm->bindParam(':cat_name', $catName, PDO::PARAM_STR);
-                $stm->execute();
+                $stm->execute([
+                    ':subcat_name' => $subcat_name,
+                    ':cat_name' => $catName
+                ]);
                 break;
             case 'remove-subcat' :
-                $query = "DELETE FROM subcats WHERE subcat_id = :subcat_id";
-                $stm = $DB->prepare($query);
-                $stm->bindParam(':subcat_id', $id, PDO::PARAM_INT);
-                $stm->execute();
+                $stm = $DB->prepare("SELECT * FROM items WHERE text_box_cat = :text_box_cat");
+                $stm->execute([':text_box_cat' => $catName]);
+                $res = $stm->fetchAll(PDO::FETCH_ASSOC);
+                if (count($res) === 0)
+                {
+                    $stm = $DB->prepare("DELETE FROM subcats WHERE subcat_id = :subcat_id");
+                    $stm->execute([':subcat_id' => $id]);
+                }
                 break;
             case 'edit-subcat' :
                 if ($newName)
                 {
+                    $stm = $DB->prepare("SELECT * FROM items WHERE text_box_cat = :catName");
+                    $stm->execute([':catName' => $catName]);
+                    $res = $stm->fetchAll(PDO::FETCH_ASSOC);
+                    foreach($res as $r)
+                    {
+                        $stm = $DB->prepare("UPDATE items SET text_box_cat = :new_cat WHERE item_id = :item_id");
+                        $stm->execute([
+                            ':new_cat' => $newName,
+                            ':item_id' => $r['item_id']
+                        ]);
+                    }
                     $query = "UPDATE subcats SET subcat_name = :subcat_name WHERE subcat_id = :subcat_id";
                     $stm = $DB->prepare($query);
-                    $stm->bindParam(':subcat_name', $newName, PDO::PARAM_STR);
-                    $stm->bindParam(':subcat_id', $id, PDO::PARAM_INT);
-                    $stm->execute();
+                    $stm->execute([
+                        ':subcat_name' => $newName,
+                        ':subcat_id' => $id
+                    ]);
                 }
                 if ($newUrl)
                 {
                     $query = "UPDATE subcats SET subcat_url = :subcat_url WHERE subcat_id = :subcat_id";
                     $stm = $DB->prepare($query);
-                    $stm->bindParam(':subcat_url', $newUrl, PDO::PARAM_STR);
-                    $stm->bindParam(':subcat_id', $id, PDO::PARAM_INT);
-                    $stm->execute();
+                    $stm->execute([
+                        ':subcat_url' => $newUrl,
+                        ':subcat_id' => $id
+                    ]);
                 }
                 break;
+            }
+            $DB->commit();
+            exit();
+        }
+        catch (PDOException $e)
+        {
+            $DB->rollBack();
         }
     }
 }

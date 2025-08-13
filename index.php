@@ -3,15 +3,30 @@ include "header.php";
 include "navigation.php";
 ?>
 <div id="main">
-    <div id="main-button-wrapper">
-        <!--<h3 id="main-header-h3">Catch the Moment</h3>
-        <h1 id="main-header-h1">Live the Journey</h1>
-        <div id="get-started-button">Get Started</div>-->
-    </div>
     <div class="carousel" data-flickity='{ "wrapAround": true, "autoPlay": true }'>
         <div id="cell-1" class="carousel-cell"></div>
-        <div id="cell-2" class="carousel-cell"></div>
-        <div id="cell-3" class="carousel-cell"></div>
+        <div id="cell-2" class="carousel-cell">
+            <div id="get-started-wrapper">
+                <h1 id="get-started-h1">Catch the art bug — explore Kathryn's creations!</h1>
+                <div id="get-started-button">Get Started</div>
+            </div>
+        </div>
+        <div id="cell-3" class="carousel-cell">
+            <div id="untitled-wrapper">
+                <div class="socialMedia-icons-wrapper">
+                    <i class='bi bi-envelope-open-fill' style='color: white'></i>
+                    <p class="social-media-p">Kathrynfrances2019@gmail.com</p>
+                </div>
+                <div class="socialMedia-icons-wrapper">
+                    <i class='bi bi-facebook' style='color: white'></i>
+                    <p class="social-media-p">Corpselotion</p>
+                </div>
+                <div class="socialMedia-icons-wrapper">
+                    <i class='bi bi-instagram' style='color: white'></i>
+                    <p class="social-media-p">@corpselotion</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!--<div id="board">
@@ -188,11 +203,11 @@ include "navigation.php";
             <polygon points="2 -10, 47 7, 91.5 -10, 91.5 150, 2 150" fill="transparent" stroke="#333" stroke-width="1"/>
         </svg>
         <h1 id="ribbon-header">5 / 5 stars!</h1>
-        <p id="ribbon-text">"I recently had a great experience shopping on [company name]'s website. The site is user-friendly, with a wide variety of high-quality fly fishing gear that caters to both beginners and seasoned anglers. Overall, I highly recommend [company name] for anyone looking to gear up for their next fishing adventure."</p>
+        <p id="ribbon-text">"Absolutely love this shop! I ordered a framed bug display and a crystal piece, and both are even more beautiful in person. You can really tell how much care and creativity goes into everything. The packaging was thoughtful and everything arrived safely and quickly. If you're into unique art, nature-inspired pieces, or just want something a little different for your space, this place is a gem. Highly recommend!"</p>
     </div>
 </div>
 <div id="socialMedia">
-    <h1 id="socialMedia-header">Follow us on instagram<br>@instagramhandle</h1>
+    <h1 id="socialMedia-header">Follow us on instagram<br>@corpselotion</h1>
     <p id="socialMedia-text">to find out what we've been up to lately,<br> and stay updated on products!</p>
     <div id="socialMedia-imgs-container"></div>
 </div>

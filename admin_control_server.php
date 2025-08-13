@@ -1,6 +1,15 @@
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
+use Dotenv\Dotenv;
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+$email_username = $_ENV['EMAIL_USERNAME'];
+$email_password = $_ENV['EMAIL_PASSWORD'];
 session_start();
 include "dbconnect.php";
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+$mail = new PHPMailer(true);
 $new_key = filter_input(INPUT_POST, 'new_key', FILTER_SANITIZE_SPECIAL_CHARS);
 if ($new_key)
 {
@@ -105,6 +114,42 @@ if ($order_id)
         }
         else if ($status['order_status'] === 'confirmed')
         {
+            $stm = $DB->prepare("SELECT * FROM orders WHERE order_id = :order_id LIMIT 1");
+            $stm->execute([':order_id' => $order_id]);
+            $res = $stm->fetch(PDO::FETCH_ASSOC);
+            $email = $res['email_address'];
+            $name = $res['payer_name'];
+            $first_name = explode(" ", $name)[0];
+            $address = $res['street_address'];
+            $confirmation_number = explode('.', $order_id)[1];
+            try 
+            {
+                // Server settings
+                $mail->isSMTP();
+                $mail->Host       = 'smtp.gmail.com';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = $email_username;
+                $mail->Password   = $email_password;
+                $mail->SMTPSecure = 'tls';
+                $mail->Port       = 587;
+
+                $mail->setFrom($email_username, 'Robert Pliml');
+                $mail->addAddress($email, $name);
+                $mail->isHTML(true);
+                $mail->Subject = "Order Shipped";
+                $mail->Body    = "Thank you for your patience in allowing us to prepare and ship your order!<br>
+                <b>Order #$confirmation_number</b><br>
+                has been shipped to $address.<br>
+                Thank you again $first_name for you support, please feel free to send back any pictures featuring your new artwork on display!<br>
+                Sincerely, Kathryn<br>
+                Corpselotion.com (?)<br>
+                @corpselotion";
+                $mail->send();
+            }
+            catch (Exception $e)
+            {
+                echo "Email could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            }
             $query = "UPDATE orders SET order_status = :order_status WHERE order_id = :order_id";
             $stm = $DB->prepare($query);
             $stm->execute([':order_status' => 'shipped', 'order_id' => $order_id]);
@@ -155,15 +200,15 @@ if ($order_id)
             }
         }
     }
-    if ($action && $action === 'previewOrder')
+    if ($action === 'previewOrder')
     {
         if ($_SESSION['admin_tool'] === 'archived')
         {
-            $query = "SELECT oi.item_id, oi.quantity, i.item_name, i.item_price, i.item_image_url FROM archived_order_items oi JOIN items i ON oi.item_id = i.item_id WHERE oi.order_id = :order_id";
+            $query = "SELECT oi.item_id, oi.quantity, i.item_name, i.item_price, i.item_image_url, i.background_size_x, i.background_size_y, i.background_pos FROM archived_order_items oi JOIN items i ON oi.item_id = i.item_id WHERE oi.order_id = :order_id";
         }
         else
         {
-            $query = "SELECT oi.item_id, oi.quantity, i.item_name, i.item_price, i.item_image_url FROM order_items oi JOIN items i ON oi.item_id = i.item_id WHERE oi.order_id = :order_id";
+            $query = "SELECT oi.item_id, oi.quantity, i.item_name, i.item_price, i.item_image_url, i.background_size_x, i.background_size_y, i.background_pos FROM order_items oi JOIN items i ON oi.item_id = i.item_id WHERE oi.order_id = :order_id";
         }
         $stm = $DB->prepare($query);
         $stm->execute([':order_id' => $order_id]);

@@ -128,12 +128,33 @@ if ($shippingData && isset($shippingData['address']))
     // Remove empty parts and join with commas
     $shippingAddress = implode(', ', array_filter($parts));
 
+    /* OPTIONAL LATER with monthly cost: filter out invalid address with google maps api.
     // If address is empty after filtering, fallback to default message
-    if (empty($shippingAddress)) {
+    $address = urlencode($shippingAddress);
+    $apiKey = 'YOUR_API_KEY';
+
+    $url = "https://maps.googleapis.com/maps/api/geocode/json?address=$address&key=$apiKey";
+    $response = file_get_contents($url);
+    $data = json_decode($response, true);
+
+    if ($data['status'] === 'OK') 
+    {
+        $formattedAddress = $data['results'][0]['formatted_address'];
+        // Address is valid!
+    } 
+    else 
+    {
+        // Address invalid
+        exit();
+    }*/
+    if (empty($shippingAddress)) 
+    {
         $shippingAddress = 'No shipping info';
     }
 }
 $payerEmail = $payer['email_address'] ?? '';
+$Date = new dateTime();
+$paymentDate = $Date->format('Y-m-d H:i:s');
 try 
 {
     // Server settings
@@ -148,11 +169,28 @@ try
     // Sender & recipient
     $mail->setFrom($email_username, 'Robert Pliml');
     $mail->addAddress(strval($payerEmail), $shippingData['name']['full_name']);
-
+    $confirmation_number = explode('.', $order_id)[1];
     // Email content
     $mail->isHTML(true);
     $mail->Subject = 'Order Confirmation';
-    $mail->Body    = '<b>Thank You!</b> now, blah blah blah.';
+    $mail->Body    = "Thank you for your purchase from Corpselotion! We are excited to let you know that we've received your order and it is currently being processed.<br>
+
+<b>Order Summary:</b><br>
+<b>Confirmation Number: #$confirmation_number</b><br>
+<b>Payment Date: $paymentDate</b><br>
+<b>Amount: $$amount</b><br>
+
+<b><Shipping To:</b><br>
+$shippingAddress<br>
+
+You will receive another email with tracking details as soon as your order ships. In the meantime, if you have any questions or need to make a change, feel free to reply to this email or send a new message to kathrynfrances2019@gmail.com.
+<br>
+Thank you for supporting original artwork and handmade creations — your order means the world to us.
+<br>
+Warmly,<br>
+Kathyrn Pliml<br>
+corpselotion.com (?)<br>
+@corpselotion";
 
     $mail->send();
     if ($payerEmail)
@@ -178,12 +216,14 @@ try
 {
     $DB->beginTransaction();
 
-    $stmt = $DB->prepare("INSERT INTO orders (order_id, price, street_address, order_status) VALUES (:order_id, :price, :address, :status)");
+    $stmt = $DB->prepare("INSERT INTO orders (order_id, price, street_address, order_status, email_address, payer_name) VALUES (:order_id, :price, :order_address, :order_status, :email_address, :payer_name)");
     $stmt->execute([
         ':order_id' => $order_id,
         ':price' => $amount,
-        ':address' => $shippingAddress,
-        ':status' => 'pending'
+        ':order_address' => $shippingAddress,
+        ':order_status' => 'pending',
+        ':email_address' => $payerEmail,
+        ':payer_name' => strval($shippingData['name']['full_name'])
     ]);
 
     $filteredItems = array_filter($items, fn($item) =>

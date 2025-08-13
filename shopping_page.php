@@ -87,7 +87,6 @@ echo "
         background-color: #E8F5E9;
         border-radius: 0 0 0.5rem 0.5rem;
     }
-
     </style>
     <h1 id='subcat-name'>".$header_name."</h1>
 <div id='sidebar-list-container'>
@@ -131,6 +130,7 @@ echo"
         box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         border: 1px solid #e0e0e0;
         background-color: #fff;
+        margin-bottom: 1rem;
     }
 
     @media(max-width: 600px)
@@ -143,7 +143,21 @@ echo"
         {
             width: 95%;
             height: 90%;
+            justify-content: center;
+        }
+    }
+    @media (min-width: 601px) and (max-width: 900px) 
+    {   
+        #sidebar-list-container
+        {
+            width: 25%;
+        }
+        #shopping-items-container
+        {
+            width: 70%;
+            height: 90%;
             border-radius: 0.5rem;
+            justify-content: center;
         }
     }
 
@@ -153,18 +167,20 @@ echo"
         border: dotted 4px;
         height: 19rem;
         width: 19rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     #add-item-button
     {
-        position: absolute;
-        height: 10%;
-        width: 10%;
-        left: 45%;
-        top: 45%;
-        background-image: url('images/add.jpeg');
-        background-size: cover;
+        position: relative;
+        height: 1.5rem;
+        width: 1.5rem;
         border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     #add-item-button:hover,
@@ -191,8 +207,8 @@ echo"
         $stm = $DB->prepare("SELECT * FROM items");
         $stm->execute();
     }
-    $items = $stm->fetchAll();
-    foreach ($items as $item) 
+    $items = $stm->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($items as $item)
     {
         $item_id = htmlspecialchars($item['item_id'], ENT_QUOTES, 'UTF-8');
         $item_img_url = htmlspecialchars($item['item_image_url'], ENT_QUOTES, 'UTF-8');
@@ -334,7 +350,7 @@ echo"
     {
     echo"
     <div id='blank-item'>
-        <div class='new-item-button' id='add-item-button'></div>
+        <div class='new-item-button' id='add-item-button'><i class='bi bi-plus-circle'></i></div>
     </div>
     "; 
     }

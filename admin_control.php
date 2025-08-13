@@ -343,14 +343,17 @@ include "navigation.php";
                         .center-wrapper
                         {
                             display: flex;
-                            flex-grow: 1;
+                            width: 25%;
                             justify-content: center;
                             align-items: center;
-                            height: 40%;
+                            height: 30%;
+                            border-radius: 0.5rem;
+                            background-color: rgba(0, 0, 0, 0.5);
                         }
                         .stock-count
                         {
                             font-size: 5rem;
+                            color: white;
                         }
                         </style>
                         <div class='inventory-item' id='inventory-item-".$item_id."'>

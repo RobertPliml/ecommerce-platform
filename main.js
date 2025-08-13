@@ -166,6 +166,7 @@ function updateCheckoutDisplay ()
         if (items.length === 0)
         {
             $("#checkout-items-wrapper").html("<p id='cart-is-empty'>Cart is empty.</p>");
+            $("#paypal-button-container").remove();
             return;
         }
     $.ajax
@@ -226,7 +227,7 @@ function updateCheckoutDisplay ()
                 }
                 </style>
                 <div class="checkout-cart-item">
-                    <div style="background-image: url('${item.item_image_url}'); background-size: ${item.background_size_x}% ${item.background_size_y}%; background-position: ${item.background_pos}" class="shopping-cart-img"></div>
+                    <div style="background-image: url('${item.item_image_url}'); background-size: ${item.background_size_x}% ${item.background_size_y}%; background-position: ${item.background_pos}" class="shopping-cart-img-checkout"></div>
                     <h4 class="checkout-cart-item-info">${item.item_name}</h4>
                     <p class="checkout-cart-item-info">Price: $${totalPrice}</p>
                     <div class="checkout-cart-counter-container">
@@ -408,11 +409,17 @@ $(document).ready(function ()
                 // seperate the way in which the 'shop all' menu displays v others
                 if (catName === 'Shop\ All')
                 {
-                    $('#dropdown-' + id).css('display', 'flex');
+                    $('#dropdown-' + id).css({
+                        'display' : 'flex',
+                        'padding' : '0.5rem'
+                    });
                 }
                 else
                 {
-                    $('#dropdown-' + id).css('display', 'block');
+                    $('#dropdown-' + id).css({
+                        'display' : 'block',
+                        'padding' : '0.5rem'
+                    });
                 }
             }
         );
@@ -422,7 +429,10 @@ $(document).ready(function ()
             {
                 let idStr = $(this).attr('id');
                 let id = idStr.split('-')[1];
-                $('#dropdown-' + id).css('display', 'none');
+                $('#dropdown-' + id).css({
+                    'display' : 'none',
+                    'padding' : '0'
+                });
                 $('#paypal-button-container').css('opacity', '1'); 
             }
         );
@@ -452,6 +462,13 @@ $(document).ready(function ()
     }
     else
     {
+        $('#navigation').on('touchstart',
+            '.listItems',
+            function ()
+            {
+                $('#paypal-button-container').css('opacity', '0');
+            }
+        );
         $("#navigation").on('touchstart',
             '.header-wrapper',    
             function () 
@@ -461,7 +478,6 @@ $(document).ready(function ()
                 var grandCatId = idStr.split('-')[1];
                 var catName = idStr.split('-')[2];
                 // seperate the way in which the 'shop all' menu displays v others
-    
                 if (timesClicked === 0)
                 {
                     if (catName === 'Shop\ All')
@@ -469,12 +485,16 @@ $(document).ready(function ()
                         $('#dropdown-' + id).css
                         ({
                             'display' : 'flex',
-                            'flex-direction' : 'column'
+                            'flex-direction' : 'column',
+                            'padding' : '0.5rem'
                         });
                     }
                     else
                     {
-                        $('#dropdown-' + id).css('display', 'block');
+                        $('#dropdown-' + id).css({
+                            'display' : 'block',
+                            'padding' : '0.5rem'
+                        });
                     }
                     timesClicked = 1;
                 }
@@ -505,8 +525,12 @@ $(document).ready(function ()
             {
                 let idStr = $(this).attr('id');
                 let id = idStr.split('-')[1];
-                $('#dropdown-' + id).css('display', 'none');
+                $('#dropdown-' + id).css({
+                    'display' : 'none',
+                    'padding' : '0'
+                });
                 timesClicked = 0;
+                $('#paypal-button-container').css('opacity', '1');
             }
         );
     }
@@ -614,7 +638,7 @@ $(document).ready(function ()
         {
             $('.menubar-modal').css('display', 'block');
             $('.close-modal-button').css('display', 'block');
-            $('.header-modal').css('display', 'block');
+            $('.header-modal').css('display', 'flex');
         }
     )
     $('#navigation').on('click',
@@ -636,7 +660,7 @@ $(document).ready(function ()
             $('.close-modal-button').css('display', 'block');
             tempId = $(this).attr('id');
             id = tempId.split('-')[2];
-            $('#rename-item-modal-' + id).css('display', 'block');
+            $('#rename-item-modal-' + id).css('display', 'flex');
         }
     )
     // SUBCAT HANDLERS
@@ -648,7 +672,7 @@ $(document).ready(function ()
             $('.close-modal-button').css('display', 'block');
             tempId = $(this).attr('id');
             id = tempId.split('-')[2];
-            $('#modal-add-subcat-' + id).css('display', 'block');
+            $('#modal-add-subcat-' + id).css('display', 'flex');
         }
     )
     $('#navigation').on('click',
@@ -670,7 +694,7 @@ $(document).ready(function ()
             let id = idStr.split('-')[1];
             $('.menubar-modal').css('display', 'block');
             $('.close-modal-button').css('display', 'block');
-            $('#modal-edit-' + id).css('display', 'block');
+            $('#modal-edit-' + id).css('display', 'flex');
         }
     )
     // CLOSE
@@ -790,7 +814,6 @@ $(document).ready(function ()
                     catName = tempIdSplit[1];
                     id = tempIdSplit[2];
                     var newName = $('#subcat-input-' + id).val();
-                    var newUrl = $('#url-input-' + id).val();
                     func = 'edit-subcat';
                     $.ajax
                     ({
@@ -801,7 +824,6 @@ $(document).ready(function ()
                             csrf_token : csrf_token,
                             catName : catName,
                             newName : newName,
-                            newUrl : newUrl,
                             id : id,
                             func : func
                         },
@@ -863,11 +885,10 @@ $(document).ready(function ()
             let tempId = $(this).attr('id');
             let tempId_split = tempId.split('-');
             let id = tempId_split[1];
-            console.log(id + ", ");
+            let catName = tempId_split[2];
             if (tempId_split[0] === 'removeSubcats')
             {
                 let func = 'remove-subcat';
-                console.log(func);
                 $.ajax
                 ({
                     type: 'POST',
@@ -877,7 +898,7 @@ $(document).ready(function ()
                         csrf_token : csrf_token,
                         id : id,
                         func : func,
-                        catName : 'remy'
+                        catName : catName
                     },
                     cache: false,
                     success : function (data)
@@ -940,7 +961,7 @@ $(document).ready(function ()
                 data: 
                 {
                     cat_id : id,
-                    grand_cat : false
+                    action: 'sidebar-findpage'
                 },
                 cache: false,
                 success : function (data) 
@@ -1166,6 +1187,16 @@ $(document).ready(function ()
           setTimeout(() => $sparkle.remove(), 600);
         }
     });
+    $('#main').on('click',
+        '#get-started-button',
+        function ()
+        {
+            $.post('shop_page_server.php', {action : 'go-to-shopall'}).then(function(data)
+            {
+                window.location.assign('shopping_page.php');
+            });
+        }
+    )
 });
 
 // fancy scroll effects for select elements

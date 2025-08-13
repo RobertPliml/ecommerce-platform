@@ -15,10 +15,10 @@
             <div id='results-footer'></div>
         </div>
         <div id="footer-credentials">
-            <p class="footer-p footer-a">youremailaddress@gmail.com</p>
+            <p class="footer-p footer-a">kathrynfrances2019@gmail.com</p>
             <p class="footer-p footer-a">1234 youraddress st. NW Grand Rapids, MI 49504</p>
         </div>
-        <p id="copyright">@ 2025 yourcompanyname</p>
+        <p id="copyright">@ 2025 Corpselotion</p>
     </div>
 </footer>
 </html>

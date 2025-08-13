@@ -97,12 +97,12 @@
             var edit_div_id = <?= json_encode($_SESSION['edit_div_id']); ?>;
             var page_search_id = <?= json_encode($_SESSION['page_search_id']); ?>;
         </script>
-        <script src="main.js" defer></script>
         <div id="top">
         <script id="checkMenuBarEdit">
             var checkEditMenuBar = <?= json_encode($_SESSION['editMenuBar']); ?>;
         </script>
         <?php
+        //$_SESSION['editMenuBar'] = false;
         $query = "SELECT * FROM cats";
         $stm = $DB->prepare($query);
         $stm->execute();
@@ -262,12 +262,13 @@
                     position: relative;
                     height: 1.5rem;
                     width: 1.5rem;
-                    top: 5%;
-                    background-image: url('images/add.jpeg');
+                    top: 0.5rem;
                     background-size: cover;
                     border: solid transparent 1px;
                     border-radius: 50%;
-                    display: inline-block;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
 
                 #add-cat-button:hover,
@@ -282,7 +283,8 @@
                 {
                     z-index: 9999;
                     text-wrap: nowrap;
-                    padding: .5rem;
+                    padding: 0;
+                    color: white;
                 }
 
                 #dropdown-".$counter."
@@ -331,6 +333,7 @@
                     left: 0;
                     margin-top: 0;
                     margin-bottom: 0;
+                    color: white;
                 }
 
                 .subcatText:hover,
@@ -373,6 +376,9 @@
                     border-radius: 0 0 10px 10px;
                     border: solid transparent 1px;
                     font-family: 'font_2';
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
 
                 .edit-button:hover,
@@ -412,6 +418,7 @@
                     justify-content: center;
                     align-items: center;
                     border-right: solid 1px;
+                    color: white;
                 }
                     
                 .subcat-edit-edit
@@ -425,6 +432,7 @@
                     justify-content: center;
                     align-items: center;
                     border-left: solid 1px;
+                    color: white;
                 }
 
                 .edit-cat-rename
@@ -438,6 +446,7 @@
                     justify-content: center;
                     align-items: center;
                     border-left: solid 1px;
+                    color: white;
                 }
 
                 .edit-cat-remove
@@ -451,6 +460,7 @@
                     justify-content: center;
                     align-items: center;
                     border-right: solid 1px;
+                    color: white;
                 }
 
                 #add-item-".$catId."
@@ -462,15 +472,17 @@
                     justify-content: center;
                     align-items: center;
                     font-size: 3rem;
+                    color: white;
                 }
 
                 #cat-edit-".$counter."
                 {
                     position: relative;
                     left: 0;
-                    border: solid black 1px;
+                    border: solid 1px;
                     min-width: 16rem;
                     height: 3rem;
+                    color: white;
                 }
 
                 @keyframes shimmer-animation
@@ -568,8 +580,14 @@
                     left: 20%;
                     top: 8rem;
                     min-height: 10rem;
-                    background-color: rgb(225, 225, 225);
+                    background-color: #E8F5E9;
                     font-family: 'font_3', 'sans-serif';
+                    border-radius: 0.5rem;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+                    display: none;
+                    justify-content: flex-start;
+                    align-items: center;
+                    flex-direction: column;
                 }
 
                 .header-item-input
@@ -578,8 +596,15 @@
                     width: 90%;
                     top: 1rem;
                     height: 4rem;
-                    font-size: 25px;
-                    text-align: center;
+                    font-size: 1rem;
+                    padding: 1rem;
+                    border-radius: 0.5rem;
+                    outline: solid #333333;
+                    border: none;
+                }
+                .header-item-input:focus
+                {
+                    outline: solid #9FE2BF;
                 }
 
                 .modal-header-h1
@@ -594,8 +619,16 @@
                     position: relative;
                     width: 90%;
                     height: 4rem;
-                    font-size: 25px;
+                    padding: 1rem;
+                    border-radius: 0.5rem;
+                    font-size: 1rem;
                     text-align: center;
+                    outline: solid #333333;
+                    border: none;
+                }
+                .header-item-input-edit:focus
+                {
+                    outline: solid #9FE2BF;
                 }
 
                 .modal-header-h1-edit
@@ -671,10 +704,10 @@
                     position: relative;
                     width: 30%;
                     height: 3rem;
-                    left: 35%;
                     margin-top: 2rem;
                     margin-bottom: 2rem;
                     border: solid 1px;
+                    border-radius: 0.5rem;
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -707,67 +740,74 @@
                             </div>
                             ";
                         }
-                        foreach($subcats as $subcat) 
+                        if (count($subcats) > 0)
                         {
-                            $subcat_name = htmlspecialchars($subcat['subcat_name'], ENT_QUOTES, 'UTF-8');
-                            $subcat_url = htmlspecialchars($subcat['subcat_url'], ENT_QUOTES, "UTF-8");
-                            $subcat_id = htmlspecialchars($subcat['subcat_id'], ENT_QUOTES, "UTF-8");
-                            $subcat_id_array[0][] = $subcat_id;
-                            $subcat_id_array[1][] = $subcat_name;
-                            echo"
-                            <style>
-                                #subcat-dropdown-".$subcat_id."
-                                {
-                                    display: none;
-                                    position: relative;
-                                    left: 0;
-                                    border: solid black 1px;
-                                    min-width: 16rem;
-                                    height: 2rem;
-                                }
-                            </style>
-                            ";
-                            if ($catName === 'Shop All')
+                            foreach($subcats as $subcat) 
                             {
-                                echo "
-                                <div class='shop-all-col'>
-                                    <h1 class='shop-all-header'>".$subcat_name."</h1>
-                                    ";
-                                    $query = "SELECT * FROM subcats WHERE cat_name = :cat_name";
-                                    $stm = $DB->prepare($query);
-                                    $stm->bindParam(':cat_name', $subcat_name, PDO::PARAM_STR);
-                                    $stm->execute();
-                                    $sub_subcats = $stm->fetchAll();
-                                    foreach($sub_subcats as $sub_subcat)
+                                $subcat_name = htmlspecialchars($subcat['subcat_name'], ENT_QUOTES, 'UTF-8');
+                                $subcat_url = htmlspecialchars($subcat['subcat_url'], ENT_QUOTES, "UTF-8");
+                                $subcat_id = htmlspecialchars($subcat['subcat_id'], ENT_QUOTES, "UTF-8");
+                                $subcat_id_array[0][] = $subcat_id;
+                                $subcat_id_array[1][] = $subcat_name;
+                                echo"
+                                <style>
+                                    #subcat-dropdown-".$subcat_id."
                                     {
-                                        $sub_subcat_name = htmlspecialchars($sub_subcat['subcat_name'], ENT_QUOTES, 'UTF-8');
-                                        $sub_subcat_url = htmlspecialchars($sub_subcat['subcat_url'], ENT_QUOTES, "UTF-8");
-                                        $sub_subcat_id = htmlspecialchars($sub_subcat['subcat_id'], ENT_QUOTES, 'UTF-8');
-                                        echo "<p class='subcatText-shopAll'><a  id='zero-one-".$sub_subcat_id."' class='subcat-text' href='".$sub_subcat_url."'>".$sub_subcat_name."</a></p>";
+                                        display: none;
+                                        position: relative;
+                                        left: 0;
+                                        border: solid 1px;
+                                        min-width: 16rem;
+                                        height: 2rem;
+                                        color: white;
                                     }
-                                    echo"
-                                </div>
+                                </style>
                                 ";
-                            }
-                            else
-                            {
-                                if ($_SESSION['editMenuBar'] === false)
-                                {
-                                    echo "<p class='subcatText'><a class='subcat-text' id='subcat-id-".$subcat_id."'>".$subcat_name."</a></p>";
-                                }
-                                else if ($_SESSION['editMenuBar'] === true && $_SESSION['isAdmin'] === true)
+                                if ($catName === 'Shop All')
                                 {
                                     echo "
-                                    <div class='subcatText-edit' id='subcat-".$subcat_id."'>".$subcat_name."
-                                        <div class='sub-dropdown' id='subcat-dropdown-".$subcat_id."'>
-                                            <div class='subcat-edit-remove' id='remove-".$subcat_id."'>Remove</div>
-                                            <div class='subcat-edit-edit' id='edit-".$subcat_id."'>Edit</div>
-                                        </div>
+                                    <div class='shop-all-col'>
+                                        <h1 class='shop-all-header'>".$subcat_name."</h1>
+                                        ";
+                                        $query = "SELECT * FROM subcats WHERE cat_name = :cat_name";
+                                        $stm = $DB->prepare($query);
+                                        $stm->bindParam(':cat_name', $subcat_name, PDO::PARAM_STR);
+                                        $stm->execute();
+                                        $sub_subcats = $stm->fetchAll();
+                                        if (count($sub_subcats) > 0)
+                                        {
+                                            foreach($sub_subcats as $sub_subcat)
+                                            {
+                                                $sub_subcat_name = htmlspecialchars($sub_subcat['subcat_name'], ENT_QUOTES, 'UTF-8');
+                                                $sub_subcat_url = htmlspecialchars($sub_subcat['subcat_url'], ENT_QUOTES, "UTF-8");
+                                                $sub_subcat_id = htmlspecialchars($sub_subcat['subcat_id'], ENT_QUOTES, 'UTF-8');
+                                                echo "<p class='subcatText-shopAll'><a  id='zero-one-".$sub_subcat_id."' class='subcat-text' href='".$sub_subcat_url."'>".$sub_subcat_name."</a></p>";
+                                            }
+                                        }
+                                        echo"
                                     </div>
                                     ";
                                 }
+                                else
+                                {
+                                    if ($_SESSION['editMenuBar'] === false)
+                                    {
+                                        echo "<p class='subcatText'><a class='subcat-text' id='subcat-id-".$subcat_id."'>".$subcat_name."</a></p>";
+                                    }
+                                    else if ($_SESSION['editMenuBar'] === true && $_SESSION['isAdmin'] === true)
+                                    {
+                                        echo "
+                                        <div class='subcatText-edit' id='subcat-".$subcat_id."'>".$subcat_name."
+                                            <div class='sub-dropdown' id='subcat-dropdown-".$subcat_id."'>
+                                                <div class='subcat-edit-remove' id='remove-".$subcat_id."'>Remove</div>
+                                                <div class='subcat-edit-edit' id='edit-".$subcat_id."'>Edit</div>
+                                            </div>
+                                        </div>
+                                        ";
+                                    }
+                                }
+                                $counter_2++;
                             }
-                            $counter_2++;
                         }
                         if ($catName != 'Shop All' && $_SESSION['editMenuBar'] === true)
                         {
@@ -779,7 +819,7 @@
                 ";
                 if ($_SESSION['isAdmin'] === true)
                 {
-                    if ($_SESSION['editMenuBar'] === true)
+                    if ($_SESSION['editMenuBar'] === true && count($subcat_id_array) > 0)
                     {
                         // MODALS ONLY ACCESSIBLE UNDER ADMIN EDIT
                         for ($i = 0; $i < count($subcat_id_array[0]); $i++)
@@ -789,15 +829,13 @@
                             echo 
                             "<div class='header-modal-remove-subcat' id='modal-remove-".$subcat_id_copy."'>
                                 <h1 class='modal-header-h1'>Remove Sub-category</h1>
-                                <div class='left-modal-button-subcats' id='removeSubcats-".$subcat_id_copy."'>Yes</div>
+                                <div class='left-modal-button-subcats' id='removeSubcats-".$subcat_id_copy."-".$subcat_name_copy."'>Yes</div>
                                 <div class='right-modal-button'>No</div>
                             </div>
                             <div class='header-modal-edit-subcat' id='modal-edit-".$subcat_id_copy."'>
                                 <h1 class='modal-header-h1-edit'>Edit Sub-category</h1>
                                 <h2 class='modal-header-h2-edit'>Rename</h2>
                                 <input class='header-item-input-edit' id='subcat-input-".$subcat_id_copy."' type='text' placeholder='ex: butts' required>
-                                <h2 class='modal-header-h2-edit'>Change Url</h2>
-                                <input class='header-item-input-edit' id='url-input-".$subcat_id_copy."' type='text' placeholder='ex: butts' required>
                                 <div class='enter-button' id='editSubcat-".$subcat_name_copy."-".$subcat_id_copy."'>ENTER</div>
                             </div>"
                             ;
@@ -809,7 +847,7 @@
             if ($_SESSION['isAdmin'] === true)
             {
                 echo "<div class='edit-button' id='menu-bar-edit'>EDIT</div>";
-                if ($_SESSION['editMenuBar'] === true)
+                if ($_SESSION['editMenuBar'] === true && count($cat_id_array) > 0)
                 {
                     for ($a = 0; $a < count($cat_id_array[0]); $a++)
                     {
@@ -834,11 +872,11 @@
                         ";
                     }
                     echo "
-                    <div class='add-cat' id='add-cat-button'></div>
+                    <div class='add-cat' id='add-cat-button'><i class='bi bi-plus-circle'></i></div>
                     <div class='menubar-modal'></div>
                     <span class='close-modal-button'>&times</span>
                     <div class='header-modal' id='add-item-modal'>
-                        <h1 class='modal-header-h1'>Add Menu Item</h1>
+                        <h1 class='modal-header-h1'>Add Category</h1>
                         <input class='header-item-input' id='new-cat-input' type='text' placeholder='ex: butts' required>
                         <h2 class='modal-header-h2'>Add to Shop All menu?</h2>
                         <input type='checkbox' class='check-box-shopall' id='add-to-shopall'>
