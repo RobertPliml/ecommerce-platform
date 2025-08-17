@@ -8,6 +8,9 @@ $email_password = $_ENV['EMAIL_PASSWORD'];
 $clientId = $_ENV['CLIENT_ID'];
 $clientSecret = $_ENV['CLIENT_SECRET'];
 require_once 'init.php';
+include_once 'rate_limit.php';
+$clientIdentifier = $_SERVER['REMOTE_ADDR'];
+checkRateLimit($clientIdentifier, 20, 60); // 20 requests per 60 seconds
 header("Content-type: application/json");
 include 'dbconnect.php';
 use PHPMailer\PHPMailer\PHPMailer;
@@ -16,23 +19,27 @@ $mail = new PHPMailer(true);
 // ------------------------------
 // CONFIG
 // ------------------------------
-$paypalApiBase = 'https://api-m.sandbox.paypal.com'; // change to live for production
+$paypalApiBase = $_ENV['PAYPAL_API_BASE'];
 
 // ------------------------------
 // GET JSON POST DATA
 // ------------------------------
 $raw = file_get_contents("php://input");
 $data = json_decode($raw, true);
-
-if (!$data || !isset($data['orderID'])) 
-{
+$csrf_token = $data['csrf_token'] ?? 'N/A';
+if (
+    !isset($_SESSION['csrf_token']) ||
+    !hash_equals($_SESSION['csrf_token'], $csrf_token) ||
+    $csrf_token === 'N/A'
+) {
+    error_log("[" . date("Y-m-d H:i:s") . "] CSRF validation failed. CSRF token value: [$csrf_token]\n", 3, __DIR__ . "/error_logs/paypal_error_log.log");
     http_response_code(400);
     echo json_encode(['error' => 'Invalid request']);
     exit;
 }
-if (!isset($data['csrf_token'], $_SESSION['csrf_token']) || 
-!hash_equals($_SESSION['csrf_token'], $data['csrf_token']))
+if (!$data || !isset($data['orderID'])) 
 {
+    error_log("[" . date("Y-m-d H:i:s") . "]If this csrf token is empty - [$csrf_token] - then no data made it through. If there IS a csrf token, then only orderID didnt make it through.\n", 3, __DIR__ . "/error_logs/paypal_error_log.log");
     http_response_code(400);
     echo json_encode(['error' => 'Invalid request']);
     exit;
@@ -70,6 +77,7 @@ $accessToken = $tokenData['access_token'] ?? null;
 
 if (!$accessToken) 
 {
+    error_log("[" . date('Y-m-d H:i:s') . "]No access token recieved. Access Token value: [$accessToken] (Empty brackets = null)\n", 3, __DIR__ . "/error_logs/paypal_error_log.log");
     http_response_code(500);
     echo json_encode(['error' => 'Failed to get access token']);
     exit;
@@ -90,22 +98,22 @@ $response = curl_exec($ch);
 curl_close($ch);
 
 $orderData = json_decode($response, true);
-//file_put_contents(__DIR__ . '/debug-orderData.json', json_encode($orderData, JSON_PRETTY_PRINT));
+$orderStatus = $orderData['status'] ?? 'Status not found.';
 
 if (!$orderData || !isset($orderData['status'])) 
 {
-    http_response_code(500);
+    error_log("[" . date('Y-m-d H:i:s') . "]Could not retrieve order data.\n", 3, __DIR__ . "/error_logs/paypal_error_log.log");
+    http_response_code(400);
     echo json_encode(['error' => 'Could not retrieve order data']);
     exit;
 }
-
 if ($orderData['status'] !== 'COMPLETED') 
 {
+    error_log("[" . date('Y-m-d H:i:s') . "]Payment status did not reach complete. Order Status: [$orderStatus]\n", 3, __DIR__ . "/error_logs/paypal_error_log.log");
     http_response_code(400);
     echo json_encode(['error' => 'Payment not completed']);
     exit;
 }
-
 // ------------------------------
 // OPTIONAL: STORE TO DATABASE HERE
 // ------------------------------
@@ -131,7 +139,7 @@ if ($shippingData && isset($shippingData['address']))
     ];
 
     // Remove empty parts and join with commas
-    $shippingAddress = implode(', ', array_filter($parts));
+    $shippingAddress = implode(', ', array_filter($parts)) ?? 'N/A';
 
     /* OPTIONAL LATER with monthly cost: filter out invalid address with google maps api.
     // If address is empty after filtering, fallback to default message
@@ -152,14 +160,11 @@ if ($shippingData && isset($shippingData['address']))
         // Address invalid
         exit();
     }*/
-    if (empty($shippingAddress)) 
-    {
-        $shippingAddress = 'No shipping info';
-    }
 }
 $payerEmail = $payer['email_address'] ?? '';
 $Date = new dateTime();
 $paymentDate = $Date->format('Y-m-d H:i:s');
+$recipientName = $shippingData['name']['full_name'] ?? 'Valued Customer';
 try 
 {
     // Server settings
@@ -173,10 +178,11 @@ try
 
     // Sender & recipient
     $mail->setFrom($email_username, 'Kathryn Pliml');
-    $mail->addAddress(strval($payerEmail), $shippingData['name']['full_name']);
+    $mail->addAddress(strval($payerEmail), $recipientName);
     $confirmation_number = explode('.', $order_id)[1];
     // Email content
     $mail->isHTML(true);
+    $mail->AltBody = strip_tags($mail->Body);
     $mail->Subject = 'Order Confirmation';
     $mail->Body    = "Thank you for your purchase from Corpselotion! We are excited to let you know that we've received your order and it is currently being processed.<br>
 
@@ -185,7 +191,7 @@ try
 <b>Payment Date: $paymentDate</b><br>
 <b>Amount: $$amount</b><br>
 
-<b><Shipping To:</b><br>
+<b>Shipping To:</b><br>
 $shippingAddress<br>
 
 You will receive another email with tracking details as soon as your order ships. In the meantime, if you have any questions or need to make a change, feel free to reply to this email or send a new message to kathrynfrances2019@gmail.com.
@@ -204,13 +210,16 @@ corpselotion.com<br>
     }
     else
     {
-        echo "Error: No email provided";
+        error_log("[" . date('Y-m-d H:i:s') . "]Payer email address was either invalid or not recieved. PayerEmail: [$payerEmail]\n", 3, __DIR__ . "/error_logs/paypal_error_log.log");
+        http_response_code(500);
         exit();
     }
 } 
 catch (Exception $e) 
 {
-    echo "Email could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    error_log("[" . date('Y-m-d H:i:s') . "]Email failed to send. Mailer Error: [{$mail->ErrorInfo}]\n", 3, __DIR__ . "/error_logs/paypal_error_log.log");
+    http_response_code(500);
+    echo json_encode("Email could not be sent.");
 }
 
 $currency = $orderData['purchase_units'][0]['amount']['currency_code'] ?? 'USD';
@@ -219,15 +228,16 @@ $currency = $orderData['purchase_units'][0]['amount']['currency_code'] ?? 'USD';
 try 
 {
     $DB->beginTransaction();
-
+    $shippingAddressSanitized = htmlspecialchars($shippingAddress, ENT_QUOTES, 'UTF-8');
+    $payerNameSanitized = htmlspecialchars($recipientName, ENT_QUOTES, 'UTF-8');
     $stmt = $DB->prepare("INSERT INTO orders (order_id, price, street_address, order_status, email_address, payer_name) VALUES (:order_id, :price, :order_address, :order_status, :email_address, :payer_name)");
     $stmt->execute([
         ':order_id' => $order_id,
         ':price' => $amount,
-        ':order_address' => $shippingAddress,
+        ':order_address' => $shippingAddressSanitized,
         ':order_status' => 'pending',
         ':email_address' => $payerEmail,
-        ':payer_name' => strval($shippingData['name']['full_name'])
+        ':payer_name' => $payerNameSanitized
     ]);
 
     $filteredItems = array_filter($items, fn($item) =>
@@ -264,7 +274,7 @@ try
 catch (PDOException $e) 
 {
     $DB->rollBack();
-    //file_put_contents(__DIR__ . '/log.txt', 'DB ERROR: ' . $e->getMessage() . "\n", FILE_APPEND);
+    error_log("[" . date("Y-m-d H:i:s") . "]Something failed during query transaction. DB Exception: [" . $e->getMessage() . "]\n", 3, __DIR__ . "/error_logs/paypal_error_log.log");
     http_response_code(500);
     echo json_encode(['error' => 'DB error']);
     exit;

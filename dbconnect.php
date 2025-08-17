@@ -1,5 +1,5 @@
 <?php
-require_once 'vendor/autoload.php';  // Make sure to include the Composer autoload file
+require_once 'vendor/autoload.php';
 
         $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
         $dotenv->load();
@@ -9,16 +9,13 @@ require_once 'vendor/autoload.php';  // Make sure to include the Composer autolo
             $username = $_ENV['DB_USER'];
             $password = $_ENV['DB_PASS'];
         
-            // Create a PDO instance
             $DB = new PDO($dsn, $username, $password);
         
-            // Set the PDO error mode to exception
-            $DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
-            // echo "Connected successfully"; 
-        
+            $DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);       
         } 
         catch (PDOException $e) 
         {
-            echo "Cannot connect to database: " . $e->getMessage();
+            error_log("[" . date('Y-m-d H:i:s') . "]DB connection failed. DB Error: [" . $e->getMessage() . "]\n", 3, __DIR__ . "/error_logs/general_error_log.log");
+            http_response_code(500);
+            echo json_encode(['Error:' => 'DB connection failure.']);
         }
