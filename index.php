@@ -209,6 +209,58 @@ include "navigation.php";
 <div id="socialMedia">
     <h1 id="socialMedia-header">Follow us on instagram<br>@corpselotion</h1>
     <p id="socialMedia-text">to find out what we've been up to lately,<br> and stay updated on products!</p>
-    <div id="socialMedia-imgs-container"></div>
+    <div id="socialMedia-imgs-container">
+        <div class="insta-cell" id="insta-cell-one">
+            <div class="gradient-overlay" id="gradient-overlay-one"></div>
+            <div class="icon-wrapper-outter" id="icon-wrapper-outter-one">
+                <div class="icon-wrapper-inner">
+                    <div class="icon-wrapper-3">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <div class="icon-wrapper-3">25</div>
+                </div>
+                <div class="icon-wrapper-inner">
+                    <div class="icon-wrapper-3">
+                        <i class="bi bi-chat"></i>
+                    </div>
+                    <div class="icon-wrapper-3">7</div>
+                </div>
+            </div>
+        </div>
+        <div class="insta-cell" id="insta-cell-two">
+            <div class="gradient-overlay" id="gradient-overlay-two"></div>
+            <div class="icon-wrapper-outter" id="icon-wrapper-outter-two">
+                <div class="icon-wrapper-inner">
+                    <div class="icon-wrapper-3">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <div class="icon-wrapper-3">32</div>
+                </div>
+                <div class="icon-wrapper-inner">
+                    <div class="icon-wrapper-3">
+                        <i class="bi bi-chat"></i>
+                    </div>
+                    <div class="icon-wrapper-3">9</div>
+                </div>
+            </div>
+        </div>
+        <div class="insta-cell" id="insta-cell-three">
+            <div class="gradient-overlay" id="gradient-overlay-three"></div>
+            <div class="icon-wrapper-outter" id="icon-wrapper-outter-three">
+                <div class="icon-wrapper-inner">
+                    <div class="icon-wrapper-3">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <div class="icon-wrapper-3">18</div>
+                </div>
+                <div class="icon-wrapper-inner">
+                    <div class="icon-wrapper-3">
+                        <i class="bi bi-chat"></i>
+                    </div>
+                    <div class="icon-wrapper-3">5</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <?php include "footer.php";?>

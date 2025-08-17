@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'init.php';
 include "dbconnect.php";
 $cat_id = filter_input(INPUT_POST, 'cat_id', FILTER_VALIDATE_INT);
 $grand_cat = filter_input(INPUT_POST, 'grand_cat', FILTER_VALIDATE_BOOLEAN);

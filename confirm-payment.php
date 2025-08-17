@@ -3,11 +3,11 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 $email_username = $_ENV['EMAIL_USERNAME'];
 $email_password = $_ENV['EMAIL_PASSWORD'];
-session_start();
+$clientId = $_ENV['CLIENT_ID'];
+$clientSecret = $_ENV['CLIENT_SECRET'];
+require_once 'init.php';
 header("Content-type: application/json");
 include 'dbconnect.php';
 use PHPMailer\PHPMailer\PHPMailer;
@@ -16,8 +16,6 @@ $mail = new PHPMailer(true);
 // ------------------------------
 // CONFIG
 // ------------------------------
-$clientId = 'Acj3BplD7LjMhQ2Oik8RcEgg7rw5OEL5ul2FHSokUQmyAW-lTlrmrFM_zIycl9hH5n_WbS2g3u-A_N02';
-$clientSecret = 'ENS9YjYg1ugLBWTlzV_yDff48FWi7jAKoMfbE_oT7Y9riOZfHGmSeKoXkBXTI2Ui2FVwacKK2GZTtozi';
 $paypalApiBase = 'https://api-m.sandbox.paypal.com'; // change to live for production
 
 // ------------------------------
@@ -27,6 +25,13 @@ $raw = file_get_contents("php://input");
 $data = json_decode($raw, true);
 
 if (!$data || !isset($data['orderID'])) 
+{
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid request']);
+    exit;
+}
+if (!isset($data['csrf_token'], $_SESSION['csrf_token']) || 
+!hash_equals($_SESSION['csrf_token'], $data['csrf_token']))
 {
     http_response_code(400);
     echo json_encode(['error' => 'Invalid request']);
@@ -85,7 +90,7 @@ $response = curl_exec($ch);
 curl_close($ch);
 
 $orderData = json_decode($response, true);
-file_put_contents(__DIR__ . '/debug-orderData.json', json_encode($orderData, JSON_PRETTY_PRINT));
+//file_put_contents(__DIR__ . '/debug-orderData.json', json_encode($orderData, JSON_PRETTY_PRINT));
 
 if (!$orderData || !isset($orderData['status'])) 
 {
@@ -167,7 +172,7 @@ try
     $mail->Port       = 587;
 
     // Sender & recipient
-    $mail->setFrom($email_username, 'Robert Pliml');
+    $mail->setFrom($email_username, 'Kathryn Pliml');
     $mail->addAddress(strval($payerEmail), $shippingData['name']['full_name']);
     $confirmation_number = explode('.', $order_id)[1];
     // Email content
@@ -189,7 +194,7 @@ Thank you for supporting original artwork and handmade creations — your order 
 <br>
 Warmly,<br>
 Kathyrn Pliml<br>
-corpselotion.com (?)<br>
+corpselotion.com<br>
 @corpselotion";
 
     $mail->send();
@@ -211,7 +216,6 @@ catch (Exception $e)
 $currency = $orderData['purchase_units'][0]['amount']['currency_code'] ?? 'USD';
 
 // === Step 5: Insert into DB
-$order_id = uniqid('order#', true);
 try 
 {
     $DB->beginTransaction();
@@ -260,7 +264,7 @@ try
 catch (PDOException $e) 
 {
     $DB->rollBack();
-    file_put_contents(__DIR__ . '/log.txt', 'DB ERROR: ' . $e->getMessage() . "\n", FILE_APPEND);
+    //file_put_contents(__DIR__ . '/log.txt', 'DB ERROR: ' . $e->getMessage() . "\n", FILE_APPEND);
     http_response_code(500);
     echo json_encode(['error' => 'DB error']);
     exit;

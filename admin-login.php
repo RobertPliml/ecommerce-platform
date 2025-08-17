@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'init.php';
 require_once 'vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
@@ -30,6 +30,7 @@ if ($csrf_token && $csrf_token === $_SESSION['csrf_token'])
             if ($username === $admin_username && $password === $admin_password)
             {
                 // echo "good anakin, goooooood";
+                session_regenerate_id(true);
                 $_SESSION['isAdmin'] = true;
             }
             else

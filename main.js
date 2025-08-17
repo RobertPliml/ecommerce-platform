@@ -615,6 +615,7 @@ $(document).ready(function ()
                                 {
                                     var scriptContent = $(this).html(); // Get the content of the script
                                     var newScript = document.createElement('script');
+                                    newScript.setAttribute('nonce', CSP_NONCE); 
                                     newScript.text = scriptContent;  // Set the content to the extracted script
                                     $("#top").append(newScript);
                                 }
@@ -1196,7 +1197,25 @@ $(document).ready(function ()
                 window.location.assign('shopping_page.php');
             });
         }
-    )
+    );
+    $('#socialMedia').on('mouseenter',
+        '.insta-cell',
+        function () 
+        {
+            let i = $(this).attr('id').split('-')[2];
+            $("#gradient-overlay-" + i).css('display', 'block');
+            $("#icon-wrapper-outter-" + i).css('display', 'flex');
+        }
+    );
+    $('#socialMedia').on('mouseleave',
+        '.insta-cell',
+        function () 
+        {
+            let i = $(this).attr('id').split('-')[2];
+            $("#gradient-overlay-" + i).css('display', 'none');
+            $("#icon-wrapper-outter-" + i).css('display', 'none');
+        }
+    );
 });
 
 // fancy scroll effects for select elements

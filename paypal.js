@@ -65,6 +65,7 @@ function waitForPayPal()
                         dataType: 'json',
                         data: JSON.stringify
                         ({
+                            csrf_token: csrf_token,
                             orderID: data.orderID,
                             payerID: data.payerID,
                             details: details,

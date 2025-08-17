@@ -1,0 +1,7 @@
+Array
+(
+    [session_token] => d6efa44bbf3c2289277396e7fd34b8615b285f076ed3ed707321678161c9f497
+    [posted_token] => d6efa44bbf3c2289277396e7fd34b8615b285f076ed3ed707321678161c9f497
+    [session_len] => 64
+    [posted_len] => 64
+)

@@ -1,6 +1,4 @@
 <?php
-session_start();
-session_regenerate_id();
 include "header.php";
 include "dbconnect.php";
 include "navigation.php";

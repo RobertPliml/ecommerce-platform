@@ -5,7 +5,7 @@ $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 $email_username = $_ENV['EMAIL_USERNAME'];
 $email_password = $_ENV['EMAIL_PASSWORD'];
-session_start();
+require_once 'init.php';
 include "dbconnect.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -133,7 +133,7 @@ if ($order_id)
                 $mail->SMTPSecure = 'tls';
                 $mail->Port       = 587;
 
-                $mail->setFrom($email_username, 'Robert Pliml');
+                $mail->setFrom($email_username, 'Kathryn Pliml');
                 $mail->addAddress($email, $name);
                 $mail->isHTML(true);
                 $mail->Subject = "Order Shipped";
@@ -142,7 +142,7 @@ if ($order_id)
                 has been shipped to $address.<br>
                 Thank you again $first_name for you support, please feel free to send back any pictures featuring your new artwork on display!<br>
                 Sincerely, Kathryn<br>
-                Corpselotion.com (?)<br>
+                Corpselotion.com<br>
                 @corpselotion";
                 $mail->send();
             }

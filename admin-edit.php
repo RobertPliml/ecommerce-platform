@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'init.php';
 include "dbconnect.php";
 $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_SPECIAL_CHARS);
 $editMenuBar = filter_input(INPUT_POST, 'editMenuBar', FILTER_VALIDATE_BOOLEAN);

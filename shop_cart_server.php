@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'init.php';
 header('Content-Type: application/json');
 include "dbconnect.php";
 try

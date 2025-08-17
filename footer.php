@@ -1,4 +1,3 @@
-<script src="search.js" defer></script>
 </body>
 <footer>
     <div id="footer-div">
@@ -16,7 +15,7 @@
         </div>
         <div id="footer-credentials">
             <p class="footer-p footer-a">kathrynfrances2019@gmail.com</p>
-            <p class="footer-p footer-a">1234 youraddress st. NW Grand Rapids, MI 49504</p>
+            <p class="footer-p footer-a"></p>
         </div>
         <p id="copyright">@ 2025 Corpselotion</p>
     </div>

@@ -1,6 +1,5 @@
 <?php
-session_start();
-session_regenerate_id(true);
+require_once 'init.php';
 include 'dbconnect.php';
 $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_SPECIAL_CHARS);
 $item_name = filter_input(INPUT_POST, 'item_name', FILTER_SANITIZE_SPECIAL_CHARS);

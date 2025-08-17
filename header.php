@@ -26,9 +26,79 @@
 
         <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
         <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+        <?php
+        require_once 'init.php';
+        if (!isset($_SESSION['isAdmin']))
+        {
+            $_SESSION['isAdmin'] = false;
+        }
+        if (!isset($_SESSION['show_login_container']))
+        {
+            $_SESSION['show_login_container'] = false;
+        }
+        if (!isset($_SESSION['grand_cat']))
+        {
+            $_SESSION['grand_cat'] = false;
+        }
+        if (!isset($_SESSION['csrf_token']))
+        {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        if (!isset($_SESSION['editMenuBar']))
+        {
+            $_SESSION['editMenuBar'] = false;
+        }
+        if (!isset($_SESSION['editing']))
+        {
+            $_SESSION['editing'] = false;
+        }
+        if (!isset($_SESSION['edit_id']))
+        {
+            $_SESSION['edit_id'] = 0;
+        }
+        if (!isset($_SESSION['edit_pos_x']))
+        {
+            $_SESSION['edit_pos_x'] = 0;
+        }
+        if (!isset($_SESSION['edit_pos_y']))
+        {
+            $_SESSION['edit_pos_y'] = 0;
+        }
+        if (!isset($_SESSION['edit_div_type']))
+        {
+            $_SESSION['edit_div_type'] = '';
+        }
+        if (!isset($_SESSION['edit_div_id']))
+        {
+            $_SESSION['edit_div_id'] = 0;
+        }
+        if (!isset($_SESSION['page_search_id']))
+        {
+            $_SESSION['page_search_id'] = 0;
+        }
+        if (!isset($_SESSION['admin_tool']))
+        {
+            $_SESSION['admin_tool'] = "stock";
+        }
+        if (!isset($_SESSION['order_email']))
+        {
+            $_SESSION['order_email'] = '';
+        }
+        ?>
+        <script nonce="<?= $nonce ?>">
+            const csrf_token = <?= json_encode($_SESSION['csrf_token']); ?>;
+            var edit_mode = <?= json_encode($_SESSION['editing']); ?>;
+            var edit_pos_x = <?= json_encode($_SESSION['edit_pos_x']); ?>;
+            var edit_pos_y = <?= json_encode($_SESSION['edit_pos_y']); ?>;
+            var edit_div_type = <?= json_encode($_SESSION['edit_div_type']); ?>;
+            var edit_div_id = <?= json_encode($_SESSION['edit_div_id']); ?>;
+            var page_search_id = <?= json_encode($_SESSION['page_search_id']); ?>;
+            const CSP_NONCE = <?= json_encode($nonce); ?>;
+        </script>
 
         <script src="paypal.js" defer></script>
         <script src="main.js" defer></script>
+        <script src="search.js" defer></script>
 
         <?php session_start(); if($_SESSION['isAdmin'] === true) : ?>
         <script src="dreamboard.js" defer></script>
